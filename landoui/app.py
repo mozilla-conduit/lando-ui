@@ -13,6 +13,9 @@ from flask import Flask
 @click.option('--debug', envvar='DEBUG', type=bool, default=False)
 @click.option('--port', envvar='PORT', type=int, default=80)
 @click.option('--host', envvar='HOST', default='0.0.0.0')
+@click.option(
+    '--version-path', envvar='VERSION_PATH', default='/app/version.json'
+)
 @click.option('--secret-key', envvar='SECRET_KEY', default=None)
 @click.option(
     '--session-cookie-name', envvar='SESSION_COOKIE_NAME', default=None
@@ -24,19 +27,22 @@ from flask import Flask
     '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=True
 )
 def create_app(
-    run_dev_server, debug, port, host, secret_key, session_cookie_name,
-    session_cookie_domain, session_cookie_secure
+    run_dev_server, debug, port, host, version_path, secret_key,
+    session_cookie_name, session_cookie_domain, session_cookie_secure
 ):
     app = Flask(__name__)
 
     # Set configuration
+    app.config['VERSION_PATH'] = version_path
     app.config['SECRET_KEY'] = secret_key
     app.config['SESSION_COOKIE_NAME'] = session_cookie_name
     app.config['SESSION_COOKIE_DOMAIN'] = session_cookie_domain
     app.config['SESSION_COOKIE_SECURE'] = session_cookie_secure
 
     # Register routes via Flask Blueprints
+    from landoui.pages import pages
     from landoui.dockerflow import dockerflow
+    app.register_blueprint(pages)
     app.register_blueprint(dockerflow)
 
     if run_dev_server:
