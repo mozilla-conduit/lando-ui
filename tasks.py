@@ -6,6 +6,7 @@ import os
 
 from invoke import Collection, task, run
 
+DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'lando-ui')
 project_root = os.path.dirname(__file__)
 
 # Name used by docker-compose to create a test-only docker environment.
@@ -63,11 +64,11 @@ def test_python(ctx, testargs='', keep=False):
     help={
         'testargs': 'Arguments to pass to the test suite (default: \'\')',
         'keep': 'Do not remove the test container after running',
-        'no_pty': 'Execute tests without a pty.',
+        'pty': 'Execute tests with a pty. (default: True)',
     }
 )
-def test_javascript(ctx, testargs='', keep=False, no_pty=False):
-    """Test landui javascript tests."""
+def test_javascript(ctx, testargs='', keep=False, pty=True):
+    """Run lando-ui javascript tests."""
     run(
         'docker-compose'
         ' -f {project_root}/docker-compose.yml'
@@ -82,7 +83,7 @@ def test_javascript(ctx, testargs='', keep=False, no_pty=False):
             args=testargs,
             rm=('' if keep else ' --rm')
         ),
-        pty=not no_pty,
+        pty=pty,
         echo=True
     )
 
@@ -142,7 +143,7 @@ def format_all(ctx):
     )
 
 
-@task(default=True, name="all", post=[test_python, test_javascript])
+@task(default=True, name="all", post=[test_python])
 def test_all(ctx):
     pass
 
@@ -159,6 +160,24 @@ def version_json(ctx):
     print(json.dumps(version))
 
 
+@task(name='build')
+def build(ctx):
+    """Build the production docker image."""
+    ctx.run(
+        'docker build --pull -t {image_name} '
+        '-f ./docker/Dockerfile-prod .'.format(image_name=DOCKER_IMAGE_NAME)
+    )
+
+
+@task(name='imageid')
+def imageid(ctx):
+    """Print the built docker image ID."""
+    ctx.run(
+        "docker inspect -f '{format}' {image_name}".
+        format(image_name=DOCKER_IMAGE_NAME, format='{{.Id}}')
+    )
+
+
 namespace = Collection(
     Collection(
         'test',
@@ -172,10 +191,8 @@ namespace = Collection(
         lint_all,
         lint_flake8,
         lint_yapf,
-    ),
-    Collection(
+    ), Collection(
         'format',
         format_all,
-    ),
-    version_json,
+    ), version_json, build, imageid
 )
