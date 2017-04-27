@@ -17,6 +17,7 @@ services:
       - PORT=7777
       - HOST=0.0.0.0
       - DEBUG=True
+      - VERSION_PATH=/version.json
       - SECRET_KEY=secret_key_change_me
       - SESSION_COOKIE_NAME=lando-ui.dev
       - SESSION_COOKIE_DOMAIN=
