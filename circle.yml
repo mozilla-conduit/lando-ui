@@ -1,0 +1,51 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# These environment variables must be set in CircleCI UI
+#
+# DOCKERHUB_REPO - docker hub repo, format: <username>/<repo>
+# DOCKER_EMAIL   - login info for docker hub
+# DOCKER_USER
+# DOCKER_PASS
+machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+  services:
+    - docker
+  python:
+    version: 3.5.2
+
+dependencies:
+  override:
+    - pip install -r circle-requirements.txt
+    - docker info
+
+compile:
+  override:
+    # create version.json
+    - invoke version > version.json
+    - cp version.json $CIRCLE_ARTIFACTS
+
+    # build development image for tests:
+    - docker-compose -f ./docker-compose.yml build lando-ui
+
+    # build production image:
+    - invoke build
+    - invoke imageid | tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt
+
+test:
+  override:
+    # test lando-ui:
+    - invoke test.python --keep
+    # TODO test.javascript --keep
+
+# appropriately tag and push the container to dockerhub
+deployment:
+  dockerhub_latest:
+    branch: "master"
+    commands:
+      - "[ ! -z $DOCKERHUB_REPO ]"
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - "docker tag lando-ui:build ${DOCKERHUB_REPO}:lando-ui-${CIRCLE_SHA1}"
+      - "docker push ${DOCKERHUB_REPO}:lando-ui-${CIRCLE_SHA1}"
