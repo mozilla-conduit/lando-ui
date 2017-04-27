@@ -1,0 +1,30 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+version: '2'
+services:
+  lando-ui:
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-dev
+    volumes:
+      - ./:/app
+    ports:
+      - "7777:7777"
+    environment:
+      - RUN_DEV_SERVER=True
+      - PORT=7777
+      - HOST=0.0.0.0
+      - DEBUG=True
+      - SECRET_KEY=secret_key_change_me
+      - SESSION_COOKIE_NAME=lando-ui.dev
+      - SESSION_COOKIE_DOMAIN=
+      - SESSION_COOKIE_SECURE=False
+  py3-linter:
+    build:
+      context: ./
+      dockerfile: ./docker/py3-linter-dockerfile
+    volumes:
+     - ./:/code/
+
