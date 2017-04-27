@@ -1,0 +1,8 @@
+[flake8]
+exclude =
+    .hg,
+    .git,
+    __pycache__,
+    .cache,
+    # Don't check parts of the tree where there is no python.
+    docker,
