@@ -20,6 +20,9 @@ mccabe==0.6.1 \
     --hash=sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42
 pytest==3.0.7 \
     --hash=sha256:66f332ae62593b874a648b10a8cb106bfdacd2c6288ed7dec3713c3a808a6017
+pytest-flask==0.10.0 \
+    --hash=sha256:2c5a36f9033ef8b6f85ddbefaebdd4f89197fc283f94b20dfe1a1beba4b77f03 \
+    --hash=sha256:657c7de386215ab0230bee4d76ace0339ae82fcbb34e134e17a29f65032eef03
 pycodestyle==2.3.1 \
     --hash=sha256:6c4245ade1edfad79c3446fadfc96b0de2759662dc29d07d80a6f27ad1ca6ba9
 pyparsing==2.2.0 \

@@ -16,7 +16,7 @@ def heartbeat():
     and return a 200 iff those services and the app itself are
     performing normally. Return a 5XX if something goes wrong.
     """
-    # TODO check backing services
+    # TODO check backing services and update tests
     return '', 200
 
 
