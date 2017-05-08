@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-</head>
-<body>
-    <div style="width: 100%; height: 50px; background-color: #ccc"></div>
-    <h1>Lando</h1>
-    <p>Hi {{name}} this is Lando!</p>
-</body>
-</html>
-
+{% extends "layout.html" %}
+{% block body %}
+<div id="home">
+    <h1>Hello from Lando!</h1>
+    <p class="bordered">Lando is an automated code lander for Mozilla!</p>
+    <button onclick="sayHi()">Say hi to Lando! (Included method)</button>
+    <button onclick="sayBye()">Say hi to Lando! (Inline method)</button>
+</div>
+<script>
+    function sayBye(){
+      alert('Bye! :(');
+    }
+</script>
+{% endblock %}

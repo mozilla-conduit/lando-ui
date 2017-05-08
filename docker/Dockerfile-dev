@@ -5,6 +5,9 @@ RUN pip install -r /requirements.txt
 ADD dev-requirements.txt /dev-requirements.txt
 RUN pip install -r /dev-requirements.txt
 
+RUN apk add --update nodejs && rm -rf /var/cache/apk/*
+RUN npm install --global less
+
 # Create a Dockerflow version file at the root so
 # we don't map over it below.
 RUN echo '{\
