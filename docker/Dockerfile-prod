@@ -8,6 +8,7 @@ COPY requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
 COPY . /app
+RUN rm -rf /app/landoui/static/src
 RUN python ./setup.py develop
 
 # run as non priviledged user

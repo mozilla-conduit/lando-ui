@@ -39,5 +39,8 @@ setup(
         'console_scripts': [
             'lando-ui-dev=landoui.app:create_app',
         ],
+        'flask.commands': [
+            'assets = flask_assets:assets',
+        ],
     },
 )

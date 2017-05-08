@@ -28,7 +28,9 @@ compile:
     - cp version.json $CIRCLE_ARTIFACTS
 
     # build development image for tests:
-    - docker-compose -f ./docker-compose.yml build lando-ui
+    - docker-compose build lando-ui
+    # build assets for production using the dev image
+    - docker-compose run -e FLASK_APP=/app/landoui/assets_app.py lando-ui flask assets build
 
     # build production image:
     - invoke build
@@ -38,7 +40,6 @@ test:
   override:
     # test lando-ui:
     - invoke test.python --keep
-    # TODO test.javascript --keep
 
 # appropriately tag and push the container to dockerhub
 deployment:
@@ -47,5 +48,5 @@ deployment:
     commands:
       - "[ ! -z $DOCKERHUB_REPO ]"
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - "docker tag lando-ui:build ${DOCKERHUB_REPO}:lando-ui-${CIRCLE_SHA1}"
-      - "docker push ${DOCKERHUB_REPO}:lando-ui-${CIRCLE_SHA1}"
+      - "docker tag ${DOCKERHUB_REPO} ${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+      - "docker push ${DOCKERHUB_REPO}:${CIRCLE_SHA1}"

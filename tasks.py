@@ -6,7 +6,7 @@ import os
 
 from invoke import Collection, task, run
 
-DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'lando-ui')
+DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/lando-ui')
 project_root = os.path.dirname(__file__)
 
 # Name used by docker-compose to create a test-only docker environment.
@@ -55,35 +55,6 @@ def test_python(ctx, testargs='', keep=False):
             rm=('' if keep else ' --rm')
         ),
         pty=True,
-        echo=True
-    )
-
-
-@task(
-    name='javascript',
-    help={
-        'testargs': 'Arguments to pass to the test suite (default: \'\')',
-        'keep': 'Do not remove the test container after running',
-        'pty': 'Execute tests with a pty. (default: True)',
-    }
-)
-def test_javascript(ctx, testargs='', keep=False, pty=True):
-    """Run lando-ui javascript tests."""
-    run(
-        'docker-compose'
-        ' -f {project_root}/docker-compose.yml'
-        ' -p {test_project_name}'
-        ' run'
-        '{rm}'
-        ' yarn'
-        ' test {args}'
-        ''.format(
-            project_root=project_root,
-            test_project_name=project_test_name,
-            args=testargs,
-            rm=('' if keep else ' --rm')
-        ),
-        pty=pty,
         echo=True
     )
 
@@ -182,7 +153,6 @@ namespace = Collection(
     Collection(
         'test',
         test_python,
-        test_javascript,
         test_all,
         remove_containers,
     ),
