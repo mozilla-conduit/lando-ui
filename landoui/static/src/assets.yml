@@ -1,0 +1,32 @@
+# Defines how the assets should be compiled.
+# All file paths are relative to the `static` folder.
+# Order matters, based on what depends on what.
+# Everything in the static folder will be served in production except
+# the src and .webassets-cache folders (if it exists).
+
+vendor_css:
+  output: build/vendor.css
+  contents:
+    - src/vendor/*.css
+
+vendor_js:
+  output: build/vendor.js
+  contents:
+    - src/vendor/jquery-3.2.1.js
+    - src/vendor/*.js
+
+main_js:
+  filters: rjsmin
+  output: build/main.js
+  contents:
+    # If dependency order matters, specify those files first.
+    # The last two lines will catch all other files not specified.
+    - src/js/*.js
+    - src/js/**/*.js
+
+main_css:
+  filters: less
+  output: build/main.css
+  contents:
+    - src/css/*.less
+    - src/css/**/*.less

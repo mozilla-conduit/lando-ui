@@ -1,9 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import os
+
 import click
 
 from flask import Flask
+from flask_assets import Environment
+from webassets.loaders import YAMLLoader
 
 
 @click.command()
@@ -45,7 +49,18 @@ def create_app(
     app.register_blueprint(pages)
     app.register_blueprint(dockerflow)
 
+    # Setup Flask Assets
+    assets = Environment(app)
+    loader = YAMLLoader(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'static/src/assets.yml'
+        )
+    )
+    assets.register(loader.load_bundles())
+
     if run_dev_server:
+        app.jinja_env.auto_reload = True
+        app.config['TEMPLATES_AUTO_RELOAD'] = True
         app.run(debug=debug, port=port, host=host)
 
     return app
