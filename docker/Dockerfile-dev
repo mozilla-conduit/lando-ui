@@ -1,5 +1,8 @@
 FROM python:3.5-alpine
 
+# TODO: Does this need to be done on Dockerfile-prod?
+RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev
+
 ADD requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 ADD dev-requirements.txt /dev-requirements.txt

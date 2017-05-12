@@ -9,6 +9,12 @@ from flask import Flask
 from flask_assets import Environment
 from webassets.loaders import YAMLLoader
 
+from landoui import auth
+
+# This global is required to allow OIDC initialization on the entire app,
+# yet still allow @oidc decorate uses for pages
+oidc = None
+
 
 @click.command()
 @click.option(
@@ -25,14 +31,19 @@ from webassets.loaders import YAMLLoader
     '--session-cookie-name', envvar='SESSION_COOKIE_NAME', default=None
 )
 @click.option(
-    '--session-cookie-domain', envvar="SESSION_COOKIE_DOMAIN", default=""
+    '--session-cookie-domain',
+    envvar='SESSION_COOKIE_DOMAIN',
+    default='lando.mozilla.org'
 )
 @click.option(
-    '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=True
+    '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
+)
+@click.option(
+    '--use-https', envvar='USE_HTTPS', default=1
 )
 def create_app(
     run_dev_server, debug, port, host, version_path, secret_key,
-    session_cookie_name, session_cookie_domain, session_cookie_secure
+    session_cookie_name, session_cookie_domain, session_cookie_secure, use_https
 ):
     app = Flask(__name__)
 
@@ -42,6 +53,13 @@ def create_app(
     app.config['SESSION_COOKIE_NAME'] = session_cookie_name
     app.config['SESSION_COOKIE_DOMAIN'] = session_cookie_domain
     app.config['SESSION_COOKIE_SECURE'] = session_cookie_secure
+    app.config['SERVER_NAME'] = session_cookie_domain
+    app.config['USE_HTTPS'] = use_https
+
+    # Authentication
+    global oidc
+    authentication = auth.OpenIDConnect(auth.OIDCConfig())
+    oidc = authentication.auth(app)
 
     # Register routes via Flask Blueprints
     from landoui.pages import pages
