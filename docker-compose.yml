@@ -15,18 +15,22 @@ services:
       - "7777:7777"
     environment:
       - RUN_DEV_SERVER=True
-      - PORT=7777
-      - HOST=0.0.0.0
       - DEBUG=True
+      - HOST=0.0.0.0
+      - PORT=7777
+      - OIDC_USERNAME=oidc_username_change_me
+      - OIDC_DOMAIN=oidc_domain_change_me
+      - OIDC_CLIENT_ID=oidc_client_id_change_me
+      - OIDC_CLIENT_SECRET=oidc_client_secret_change_me
       - VERSION_PATH=/version.json
       - SECRET_KEY=secret_key_change_me
-      - SESSION_COOKIE_NAME=lando-ui.dev
-      - SESSION_COOKIE_DOMAIN=
-      - SESSION_COOKIE_SECURE=False
+      - SESSION_COOKIE_NAME=lando.ui:7777
+      - SESSION_COOKIE_DOMAIN=lando.ui:7777
+      - SESSION_COOKIE_SECURE=0
+      - USE_HTTPS=0
   py3-linter:
     build:
       context: ./
       dockerfile: ./docker/py3-linter-dockerfile
     volumes:
      - ./:/code/
-

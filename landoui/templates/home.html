@@ -6,9 +6,11 @@
     <button onclick="sayHi()">Say hi to Lando! (Included method)</button>
     <button onclick="sayBye()">Say hi to Lando! (Inline method)</button>
 </div>
-<script>
-    function sayBye(){
-      alert('Bye! :(');
-    }
-</script>
+<ul>
+  <li><a href="/protected">Sign In</a></li>
+  <li><a href="/logout">Sign Out</a></li>
+</ul>
+
+<p><em>You are {{ '' if logged_in else 'not' }} logged in</em></p>
+
 {% endblock %}
