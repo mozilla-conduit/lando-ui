@@ -38,12 +38,11 @@ oidc = None
 @click.option(
     '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
 )
-@click.option(
-    '--use-https', envvar='USE_HTTPS', default=1
-)
+@click.option('--use-https', envvar='USE_HTTPS', default=1)
 def create_app(
     run_dev_server, debug, port, host, version_path, secret_key,
-    session_cookie_name, session_cookie_domain, session_cookie_secure, use_https
+    session_cookie_name, session_cookie_domain, session_cookie_secure,
+    use_https
 ):
     app = Flask(__name__)
 
