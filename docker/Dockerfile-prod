@@ -1,11 +1,15 @@
 FROM python:3.5-alpine
 
+RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev
+
 RUN addgroup -g 1001 app && \
     adduser -D -u 1001 -G app -s /usr/sbin/nologin app
 
 WORKDIR /app
 COPY requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
+
+RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev
 
 COPY . /app
 RUN rm -rf /app/landoui/static/src
