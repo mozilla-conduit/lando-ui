@@ -41,8 +41,8 @@ def app(versionfile):
         host='0.0.0.0',
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
-        session_cookie_name='landoui-test',
-        session_cookie_domain='',
+        session_cookie_name='lando-ui',
+        session_cookie_domain='lando-ui:7777',
         session_cookie_secure=False,
     )
 
