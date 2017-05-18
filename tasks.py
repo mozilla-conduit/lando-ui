@@ -9,25 +9,6 @@ from invoke import Collection, task, run
 DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/lando-ui')
 project_root = os.path.dirname(__file__)
 
-# Name used by docker-compose to create a test-only docker environment.
-project_test_name = 'testlandoui'
-
-
-@task(name='remove-containers')
-def remove_containers(ctx):
-    """Remove all temporary containers created for testing."""
-    if not ctx.config.get('keep_containers'):
-        cmd = (
-            'docker-compose'
-            ' -f {project_root}/docker-compose.yml'
-            ' -p {test_project_name}'
-        ).format(
-            project_root=project_root, test_project_name=project_test_name
-        )
-
-        ctx.run(cmd + ' stop', pty=True, echo=True)
-        ctx.run(cmd + ' rm --force -v', pty=True, echo=True)
-
 
 @task(
     name='python',
@@ -35,25 +16,13 @@ def remove_containers(ctx):
         'testargs': 'Arguments to pass to the test suite (default: \'\')',
         'keep': 'Do not remove the test container after running',
     },
-    post=[remove_containers]
 )
 def test_python(ctx, testargs='', keep=False):
     """Run lando-ui python tests."""
     ctx.config.keep_containers = keep  # Stashed for our cleanup tasks
     run(
-        'docker-compose'
-        ' -f {project_root}/docker-compose.yml'
-        ' -p {test_project_name}'
-        ' run'
-        '{rm}'
-        ' lando-ui'
-        ' pytest {args}'
-        ''.format(
-            project_root=project_root,
-            test_project_name=project_test_name,
-            args=testargs,
-            rm=('' if keep else ' --rm')
-        ),
+        'docker-compose run {rm} lando-ui pytest {args}'
+        ''.format(args=testargs, rm=('' if keep else ' --rm')),
         pty=True,
         echo=True
     )
@@ -62,32 +31,14 @@ def test_python(ctx, testargs='', keep=False):
 @task(name='flake8')
 def lint_flake8(ctx):
     """Run flake8."""
-    run(
-        'docker-compose'
-        ' -f {project_root}/docker-compose.yml'
-        ' run'
-        ' --rm'
-        ' py3-linter'
-        ' flake8 ./'
-        ''.format(project_root=project_root),
-        pty=True,
-        echo=True
-    )
+    run('docker-compose run --rm py3-linter flake8 ./', pty=True, echo=True)
 
 
 @task(name='yapf')
 def lint_yapf(ctx):
     """Run yapf."""
     run(
-        'docker-compose'
-        ' -f {project_root}/docker-compose.yml'
-        ' run'
-        ' --rm'
-        ' py3-linter'
-        ' yapf'
-        ' --diff --recursive'
-        ' ./'
-        ''.format(project_root=project_root),
+        'docker-compose run --rm py3-linter yapf --diff --recursive ./',
         pty=True,
         echo=True
     )
@@ -101,15 +52,7 @@ def lint_all(ctx):
 @task(default=True, name='all')
 def format_all(ctx):
     run(
-        'docker-compose'
-        ' -f {project_root}/docker-compose.yml'
-        ' run'
-        ' --rm'
-        ' py3-linter'
-        ' yapf'
-        ' --in-place --recursive'
-        ' ./'
-        ''.format(project_root=project_root),
+        'docker-compose run --rm py3-linter yapf --in-place --recursive ./',
         echo=True
     )
 
@@ -154,7 +97,6 @@ namespace = Collection(
         'test',
         test_python,
         test_all,
-        remove_containers,
     ),
     Collection(
         'lint',
