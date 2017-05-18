@@ -31,9 +31,7 @@ oidc = None
     '--session-cookie-name', envvar='SESSION_COOKIE_NAME', default=None
 )
 @click.option(
-    '--session-cookie-domain',
-    envvar='SESSION_COOKIE_DOMAIN',
-    default='lando.mozilla.org'
+    '--session-cookie-domain', envvar='SESSION_COOKIE_DOMAIN', default=None
 )
 @click.option(
     '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
