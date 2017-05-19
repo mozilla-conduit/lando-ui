@@ -1,13 +1,20 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import logging
 import os
 
 from flask import (
     Blueprint, current_app, jsonify, redirect, render_template, session
 )
+from mozlogging import MozLogFormatter
 
 from landoui.app import oidc
+
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(MozLogFormatter())
+logger.addHandler(handler)
 
 pages = Blueprint('page', __name__)
 
@@ -37,6 +44,12 @@ def home():
 @pages.route('/protected')
 @oidc.oidc_auth
 def protected():
+    logger.warn(
+        {
+            'user_name': session['userinfo']['name'],
+            'email': session['userinfo']['email']
+        }, 'ProtectedPageView'
+    )
     return render_template('protected.html')
 
 
