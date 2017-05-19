@@ -24,8 +24,8 @@ services:
       - OIDC_CLIENT_SECRET=oidc_client_secret_change_me
       - VERSION_PATH=/version.json
       - SECRET_KEY=secret_key_change_me
-      - SESSION_COOKIE_NAME=lando.ui:7777
-      - SESSION_COOKIE_DOMAIN=lando.ui:7777
+      - SESSION_COOKIE_NAME=lando-ui.test:7777
+      - SESSION_COOKIE_DOMAIN=lando-ui.test:7777
       - SESSION_COOKIE_SECURE=0
       - USE_HTTPS=0
   py3-linter:
