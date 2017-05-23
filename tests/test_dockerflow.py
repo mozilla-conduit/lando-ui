@@ -3,48 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
-import os
-import binascii
 
-import click
-import pytest
-
-from landoui.app import create_app
-
-
-@pytest.fixture
-def versionfile(tmpdir):
-    """Provide a temporary version.json on disk."""
-    v = tmpdir.mkdir('app').join('version.json')
-    v.write(
-        json.dumps(
-            {
-                'source': 'https://github.com/mozilla-conduit/lando-api',
-                'version': '0.0.0',
-                'commit': '',
-                'build': 'test',
-            }
-        )
-    )
-    return v
-
-
-@pytest.fixture
-def app(versionfile):
-    """Needed for pytest-flask."""
-    return click.Context.invoke(
-        None,
-        create_app,
-        run_dev_server=False,
-        debug=True,
-        port=80,
-        host='0.0.0.0',
-        version_path=versionfile.strpath,
-        secret_key=str(binascii.b2a_hex(os.urandom(15))),
-        session_cookie_name='lando-ui',
-        session_cookie_domain='lando-ui:7777',
-        session_cookie_secure=False,
-    )
+from tests.utils import app, versionfile
 
 
 def test_dockerflow_lb_endpoint_returns_200(client):

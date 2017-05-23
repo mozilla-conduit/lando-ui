@@ -7,6 +7,7 @@ import click
 
 from flask import Flask
 from flask_assets import Environment
+from flask_talisman import Talisman
 from webassets.loaders import YAMLLoader
 
 from landoui import auth
@@ -42,7 +43,19 @@ def create_app(
     session_cookie_name, session_cookie_domain, session_cookie_secure,
     use_https
 ):
+
+    csp = {
+        'default-src':
+        '\'self\'',
+        # The following settings needed for Google Fonts from Semantic UI
+        'font-src':
+        '\'self\' themes.googleusercontent.com *.gstatic.com',
+        'style-src':
+        '\'self\' ajax.googleapis.com fonts.googleapis.com *.gstatic.com',
+    }
+
     app = Flask(__name__)
+    Talisman(app, content_security_policy=csp, force_https=use_https)
 
     # Set configuration
     app.config['VERSION_PATH'] = version_path
