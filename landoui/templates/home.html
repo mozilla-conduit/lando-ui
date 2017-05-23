@@ -3,14 +3,14 @@
 <div id="home">
     <h1>Hello from Lando!</h1>
     <p class="bordered">Lando is an automated code lander for Mozilla!</p>
-    <button onclick="sayHi()">Say hi to Lando! (Included method)</button>
-    <button onclick="sayBye()">Say hi to Lando! (Inline method)</button>
 </div>
-<ul>
-  <li><a href="/protected">Sign In</a></li>
-  <li><a href="/logout">Sign Out</a></li>
-</ul>
 
-<p><em>You are {{ '' if logged_in else 'not' }} logged in</em></p>
-
+<p>
+  <em>You are {{ '' if logged_in else 'not' }} logged in!</em>
+  {% if logged_in %}
+    <a href="/logout">Sign Out</a>
+  {% else %}
+    <a href="/protected">Sign In</a>
+  {% endif %}
+</p>
 {% endblock %}

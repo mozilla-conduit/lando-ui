@@ -127,3 +127,6 @@ pycparser==2.17 \
 mozlogging==0.1.0 \
     --hash=sha256:2fc3d520a17b048c8723abdba19f6c01f2bcaf4182944aaac5906f28bd5b7d77 \
     --hash=sha256:2e1362b80418b845164d8d47337da838dade05720dbaf17956d1cafebc511b94
+flask-talisman==0.3.2 \
+    --hash=sha256:d7e0773910cfe2cadfa97b01d094fe6e70c5ea4d9f2fe5d3e81c589acf5a0133 \
+    --hash=sha256:9945b964f2cce36c036c3d04c665b47c5d05fc923927eae32362384b78e0f08b
