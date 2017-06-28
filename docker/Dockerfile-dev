@@ -1,16 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 FROM python:3.5-alpine
 
-RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev
-
-ADD requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
-ADD dev-requirements.txt /dev-requirements.txt
-RUN pip install -r /dev-requirements.txt
-
-RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev
 
 RUN apk add --update nodejs && rm -rf /var/cache/apk/*
 RUN npm install --global less
+
+COPY requirements.txt dev-requirements.txt /
+
+# Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
+# uninstall any compile-time OS package dependencies and keep only the run-time
+# OS package dependencies.
+RUN set -ex \
+    && apk add --no-cache --virtual .build-deps \
+           gcc \
+           libc-dev \
+           musl-dev \
+           linux-headers \
+           pcre-dev \
+           openssl-dev \
+           libffi-dev \
+    && pip install --no-cache -r /requirements.txt \
+    && pip install --no-cache -r /dev-requirements.txt \
+	&& runDeps="$( \
+		scanelf --needed --nobanner --recursive /usr/local \
+			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+			| sort -u \
+			| xargs -r apk info --installed \
+			| sort -u \
+	)" \
+	&& apk add --virtual .python-rundeps $runDeps \
+    && apk del .build-deps
 
 # Create a Dockerflow version file at the root so
 # we don't map over it below.
@@ -21,12 +43,12 @@ RUN echo '{\
     "build": "dev"\
 }' >> /version.json
 
-ADD . /app
+COPY . /app
 WORKDIR /app
 
 # We install outside of the app directory to create the .egg-info in a
 # location that will not be mounted over. This means /app needs to be
 # added to PYTHONPATH though.
 ENV PYTHONPATH /app
-RUN cd / && python /app/setup.py develop
+RUN cd / && pip install --no-cache /app
 CMD ["lando-ui-dev"]
