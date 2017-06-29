@@ -7,13 +7,13 @@
 vendor_css:
   output: build/vendor.css
   contents:
-    - src/vendor/*.css
+    - ../assets_src/vendor/*.css
 
 vendor_js:
   output: build/vendor.js
   contents:
-    - src/vendor/jquery-3.2.1.js
-    - src/vendor/*.js
+    - ../assets_src/vendor/jquery-3.2.1.js
+    - ../assets_src/vendor/*.js
 
 main_js:
   filters: rjsmin
@@ -21,12 +21,12 @@ main_js:
   contents:
     # If dependency order matters, specify those files first.
     # The last two lines will catch all other files not specified.
-    - src/js/*.js
-    - src/js/**/*.js
+    - ../assets_src/js/*.js
+    - ../assets_src/js/**/*.js
 
 main_css:
   filters: less
   output: build/main.css
   contents:
-    - src/css/*.less
-    - src/css/**/*.less
+    - ../assets_src/css/*.less
+    - ../assets_src/css/**/*.less

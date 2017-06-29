@@ -81,7 +81,7 @@ def create_app(
     assets = Environment(app)
     loader = YAMLLoader(
         os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'static/src/assets.yml'
+            os.path.dirname(os.path.abspath(__file__)), 'assets_src/assets.yml'
         )
     )
     assets.register(loader.load_bundles())
