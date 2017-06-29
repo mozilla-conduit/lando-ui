@@ -11,20 +11,13 @@ be found in the landoui/static/build folder.
 import os
 import binascii
 
-import click
-
 from landoui.app import create_app
 
-app = click.Context.invoke(
-    None,
-    create_app,
-    run_dev_server=False,
-    debug=True,
-    port=80,
-    host='0.0.0.0',
+app = create_app(
     version_path='/version.json',
     secret_key=str(binascii.b2a_hex(os.urandom(15))),
-    session_cookie_name='landoui-development-app',
-    session_cookie_domain='',
+    session_cookie_name='lando-ui.test',
+    session_cookie_domain='lando-ui.test',
     session_cookie_secure=False,
+    use_https=0
 )
