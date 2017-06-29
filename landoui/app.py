@@ -17,33 +17,13 @@ from landoui import auth
 oidc = None
 
 
-@click.command()
-@click.option(
-    '--run-dev-server', envvar='RUN_DEV_SERVER', type=bool, default=False
-)
-@click.option('--debug', envvar='DEBUG', type=bool, default=False)
-@click.option('--port', envvar='PORT', type=int, default=80)
-@click.option('--host', envvar='HOST', default='0.0.0.0')
-@click.option(
-    '--version-path', envvar='VERSION_PATH', default='/app/version.json'
-)
-@click.option('--secret-key', envvar='SECRET_KEY', default=None)
-@click.option(
-    '--session-cookie-name', envvar='SESSION_COOKIE_NAME', default=None
-)
-@click.option(
-    '--session-cookie-domain', envvar='SESSION_COOKIE_DOMAIN', default=None
-)
-@click.option(
-    '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
-)
-@click.option('--use-https', envvar='USE_HTTPS', default=1)
 def create_app(
-    run_dev_server, debug, port, host, version_path, secret_key,
-    session_cookie_name, session_cookie_domain, session_cookie_secure,
-    use_https
+    version_path, secret_key, session_cookie_name, session_cookie_domain,
+    session_cookie_secure, use_https
 ):
-
+    """
+    Create an app instance.
+    """
     csp = {
         'default-src':
         '\'self\'',
@@ -86,9 +66,38 @@ def create_app(
     )
     assets.register(loader.load_bundles())
 
-    if run_dev_server:
-        app.jinja_env.auto_reload = True
-        app.config['TEMPLATES_AUTO_RELOAD'] = True
-        app.run(debug=debug, port=port, host=host)
-
     return app
+
+
+@click.command()
+@click.option('--debug', envvar='DEBUG', type=bool, default=False)
+@click.option('--host', envvar='HOST', default='0.0.0.0')
+@click.option('--port', envvar='PORT', type=int, default=80)
+@click.option(
+    '--version-path', envvar='VERSION_PATH', default='/app/version.json'
+)
+@click.option('--secret-key', envvar='SECRET_KEY', default=None)
+@click.option(
+    '--session-cookie-name', envvar='SESSION_COOKIE_NAME', default=None
+)
+@click.option(
+    '--session-cookie-domain', envvar='SESSION_COOKIE_DOMAIN', default=None
+)
+@click.option(
+    '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
+)
+@click.option('--use-https', envvar='USE_HTTPS', default=1)
+def run_dev_server(
+    debug, host, port, version_path, secret_key, session_cookie_name,
+    session_cookie_domain, session_cookie_secure, use_https
+):
+    """
+    Run the development server which auto reloads when things change.
+    """
+    app = create_app(
+        version_path, secret_key, session_cookie_name, session_cookie_domain,
+        session_cookie_secure, use_https
+    )
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.run(debug=debug, port=port, host=host)

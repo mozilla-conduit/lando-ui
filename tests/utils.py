@@ -14,13 +14,7 @@ from landoui.app import create_app
 
 @pytest.fixture
 def app(versionfile):
-    return click.Context.invoke(
-        None,
-        create_app,
-        run_dev_server=False,
-        debug=True,
-        port=80,
-        host='0.0.0.0',
+    return create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
         session_cookie_name='lando-ui',
