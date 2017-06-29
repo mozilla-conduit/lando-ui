@@ -14,7 +14,6 @@ services:
     ports:
       - "7777:7777"
     environment:
-      - RUN_DEV_SERVER=True
       - DEBUG=True
       - HOST=0.0.0.0
       - PORT=7777
