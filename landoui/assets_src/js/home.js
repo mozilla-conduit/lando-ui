@@ -1,4 +1,0 @@
-
-function sayHi(){
-  alert('Hi! :)');
-}
