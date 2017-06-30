@@ -1,8 +1,9 @@
-{% extends "layout.html" %}
-{% block body %}
+{% extends "partials/layout.html" %}
+{% block main %}
+<main class="container">
 <div id="home">
-    <h1>Hello from Lando!</h1>
-    <p class="bordered">Lando is an automated code lander for Mozilla!</p>
+  <h1>Hello from Lando!</h1>
+  <p class="bordered">Lando is an automated code lander for Mozilla!</p>
 </div>
 
 <p>
@@ -13,4 +14,9 @@
     <a href="/protected">Sign In</a>
   {% endif %}
 </p>
+
+<p>
+  Here is an example revision: <a href="/revisions/D7">Phab Revision D7</a>
+</p>
+</main>
 {% endblock %}

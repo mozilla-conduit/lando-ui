@@ -1,0 +1,48 @@
+@import "../colors";
+
+.RevisionPage {
+  background-color: #fff;
+  padding: 1.3rem;
+  border-top: 0;
+}
+
+// Nesting to get more specificity than Bulma.
+.RevisionPage {
+
+  .RevisionPage-title {
+    font-weight: bold;
+  }
+
+  .RevisionPage-label {
+    font-weight: 600;
+  }
+
+  .RevisionPage-landBtn {
+    width: 100%;
+    box-shadow: 3px 3px 5px #bbb;
+  }
+
+  .RevisionPage-parentRevision {
+    border: 1px solid #7a7a7a;
+    padding: .5rem .75rem .5rem .75rem;
+    border-radius: .25rem;
+    margin-bottom: .5rem;
+    color: #4a4a4a;
+
+    a {
+      color: #4a4a4a;
+      &:hover {
+        color: $blue;
+      }
+    }
+  }
+
+  .RevisionPage-parentRevisionHeader {
+    margin-bottom: 0;
+  }
+
+  .RevisionPage-parentRevisionBody {
+    display: none;
+    margin-top: .5rem;
+  }
+}

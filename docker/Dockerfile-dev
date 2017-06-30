@@ -9,8 +9,9 @@ RUN pip install -r /dev-requirements.txt
 
 RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev
 
-RUN apk add --update nodejs && rm -rf /var/cache/apk/*
-RUN npm install --global less
+RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
+RUN npm install --global eslint
+RUN gem install sass --no-ri --no-rdoc
 
 # Create a Dockerflow version file at the root so
 # we don't map over it below.

@@ -25,14 +25,11 @@ def create_app(
     Create an app instance.
     """
     csp = {
-        'default-src':
-        '\'self\'',
-        # The following settings needed for Google Fonts from Semantic UI
-        'font-src':
-        '\'self\' themes.googleusercontent.com *.gstatic.com',
-        'style-src':
-        '\'self\' ajax.googleapis.com fonts.googleapis.com *.gstatic.com',
-    }
+        'default-src': "'self'",
+        'font-src': "'self' https://code.cdn.mozilla.net",
+        'style-src': "'self' https://code.cdn.mozilla.net",
+        'img-src': "'self' *.cloudfront.net *.gravatar.com",
+    } # yapf: disable
 
     app = Flask(__name__)
     Talisman(app, content_security_policy=csp, force_https=use_https)
@@ -53,8 +50,10 @@ def create_app(
 
     # Register routes via Flask Blueprints
     from landoui.pages import pages
+    from landoui.revisions import revisions
     from landoui.dockerflow import dockerflow
     app.register_blueprint(pages)
+    app.register_blueprint(revisions)
     app.register_blueprint(dockerflow)
 
     # Setup Flask Assets

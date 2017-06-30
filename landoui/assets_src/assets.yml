@@ -5,19 +5,20 @@
 # the src and .webassets-cache folders (if it exists).
 
 vendor_css:
-  output: build/vendor.css
+  output: build/vendor.min.css
   contents:
     - ../assets_src/vendor/*.css
 
 vendor_js:
-  output: build/vendor.js
+  output: build/vendor.min.js
   contents:
-    - ../assets_src/vendor/jquery-3.2.1.js
+    - ../assets_src/vendor/jquery-3.2.1.min.js
     - ../assets_src/vendor/*.js
 
 main_js:
+  # Minifies the js
   filters: rjsmin
-  output: build/main.js
+  output: build/main.min.js
   contents:
     # If dependency order matters, specify those files first.
     # The last two lines will catch all other files not specified.
@@ -25,8 +26,12 @@ main_js:
     - ../assets_src/js/**/*.js
 
 main_css:
-  filters: less
-  output: build/main.css
+  filters: scss
+  output: build/main.min.css
+  config:
+    SASS_STYLE: compressed
   contents:
-    - ../assets_src/css/*.less
-    - ../assets_src/css/**/*.less
+    - ../assets_src/css/lando.scss
+    - ../assets_src/css/components/*.scss
+    - ../assets_src/css/pages/*.scss
+    - ../assets_src/css/*.scss
