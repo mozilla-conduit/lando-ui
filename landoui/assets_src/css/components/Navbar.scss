@@ -1,0 +1,25 @@
+@import "../colors";
+
+.Navbar {
+
+  .Navbar-logo {
+    max-height: 2.75rem;
+  }
+
+  .Navbar-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-left: 0.125rem;
+    color: #000;
+  }
+
+  .Navbar-subtitle {
+    color: #aaa;
+    font-size: 1.5rem;
+  }
+
+  .Navbar-login {
+    border: 1px solid $blue;
+    color: $blue;
+  }
+}

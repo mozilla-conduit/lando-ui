@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta content="ie=edge" http-equiv="x-ua-compatible">
+  <title>{% block page_title %}{% endblock %}</title>
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <link rel="shortcut icon"
+        href="{{ url_for('static', filename='images/logo/bird_64.png') }}">
+  <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+</head>
+<body>
+{% include "partials/navbar.html" %}
+<section class="hero is-light is-bold">
+  <div class="container">
+    <p class="subtitle">{% block banner_text %}{% endblock %}</p>
+  </div>
+</section>
+{% block main %}{% endblock %}
+{% include "partials/footer.html" %}
+
+{% assets "vendor_css" %}<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">{% endassets %}
+{% assets "main_css" %}<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">{% endassets %}
+{% assets "vendor_js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+{% assets "main_js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+</body>
+</html>

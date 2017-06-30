@@ -17,7 +17,6 @@ services:
       - DEBUG=True
       - HOST=0.0.0.0
       - PORT=7777
-      - OIDC_USERNAME=oidc_username_change_me
       - OIDC_DOMAIN=oidc_domain_change_me
       - OIDC_CLIENT_ID=oidc_client_id_change_me
       - OIDC_CLIENT_SECRET=oidc_client_secret_change_me
@@ -27,6 +26,7 @@ services:
       - SESSION_COOKIE_DOMAIN=lando-ui.test:7777
       - SESSION_COOKIE_SECURE=0
       - USE_HTTPS=0
+      - LANDO_API_URL=http://lando-api.test:8888
   py3-linter:
     build:
       context: ./

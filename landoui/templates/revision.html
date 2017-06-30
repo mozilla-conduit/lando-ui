@@ -1,0 +1,121 @@
+{% extends "partials/layout.html" %}
+{% block page_title %}D{{revision['id']}} - Lando@Mozilla{% endblock %}
+{% block banner_text %}Land a Revision{% endblock %}
+
+{% macro revision_review_status_tag(revision, outline='') %}
+  {% if revision['status_name'] == 'Accepted' %}
+    <span class="tag is-success {{ outline }}">{{ revision['status_name'] }}</span>
+  {% elif revision['status_name'] == 'Needs Revision' %}
+    <span class="tag is-danger {{ outline }}">{{ revision['status_name'] }}</span>
+  {% elif revision['status_name'] == 'Needs Review' %}
+    <span class="tag is-warning {{ outline }}">{{ revision['status_name'] }}</span>
+  {% else %}
+    <span class="tag is-info {{ outline }}">{{ revision['status_name'] }}</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro revision_info_html(revision, author, repo) %}
+  <div class="columns">
+    <div class="column is-4">
+      <div>
+        <i class="fa fa-bug"></i>
+        <span class="RevisionPage-label">Bug: </span>
+        {% if revision['bug_id'] %}
+          <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{revision['bug_id']}}">#{{revision['bug_id']}}</a>
+        {% else %}
+          None
+        {% endif %}
+      </div>
+      <div>
+        <i class="fa fa-calendar"></i>
+        <span class="RevisionPage-label">Created: </span>{{revision['date_created']}}
+      </div>
+      <div>
+        <i class="fa fa-calendar-plus-o"></i>
+        <span class="RevisionPage-label">Last modified: </span>{{revision['date_modified']}}
+      </div>
+      <div>
+        <i class="fa fa-thumbs-up"></i>
+        <span class="RevisionPage-label">Review Status: </span>
+        {{ revision_review_status_tag(revision) }}
+      </div>
+    </div>
+    <div class="column is-8">
+      <div>
+        <i class="fa fa-edit"></i>
+        <span class="RevisionPage-label">Revision: </span>
+        <a href="{{revision['url']}}">{{revision['url']}}</a>
+      </div>
+      <div>
+        <i class="fa fa-code-fork"></i>
+        <span class="RevisionPage-label">Target Repository: </span>
+        <a href="{{repo['url']}}">{{repo['full_name']}}</a>
+      </div>
+      <div>
+        <i class="fa fa-user-circle"></i>
+        <span class="RevisionPage-label">Author: </span>
+        <a href="{{author['url']}}">{{author['real_name']}} ({{author['username']}})</a>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% block main %}
+<main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
+  <div class="columns is-mobile">
+    <div class="column is-two-thirds-desktop">
+      <h3 class="RevisionPage-title">D{{revision['id']}}: {{revision['title']}}</h3>
+
+      <article class="message">
+        <div class="message-header">
+          <p>Info</p>
+        </div>
+        <div class="message-body">
+          {{ revision_info_html(revision, author, repo) }}
+        </div>
+      </article>
+
+      <h4>
+        <strong>Depends on {{ parents|length if parents else 'no other' }} {{ 'revision' if parents|length == 1 else 'revisions' }}</strong>
+      </h4>
+      {% for parent in parents %}
+        <div class="RevisionPage-parentRevision">
+          <div class="RevisionPage-parentRevisionHeader columns">
+            <div class="column is-1">
+              <a class="RevisionPage-collapseLink">
+                <i class="fa fa-chevron-circle-right"></i>
+              </a>
+            </div>
+            <div class="column is-8">
+              <a class="RevisionPage-collapseLink">D{{ parent['id'] }}: {{ parent['title'] }}</a>
+            </div>
+            <div class="column is-3 has-text-right">
+              <span class="tag is-danger is-outlined">Not Landed</span>
+              {{ revision_review_status_tag(parent, 'is-outlined') }}
+            </div>
+          </div>
+
+
+          <div class="RevisionPage-parentRevisionBody">
+            {{ revision_info_html(parent, parent['author'], parent['repo']) }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="column is-one-third-desktop">
+      <div>
+        <a class="RevisionPage-landBtn is-primary button">Land this Revision!</a>
+      </div>
+      <br />
+      <article class="message">
+        <div class="message-header">
+          <p>Landing History</p>
+        </div>
+        <div class="message-body">
+          This Revision has never been landed before
+        </div>
+      </article>
+    </div>
+  </div>
+</main>
+{% endblock %}
