@@ -1,19 +1,18 @@
 # Lando UI JS Structure
 
 Lando UI doesn't use any complicated javascript library for the frontend besides
-jQuery. The idea was that our application is very simple, and javascripts main
+jQuery. The idea was that our application is very simple, and javascript's main
 purpose is to respond to user input.
 
 The app has been designed to work somewhat like Backbone, without actually
 using backbone - the idea is that every Page (i.e. route on the server), and
-every Component (e.g. the navbar or a reusable widget) has a javascript class.
+every Component (e.g. the navbar or a reusable widget) has a javascript class
+(in the form of a jQuery plugin).
 
 At the end of every Page or Component there is a snippet of js code which
-checks to see if the corresponding DOM element for it exists. If so, it will
-instantiate the class using that element, at that point the class can bind
-event handlers and so on. You can also choose to not initialize a component this
-way and instead have a parent Component or Page initialize the child component
-in their javascript class.
+initializes the jQuery plugin for that component if it is present. You can also
+choose to not initialize a component this way and instead have a parent Component
+or Page initialize the child component in their javascript class.
 
 To pass state or any other data from the server to the browser, use a HTML
 data-attribute like `data-state` on the DOM element of the component. In Flask
@@ -60,14 +59,7 @@ Lando UI doesn't have any dependency resolver built it, so there's no way to
 'require' a js file in another one. You will have to rely on that js file being
 loaded before the one that depends on it.
 
-Our load order is manually defined in the `static/src/assets.yml` file. For the
+Our load order is manually defined in the `assets_src/assets.yml` file. For the
 most part Lando UI is simple enough that there won't be many dependencies, but,
 if there are you must manually specify the js files that come first in the
 `assets.yml` file mentioned.
-
-
-# Global namespace
-
-Because we aren't using a dependency resolve like Webpack (for simplicity), we
-instead have one global variable - `Lando`- which contains all our classes
-and anything else you want to put in the "global" space.

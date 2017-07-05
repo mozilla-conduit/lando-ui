@@ -18,4 +18,4 @@ which you cloned.
 
 ### How to customize
 Follow the instructions at http://bulma.io/documentation/overview/customize/ or
-simply set the initial-variables that bulma provides in the lando-bulma.scss file.
+simply set the initial-variables that bulma provides in the `assets_src/css/lando.scss` file.
