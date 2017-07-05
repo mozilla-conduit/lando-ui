@@ -18,7 +18,7 @@ machine:
 
 dependencies:
   override:
-    - pip install -r circle-requirements.txt
+    - pip install -r requirements/circle.txt
     - docker info
 
 compile:
