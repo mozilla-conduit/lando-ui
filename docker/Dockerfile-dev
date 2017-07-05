@@ -2,10 +2,10 @@ FROM python:3.5-alpine
 
 RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev
 
-ADD requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
-ADD dev-requirements.txt /dev-requirements.txt
-RUN pip install -r /dev-requirements.txt
+RUN mkdir /python_requirements
+COPY requirements/* /python_requirements/
+RUN pip install --no-cache -r /python_requirements/common.txt \
+    && pip install --no-cache -r /python_requirements/dev.txt
 
 RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev
 
