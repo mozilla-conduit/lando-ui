@@ -9,8 +9,8 @@ compiles our sources, it emits a folder called `build` which contains
 the combined js and css files.
 
 See the `assets.yml` file for an example of how this works. Also checkout
-[The Web Assets Docs](https://webassets.readthedocs.io/en/latest/) for details
-on how to configure it.
+[The Web Assets Docs](https://webassets.readthedocs.io/en/latest/) for
+details on how to configure it.
 
 See the js and css folders for more detailed README's about the two.
 
@@ -22,8 +22,9 @@ to restart the server is if you change the `assets.yml` file.
 
 # Production
 
-The production docker container deletes the `src` folder and `assets.yml` file
-so no need to worry about those being served in production.
+The production docker container will serve all static assets in the `static`
+folder. In the circle build the dev container is used to build the static assets
+and then the production container simply copies them in.
 
 You can manually compile the static assets by running:
 `docker-compose run -e FLASK_APP=/app/landoui/assets_app.py lando-ui flask assets build`.

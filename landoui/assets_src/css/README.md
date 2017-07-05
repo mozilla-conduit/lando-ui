@@ -113,11 +113,11 @@ and the Fira font.
 
 # Logo
 
-In the `static/images` folder you will find many logos to use. They have been
+In the `static/images/logo` folder you will find many logos to use. They have been
 resized at 1024px, 512px, 256px, 128px, and some at 64px.
 
 The logo with the text's aspect ratio is 2.65625, it comes with both black and
-white text. See the `static/src/log` folder for the src files.
+white text. See the `assets_src/logo` folder for the src files.
 Israel, imadueme@mozilla.com, created them :D
 
 
