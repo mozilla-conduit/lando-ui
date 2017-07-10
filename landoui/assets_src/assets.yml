@@ -1,19 +1,16 @@
 # Defines how the assets should be compiled.
 # All file paths are relative to the `static` folder.
 # Order matters, based on what depends on what.
-# Everything in the static folder will be served in production except
-# the src and .webassets-cache folders (if it exists).
 
 vendor_css:
   output: build/vendor.min.css
   contents:
-    - ../assets_src/vendor/*.css
+    - ../assets_src/vendor/font-awesome.min.css
 
 vendor_js:
   output: build/vendor.min.js
   contents:
     - ../assets_src/vendor/jquery-3.2.1.min.js
-    - ../assets_src/vendor/*.js
 
 main_js:
   # Minifies the js
@@ -23,7 +20,8 @@ main_js:
     # If dependency order matters, specify those files first.
     # The last two lines will catch all other files not specified.
     - ../assets_src/js/*.js
-    - ../assets_src/js/**/*.js
+    - ../assets_src/js/components/*.js
+    - ../assets_src/js/pages/*.js
 
 main_css:
   filters: scss
@@ -32,6 +30,6 @@ main_css:
     SASS_STYLE: compressed
   contents:
     - ../assets_src/css/lando.scss
+    - ../assets_src/css/colors.scss
     - ../assets_src/css/components/*.scss
     - ../assets_src/css/pages/*.scss
-    - ../assets_src/css/*.scss
