@@ -9,7 +9,10 @@ from flask import (
     Blueprint, current_app, jsonify, redirect, render_template, session
 )
 
+from landoui.helpers import set_last_local_referrer
+
 revisions = Blueprint('revisions', __name__)
+revisions.before_request(set_last_local_referrer)
 
 
 @revisions.route('/revisions/<revision_id>')

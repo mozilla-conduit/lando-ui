@@ -10,6 +10,7 @@ from flask import (
 from mozlogging import MozLogFormatter
 
 from landoui.app import oidc
+from landoui.helpers import set_last_local_referrer
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -17,6 +18,7 @@ handler.setFormatter(MozLogFormatter())
 logger.addHandler(handler)
 
 pages = Blueprint('page', __name__)
+pages.before_request(set_last_local_referrer)
 
 
 def is_logged_in():
@@ -39,6 +41,13 @@ def info():
 @pages.route('/')
 def home():
     return render_template('home.html', logged_in=is_logged_in())
+
+
+@pages.route('/signin')
+@oidc.oidc_auth
+def signin():
+    redirect_url = session.get('last_local_referrer') or '/'
+    return redirect(redirect_url)
 
 
 @pages.route('/protected')
