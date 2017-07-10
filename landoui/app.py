@@ -28,7 +28,7 @@ def create_app(
         'default-src': "'self'",
         'font-src': "'self' https://code.cdn.mozilla.net",
         'style-src': "'self' https://code.cdn.mozilla.net",
-        'img-src': "'self' *.cloudfront.net *.gravatar.com",
+        'img-src': "'self' *.cloudfront.net *.gravatar.com *.googleusercontent.com",
     } # yapf: disable
 
     app = Flask(__name__)

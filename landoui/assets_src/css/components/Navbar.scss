@@ -1,6 +1,9 @@
 @import "../colors";
 
 .Navbar {
+  .navbar-brand .navbar-item {
+    padding-left: 0;
+  }
 
   .Navbar-logo {
     max-height: 2.75rem;

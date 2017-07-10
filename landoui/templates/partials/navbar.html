@@ -1,34 +1,83 @@
-<nav class="Navbar nav">
-  <div class="nav-left">
-    <a class="nav-item" href="/">
+<nav class="Navbar navbar container">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
       <img
         class="Navbar-logo"
         src="{{ url_for('static', filename='images/logo/bird_128.png') }}"/>
-      <span class="Navbar-title">LANDO</span>
-      <span class="Navbar-subtitle">@MOZILLA</span>
+      <span class="Navbar-title">LANDO&nbsp;</span>
+      <span class="Navbar-subtitle">- MOZILLA</span>
     </a>
+
+    <div class="navbar-burger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
 
-  <div class="nav-right">
-    <div class="nav-item">
-      <div class="field is-grouped">
-        <p class="control">
-          <a class="Navbar-login button">
-            <span class="icon">
-              <i class="fa fa-user-circle"></i>
-            </span>
-            <span>Login with Auth0</span>
-          </a>
-        </p>
-        <p class="control">
-          <a class="button" >
-            <span class="icon">
-              <i class="fa fa-question-circle"></i>
-            </span>
-            <span>Help</span>
-          </a>
-        </p>
+  <div id="Navbar-menu" class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="field is-grouped">
+          {% if 'id_token' in session %}
+            <p class="control">
+              <a class="Navbar-userSettingsBtn button">
+                <span class="icon">
+                  <img src="{{ session['userinfo']['picture'] }}" />
+                </span>
+                <span>&nbsp;{{ session['userinfo']['name'] }}&nbsp;</span>
+                <i class="fa fa-cogs"></i>
+              </a>
+            </p>
+          {% endif %}
+          <p class="control">
+            {% if 'id_token' in session %}
+              <a class="button" href="/logout">
+                <span class="icon">
+                  <i class="fa fa-sign-out"></i>
+                </span>
+                <span>Logout</span>
+              </a>
+            {% else %}
+              <a class="Navbar-login button" href="/signin">
+                <span class="icon">
+                  <i class="fa fa-sign-in"></i>
+                </span>
+                <span>Login with Auth0</span>
+              </a>
+            {% endif %}
+          </p>
+          <p class="control">
+            <a class="button" >
+              <span class="icon">
+                <i class="fa fa-question-circle"></i>
+              </span>
+              <span>Help</span>
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="Navbar-modal modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Settings</p>
+        <button class="Navbar-modalCancel delete"></button>
+      </header>
+      <section class="modal-card-body">
+        This modal will later be used to implement the Phabricator
+        privileged mode workflow and also as a settings window for things
+        like customizing the user's timezone.
+      </section>
+      <footer class="modal-card-foot">
+        <a class="Navbar-modalSubmit button is-success">Save changes</a>
+        <a class="Navbar-modalCancel button">Cancel</a>
+      </footer>
+    </div>
+  </div>
 </nav>
+
+
