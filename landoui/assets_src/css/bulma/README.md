@@ -1,4 +1,4 @@
-### Bulma (Version: 0.4.2)
+### Bulma (Version: 0.4.3)
 
 See [https://github.com/jgthms/bulma](https://github.com/jgthms/bulma).
 This is a vendored subset of bulma used for compiling our custom version of it
@@ -12,7 +12,13 @@ REDISTRIBUTED_LICENSES in the root of the lando-ui project.
 any existing file.
 3. One customization made directly in the Bulma sass files is in `sass/elements/
 tag.sass` lines 24 - 27 for the outline style. You should re add that or consider
-removing its usages.
+removing its usages. Here it is again for simplicity:
+```sass
+&.is-#{$name}.is-outlined
+  background-color: inherit
+  color: $color
+  border: 1px solid $color
+```
 4. Update the version number at the top of this README.md file to match the version
 which you cloned.
 
