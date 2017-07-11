@@ -35,7 +35,3 @@ $.fn.landoNavbar = function() {
     });
   });
 };
-
-$(document).ready(function () {
-  $('.Navbar').landoNavbar();
-});
