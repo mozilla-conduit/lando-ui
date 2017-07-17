@@ -7,15 +7,11 @@ import os
 from flask import (
     Blueprint, current_app, jsonify, redirect, render_template, session
 )
-from mozlogging import MozLogFormatter
 
 from landoui.app import oidc
 from landoui.helpers import set_last_local_referrer
 
 logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-handler.setFormatter(MozLogFormatter())
-logger.addHandler(handler)
 
 pages = Blueprint('page', __name__)
 pages.before_request(set_last_local_referrer)
