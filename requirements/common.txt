@@ -127,6 +127,14 @@ pycparser==2.17 \
 mozlogging==0.1.0 \
     --hash=sha256:2fc3d520a17b048c8723abdba19f6c01f2bcaf4182944aaac5906f28bd5b7d77 \
     --hash=sha256:2e1362b80418b845164d8d47337da838dade05720dbaf17956d1cafebc511b94
+raven[flask]==6.1.0 \
+    --hash=sha256:56dc9062dd42bca97350e5048ff417c914376366caa3b1b5f788b27ddc0a34b7 \
+    --hash=sha256:02cabffb173b99d860a95d4908e8b1864aad1b8452146e13fd7e212aa576a884
+contextlib2==0.5.5 \
+    --hash=sha256:f5260a6e679d2ff42ec91ec5252f4eeffdcf21053db9113bd0a8e4d953769c00 \
+    --hash=sha256:509f9419ee91cdd00ba34443217d5ca51f5a364a404e1dce9e8979cea969ca48
+blinker==1.4 \
+    --hash=sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6
 flask-talisman==0.3.2 \
     --hash=sha256:d7e0773910cfe2cadfa97b01d094fe6e70c5ea4d9f2fe5d3e81c589acf5a0133 \
     --hash=sha256:9945b964f2cce36c036c3d04c665b47c5d05fc923927eae32362384b78e0f08b

@@ -27,6 +27,8 @@ services:
       - SESSION_COOKIE_SECURE=0
       - USE_HTTPS=0
       - LANDO_API_URL=http://lando-api.test:8888
+      - ENV=localdev
+      - SENTRY_DSN=
   py3-linter:
     build:
       context: ./
