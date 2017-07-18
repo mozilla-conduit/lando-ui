@@ -50,3 +50,4 @@ deployment:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - "docker tag ${DOCKERHUB_REPO} ${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
       - "docker push ${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+      - "docker push ${DOCKERHUB_REPO}:latest"
