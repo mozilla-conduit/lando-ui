@@ -58,6 +58,7 @@ def create_app(
     app.config['SESSION_COOKIE_SECURE'] = session_cookie_secure
     app.config['SERVER_NAME'] = session_cookie_domain
     app.config['USE_HTTPS'] = use_https
+    app.config['PREFERRED_URL_SCHEME'] = 'https' if use_https else 'http'
 
     Talisman(app, content_security_policy=csp, force_https=use_https)
 
