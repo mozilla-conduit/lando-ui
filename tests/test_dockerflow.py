@@ -4,8 +4,6 @@
 
 import json
 
-from tests.utils import app, versionfile
-
 
 def test_dockerflow_lb_endpoint_returns_200(client):
     assert client.get('/__lbheartbeat__').status_code == 200
