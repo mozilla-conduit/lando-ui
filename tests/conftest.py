@@ -6,7 +6,6 @@ import os
 import binascii
 import json
 
-import click
 import pytest
 
 from landoui.app import create_app
