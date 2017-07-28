@@ -9,11 +9,11 @@ import click
 from flask import Flask
 from flask_assets import Environment
 from flask_talisman import Talisman
-from raven.contrib.flask import Sentry
 from webassets.loaders import YAMLLoader
 
 from landoui import auth
 from landoui.logging import initialize_logging, log_config_change
+from landoui.sentry import initialize_sentry
 
 logger = logging.getLogger(__name__)
 
@@ -84,39 +84,6 @@ def create_app(
     assets.register(loader.load_bundles())
 
     return app
-
-
-def initialize_sentry(flask_app, release):
-    """Initialize Sentry application monitoring.
-
-    See https://docs.sentry.io/clients/python/advanced/#client-arguments for
-    details about what this function's arguments mean to Sentry.
-
-    Args:
-        flask_app: A Flask() instance.
-        release: A string representing this application release number (such as
-            a git sha).  Will be used as the Sentry "release" identifier. See
-            the Sentry client configuration docs for details.
-    """
-    sentry_dsn = os.environ.get('SENTRY_DSN', None)
-    if sentry_dsn:
-        log_config_change('SENTRY_DSN', sentry_dsn)
-    else:
-        log_config_change('SENTRY_DSN', 'none (sentry disabled)')
-
-    # Do this after logging the DSN so if there is a DSN URL parsing error
-    # the logs will record the configured value before the Sentry client
-    # kills the app.
-    sentry = Sentry(flask_app, dsn=sentry_dsn)
-
-    # Set these attributes directly because their keyword arguments can't be
-    # passed into Sentry.__init__() or make_client().
-    sentry.client.release = release
-    log_config_change('SENTRY_LOG_RELEASE_AS', release)
-
-    environment = os.environ.get('ENV', None)
-    sentry.client.environment = environment
-    log_config_change('SENTRY_LOG_ENVIRONMENT_AS', environment)
 
 
 @click.command()
