@@ -9,14 +9,6 @@ import os
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 
 
-class nullOpenIDConnect:
-    """Null object for ensuring test cov if new up fails."""
-
-    def __init__(self):
-        """None based versions of OIDC object."""
-        pass
-
-
 class OIDCConfig:
     """Convienience object for returning required vars to flask."""
 

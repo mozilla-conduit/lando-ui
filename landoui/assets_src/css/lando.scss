@@ -24,6 +24,17 @@ body {
 
 main {
   flex: 1 0 auto;
+  padding: 1em 0;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: .25em;
+}
+
+p {
+  margin-bottom: 1em;
 }
 
 // The banner that appears at the top of every page
