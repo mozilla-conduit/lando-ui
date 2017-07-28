@@ -7,6 +7,8 @@ from raven.contrib.flask import Sentry
 
 from landoui.logging import log_config_change
 
+sentry = Sentry()
+
 
 def initialize_sentry(app, release):
     """Initialize Sentry application monitoring.
@@ -29,7 +31,8 @@ def initialize_sentry(app, release):
     # Do this after logging the DSN so if there is a DSN URL parsing error
     # the logs will record the configured value before the Sentry client
     # kills the app.
-    sentry = Sentry(app, dsn=sentry_dsn)
+    global sentry
+    sentry.init_app(app, dsn=sentry_dsn)
 
     # Set these attributes directly because their keyword arguments can't be
     # passed into Sentry.__init__() or make_client().
