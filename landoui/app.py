@@ -24,7 +24,7 @@ oidc = None
 
 def create_app(
     version_path, secret_key, session_cookie_name, session_cookie_domain,
-    session_cookie_secure, use_https
+    session_cookie_secure, use_https, enable_asset_pipeline
 ):
     """
     Create an app instance.
@@ -76,12 +76,14 @@ def create_app(
 
     # Setup Flask Assets
     assets = Environment(app)
-    loader = YAMLLoader(
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'assets_src/assets.yml'
+    if enable_asset_pipeline:
+        loader = YAMLLoader(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'assets_src/assets.yml'
+            )
         )
-    )
-    assets.register(loader.load_bundles())
+        assets.register(loader.load_bundles())
 
     return app
 
@@ -104,16 +106,20 @@ def create_app(
     '--session-cookie-secure', envvar='SESSION_COOKIE_SECURE', default=1
 )
 @click.option('--use-https', envvar='USE_HTTPS', default=1)
+@click.option(
+    '--enable-asset-pipeline', envvar='ENABLE_ASSET_PIPELINE', default=1
+)
 def run_dev_server(
     debug, host, port, version_path, secret_key, session_cookie_name,
-    session_cookie_domain, session_cookie_secure, use_https
+    session_cookie_domain, session_cookie_secure, use_https,
+    enable_asset_pipeline
 ):
     """
     Run the development server which auto reloads when things change.
     """
     app = create_app(
         version_path, secret_key, session_cookie_name, session_cookie_domain,
-        session_cookie_secure, use_https
+        session_cookie_secure, use_https, enable_asset_pipeline
     )
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
