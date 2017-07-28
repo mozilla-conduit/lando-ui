@@ -13,13 +13,21 @@ from landoui.app import create_app
 
 
 @pytest.fixture
+def docker_env_vars(monkeypatch):
+    """Monkeypatch environment variables that we'd get running under docker."""
+    monkeypatch.setenv('OIDC_DOMAIN', 'test_oidc_domain')
+    monkeypatch.setenv('OIDC_CLIENT_ID', 'test_oidc_client_id')
+    monkeypatch.setenv('OIDC_CLIENT_SECRET', 'test_oidc_secret')
+
+
+@pytest.fixture
 def disable_log_output():
     """Disable Python standard logging output to the console."""
     logging.disable(logging.CRITICAL)
 
 
 @pytest.fixture
-def app(versionfile, disable_log_output):
+def app(versionfile, disable_log_output, docker_env_vars):
     return create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
