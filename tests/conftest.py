@@ -6,13 +6,20 @@ import os
 import binascii
 import json
 
+import logging
 import pytest
 
 from landoui.app import create_app
 
 
 @pytest.fixture
-def app(versionfile):
+def disable_log_output():
+    """Disable Python standard logging output to the console."""
+    logging.disable(logging.CRITICAL)
+
+
+@pytest.fixture
+def app(versionfile, disable_log_output):
     return create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
