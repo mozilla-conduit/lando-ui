@@ -1,6 +1,5 @@
 {% extends "partials/layout.html" %}
 {% block page_title %}D{{revision['id']}} - Lando - Mozilla{% endblock %}
-{% block banner_text %}Land a Revision{% endblock %}
 
 {% macro revision_review_status_tag(revision, outline='') %}
   {% if revision['status_name'] == 'Accepted' %}

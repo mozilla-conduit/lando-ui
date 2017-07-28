@@ -1,22 +1,22 @@
 {% extends "partials/layout.html" %}
 {% block main %}
 <main class="container">
-<div id="home">
-  <h1>Hello from Lando!</h1>
-  <p class="bordered">Lando is an automated code lander for Mozilla!</p>
-</div>
+  <div id="home">
+    <h1>Welcome to Lando</h1>
+    <p class="bordered">Lando is an automated code lander for Mozilla.</p>
+  </div>
 
-<p>
-  <em>You are {{ '' if logged_in else 'not' }} logged in!</em>
-  {% if logged_in %}
-    <a href="/logout">Sign Out</a>
-  {% else %}
-    <a href="/protected">Sign In</a>
-  {% endif %}
-</p>
+  <p>
+    <em>You are {{ '' if logged_in else 'not' }} logged in!</em>
+    {% if logged_in %}
+      <a href="/logout">Sign Out</a>
+    {% else %}
+      <a href="/protected">Sign In</a>
+    {% endif %}
+  </p>
 
-<p>
-  Here is an example revision: <a href="/revisions/D2">Phab Revision D2</a>
-</p>
+  <p>
+    Here is an example revision: <a href="/revisions/D2">Phab Revision D2</a>
+  </p>
 </main>
 {% endblock %}
