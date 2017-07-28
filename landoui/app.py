@@ -3,18 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 import os
-
-import click
 import logging
 
+import click
 from flask import Flask
 from flask_assets import Environment
 from flask_talisman import Talisman
-from mozlogging import MozLogFormatter
 from raven.contrib.flask import Sentry
 from webassets.loaders import YAMLLoader
 
 from landoui import auth
+from landoui.logging import initialize_logging, log_config_change
 
 logger = logging.getLogger(__name__)
 
@@ -120,32 +119,6 @@ def initialize_sentry(flask_app, release):
     log_config_change('SENTRY_LOG_ENVIRONMENT_AS', environment)
 
 
-def initialize_logging():
-    """Initialize application-wide logging."""
-    mozlog_handler = logging.StreamHandler()
-    mozlog_handler.setFormatter(MozLogFormatter())
-
-    # We need to configure the logger just for our application code.  This is
-    # because the MozLogFormatter changes the signature of the standard
-    # library logging functions.  Any code that tries to log a message assuming
-    # the standard library's formatter is in place, such as the code in the
-    # libraries we use, with throw an error if the MozLogFormatter tries to
-    # handle the message.
-    app_logger = logging.getLogger('landoui')
-
-    # Stop our specially-formatted log messages from bubbling up to any
-    # Flask-installed loggers that may be present.  They will throw an exception
-    # if they handle our messages.
-    app_logger.propagate = False
-
-    app_logger.addHandler(mozlog_handler)
-
-    level = os.environ.get('LOG_LEVEL', 'INFO')
-    app_logger.setLevel(level)
-
-    log_config_change('LOG_LEVEL', level)
-
-
 @click.command()
 @click.option('--debug', envvar='DEBUG', type=bool, default=False)
 @click.option('--host', envvar='HOST', default='0.0.0.0')
@@ -178,13 +151,3 @@ def run_dev_server(
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(debug=debug, port=port, host=host)
-
-
-def log_config_change(setting_name, value):
-    """Helper to log configuration changes.
-
-    Args:
-        setting_name: The setting being changed.
-        value: The setting's new value.
-    """
-    logger.info({'setting': setting_name, 'value': value}, 'app.configure')
