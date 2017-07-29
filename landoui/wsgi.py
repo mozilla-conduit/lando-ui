@@ -14,5 +14,6 @@ app = create_app(
     session_cookie_name=os.getenv('SESSION_COOKIE_NAME'),
     session_cookie_domain=os.getenv('SESSION_COOKIE_DOMAIN'),
     session_cookie_secure=os.getenv('SESSION_COOKIE_SECURE'),
-    use_https=int(os.getenv('USE_HTTPS', 1))
+    use_https=int(os.getenv('USE_HTTPS', 1)),
+    enable_asset_pipeline=True,
 )
