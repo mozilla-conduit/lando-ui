@@ -6,10 +6,11 @@ import os
 import requests
 
 from flask import (
-    Blueprint, current_app, jsonify, redirect, render_template, session
+    abort, Blueprint, current_app, jsonify, redirect, render_template, session
 )
 
 from landoui.helpers import set_last_local_referrer
+from landoui.sentry import sentry
 
 revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
@@ -20,7 +21,22 @@ def get_revision(revision_id):
     revision_api_url = '{}/revisions/{}'.format(
         os.getenv('LANDO_API_URL'), revision_id
     )
-    result = requests.get(revision_api_url)
+
+    try:
+        result = requests.get(revision_api_url)
+        result.raise_for_status()
+    except requests.HTTPError as exc:
+        if exc.response.status_code == 404:
+            # The user looked up a non-existent revision, no special treatment
+            # is necessary.
+            abort(404)
+        else:
+            sentry.captureException()
+            abort(500)
+    except requests.ConnectionError:
+        sentry.captureException()
+        abort(500)
+
     revision = result.json()
 
     return render_template(
