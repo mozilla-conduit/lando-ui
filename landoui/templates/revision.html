@@ -63,20 +63,20 @@
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
   <div class="columns is-mobile">
     <div class="column is-two-thirds-desktop">
-      <h3 class="RevisionPage-title">D{{revision['id']}}: {{revision['title']}}</h3>
+      <h1 class="RevisionPage-title">D{{revision['id']}}: {{revision['title']}}</h1>
 
       <article class="message">
         <div class="message-header">
-          <p>Info</p>
+          <h2>Revision Detail</h2>
         </div>
         <div class="message-body">
           {{ revision_info_html(revision, author, repo) }}
         </div>
       </article>
 
-      <h4>
+      <h3>
         <strong>Depends on {{ parents|length if parents else 'no other' }} {{ 'revision' if parents|length == 1 else 'revisions' }}</strong>
-      </h4>
+      </h3>
       {% for parent in parents %}
         <div class="RevisionPage-parentRevision">
           <div class="RevisionPage-parentRevisionHeader columns">
@@ -108,7 +108,7 @@
       <br />
       <article class="message">
         <div class="message-header">
-          <p>Landing History</p>
+          <h2>Landing History</h2>
         </div>
         <div class="message-body">
           This Revision has never been landed before
