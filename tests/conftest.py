@@ -28,7 +28,7 @@ def disable_log_output():
 
 @pytest.fixture
 def app(versionfile, disable_log_output, docker_env_vars):
-    return create_app(
+    app = create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
         session_cookie_name='lando-ui',
@@ -37,6 +37,14 @@ def app(versionfile, disable_log_output, docker_env_vars):
         use_https=0,
         enable_asset_pipeline=False
     )
+
+    # Turn on the TESTING setting so that exceptions within the app bubble up
+    # to the test runner.  Otherwise Flask will hide the exception behind a
+    # generic HTTP 500 response, and that makes writing and debugging tests
+    # much harder.
+    app.config['TESTING'] = True
+
+    return app
 
 
 @pytest.fixture
