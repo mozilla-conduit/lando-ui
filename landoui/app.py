@@ -35,6 +35,13 @@ def create_app(
         'font-src': "'self' https://code.cdn.mozilla.net",
         'style-src': "'self' https://code.cdn.mozilla.net",
         'img-src': "'self' *.cloudfront.net *.gravatar.com *.googleusercontent.com",
+        'object-src': "'none'",
+        'frame-ancestors': "'none'",
+        'manifest-src': "'none'",
+        'worker-src': "'none'",
+        'media-src': "'none'",
+        'frame-src': "'none'",
+        'base-uri': "'none'",
     } # yapf: disable
 
     initialize_logging()
