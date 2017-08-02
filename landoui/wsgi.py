@@ -16,4 +16,5 @@ app = create_app(
     session_cookie_secure=os.getenv('SESSION_COOKIE_SECURE'),
     use_https=int(os.getenv('USE_HTTPS', 1)),
     enable_asset_pipeline=True,
+    lando_api_url=os.getenv('LANDO_API_URL'),
 )
