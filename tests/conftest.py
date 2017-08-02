@@ -27,7 +27,13 @@ def disable_log_output():
 
 
 @pytest.fixture
-def app(versionfile, disable_log_output, docker_env_vars):
+def api_url():
+    """A string holding the Lando API base URL. Useful for request mocking."""
+    return 'http://lando-api.test'
+
+
+@pytest.fixture
+def app(versionfile, disable_log_output, docker_env_vars, api_url):
     app = create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
@@ -35,7 +41,8 @@ def app(versionfile, disable_log_output, docker_env_vars):
         session_cookie_domain='lando-ui.test:7777',
         session_cookie_secure=False,
         use_https=0,
-        enable_asset_pipeline=False
+        enable_asset_pipeline=False,
+        lando_api_url=api_url,
     )
 
     # Turn on the TESTING setting so that exceptions within the app bubble up

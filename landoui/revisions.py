@@ -19,7 +19,7 @@ revisions.before_request(set_last_local_referrer)
 @revisions.route('/revisions/<revision_id>')
 def get_revision(revision_id):
     revision_api_url = '{}/revisions/{}'.format(
-        os.getenv('LANDO_API_URL'), revision_id
+        current_app.config['LANDO_API_URL'], revision_id
     )
 
     try:

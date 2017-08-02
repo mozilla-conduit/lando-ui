@@ -24,7 +24,7 @@ oidc = None
 
 def create_app(
     version_path, secret_key, session_cookie_name, session_cookie_domain,
-    session_cookie_secure, use_https, enable_asset_pipeline
+    session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url
 ):
     """
     Create an app instance.
@@ -56,6 +56,9 @@ def create_app(
 
     this_app_version = version_info['version']
     initialize_sentry(app, this_app_version)
+
+    app.config['LANDO_API_URL'] = lando_api_url
+    log_config_change('LANDO_API_URL', lando_api_url)
 
     # Set remaining configuration
     app.config['SECRET_KEY'] = secret_key
@@ -116,17 +119,18 @@ def create_app(
 @click.option(
     '--enable-asset-pipeline', envvar='ENABLE_ASSET_PIPELINE', default=1
 )
+@click.option('--lando-api-url', envvar='LANDO_API_URL', default=None)
 def run_dev_server(
     debug, host, port, version_path, secret_key, session_cookie_name,
     session_cookie_domain, session_cookie_secure, use_https,
-    enable_asset_pipeline
+    enable_asset_pipeline, lando_api_url
 ):
     """
     Run the development server which auto reloads when things change.
     """
     app = create_app(
         version_path, secret_key, session_cookie_name, session_cookie_domain,
-        session_cookie_secure, use_https, enable_asset_pipeline
+        session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url
     )
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True

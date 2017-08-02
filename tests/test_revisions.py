@@ -7,35 +7,29 @@ import requests_mock
 from tests.canned_responses import LANDO_API_RESPONSE
 
 
-def test_render_valid_revision(client, monkeypatch):
-    monkeypatch.setenv('LANDO_API_URL', 'http://landoapi.test')
+def test_render_valid_revision(client, api_url):
     with requests_mock.mock() as m:
-        m.get('http://landoapi.test/revisions/D1', json=LANDO_API_RESPONSE)
+        m.get(api_url + '/revisions/D1', json=LANDO_API_RESPONSE)
         response = client.get('/revisions/D1')
     assert response.status_code == 200
 
 
-def test_missing_revision_returns_404(client, monkeypatch):
-    monkeypatch.setenv('LANDO_API_URL', 'http://landoapi.test')
+def test_missing_revision_returns_404(client, api_url):
     with requests_mock.mock() as m:
-        m.get('http://landoapi.test/revisions/D1057', status_code=404)
+        m.get(api_url + '/revisions/D1057', status_code=404)
         response = client.get('/revisions/D1057')
     assert response.status_code == 404
 
 
-def test_lando_api_connection_error_returns_500(client, monkeypatch):
-    monkeypatch.setenv('LANDO_API_URL', 'http://landoapi.test')
+def test_lando_api_connection_error_returns_500(client, api_url):
     with requests_mock.mock() as m:
-        m.get(
-            'http://landoapi.test/revisions/D1', exc=requests.ConnectionError
-        )
+        m.get(api_url + '/revisions/D1', exc=requests.ConnectionError)
         response = client.get('/revisions/D1')
     assert response.status_code == 500
 
 
-def test_lando_api_response_insanity_returns_500(client, monkeypatch):
-    monkeypatch.setenv('LANDO_API_URL', 'http://landoapi.test')
+def test_lando_api_response_insanity_returns_500(client, api_url):
     with requests_mock.mock() as m:
-        m.get('http://landoapi.test/revisions/D1', status_code=500)
+        m.get(api_url + '/revisions/D1', status_code=500)
         response = client.get('/revisions/D1')
     assert response.status_code == 500

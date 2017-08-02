@@ -20,5 +20,6 @@ app = create_app(
     session_cookie_domain='lando-ui.test',
     session_cookie_secure=False,
     use_https=0,
-    enable_asset_pipeline=True
+    enable_asset_pipeline=True,
+    lando_api_url='lando-api.test',
 )
