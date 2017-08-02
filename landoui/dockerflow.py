@@ -3,7 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 
+import logging
+import requests
 from flask import Blueprint, current_app, jsonify
+
+logger = logging.getLogger(__name__)
 
 dockerflow = Blueprint('dockerflow', __name__)
 
@@ -16,8 +20,20 @@ def heartbeat():
     and return a 200 iff those services and the app itself are
     performing normally. Return a 5XX if something goes wrong.
     """
-    # TODO check backing services and update tests
-    return '', 200
+    try:
+        response = requests.get(
+            current_app.config['LANDO_API_URL'] + '/__lbheartbeat__'
+        )
+        response.raise_for_status()
+    except (requests.HTTPError, requests.ConnectionError):
+        logger.warning(
+            {
+                'msg': 'problem connecting to lando-api',
+            }, 'heartbeat'
+        )
+        return 'heartbeat: problem', 500
+    logger.info({'msg': 'ok, all services are up'}, 'heartbeat')
+    return 'heartbeat: ok', 200
 
 
 @dockerflow.route('/__lbheartbeat__')
