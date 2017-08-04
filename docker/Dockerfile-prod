@@ -20,6 +20,7 @@ COPY requirements/* /python_requirements/
 RUN set -ex \
     && apk add --update --no-cache --virtual .build-deps \
            gcc \
+           git \
            libc-dev \
            musl-dev \
            linux-headers \
@@ -27,6 +28,7 @@ RUN set -ex \
            openssl-dev \
            libffi-dev \
     && pip install --no-cache -r /python_requirements/common.txt \
+    && pip install --no-cache -r /python_requirements/vendor.txt \
     && pip install --no-cache -r /python_requirements/production.txt \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --recursive /usr/local \

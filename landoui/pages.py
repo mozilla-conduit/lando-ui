@@ -51,8 +51,7 @@ def signin():
 def protected():
     logger.warn(
         {
-            'user_name': session['userinfo']['name'],
-            'email': session['userinfo']['email']
+            'user_name': session['userinfo']['name']
         }, 'ProtectedPageView'
     )
     return render_template('protected.html')

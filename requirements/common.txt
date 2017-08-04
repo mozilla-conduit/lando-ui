@@ -22,8 +22,6 @@ PyYAML==3.12 \
     --hash=sha256:592766c6303207a20efc445587778322d7f73b161bd994f227adaa341ba212ab
 glob2==0.5 \
     --hash=sha256:58c64a566a84a4ffed98e3bc2346f9d5d761df6203bf7b1c854d4c2edd332bc9
-Flask-pyoidc==1.1.0 \
-    --hash=sha256:77466710f80bd54a4395942ac7d96d6eaf6ac560023c97ad3eb5e5ccdc909b08
 oic==0.9.1.0 \
     --hash=sha256:ac4f63b53c68869fe1e770ee2003d892fb9f4fae1d6081fa6dbbc07fff598c3e
 pycryptodomex==3.4.5 \
