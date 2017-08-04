@@ -1,13 +1,14 @@
 FROM python:3.5-alpine
 
-RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev
+RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev git
 
 RUN mkdir /python_requirements
 COPY requirements/* /python_requirements/
 RUN pip install --no-cache -r /python_requirements/common.txt \
-    && pip install --no-cache -r /python_requirements/dev.txt
+    && pip install --no-cache -r /python_requirements/dev.txt \
+    && pip install --no-cache -r /python_requirements/vendor.txt
 
-RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev
+RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev git
 
 RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
 RUN npm install --global eslint

@@ -45,7 +45,8 @@ class OpenIDConnect:
     def client_info(self):
         return dict(
             client_id=self.oidc_config.client_id(),
-            client_secret=self.oidc_config.client_secret()
+            client_secret=self.oidc_config.client_secret(),
+            session_refresh_interval_seconds=900  # 15 minutes
         )
 
     def provider_info(self):

@@ -1,0 +1,1 @@
+-e git://github.com/mozilla-iam/Flask-pyoidc.git@92a7b17e48c760534558e51e6d803fee12a684f8#egg=Flask-pyoidc
