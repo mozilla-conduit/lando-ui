@@ -41,6 +41,7 @@ def create_app(
         'media-src': "'none'",
         'frame-src': "'none'",
         'base-uri': "'none'",
+        'report-uri': "/__cspreport__"
     } # yapf: disable
 
     initialize_logging()
