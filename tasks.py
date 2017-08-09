@@ -6,7 +6,7 @@ import os
 
 from invoke import Collection, task, run
 
-DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/lando-ui')
+DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/landoui')
 project_root = os.path.dirname(__file__)
 
 
