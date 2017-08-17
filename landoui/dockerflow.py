@@ -12,6 +12,15 @@ logger = logging.getLogger(__name__)
 dockerflow = Blueprint('dockerflow', __name__)
 
 
+@dockerflow.after_request
+def disable_caching(response):
+    """Disable caching on a response and return it."""
+    response.cache_control.no_cache = True
+    response.cache_control.no_store = True
+    response.cache_control.must_revalidate = True
+    return response
+
+
 @dockerflow.route('/__heartbeat__')
 def heartbeat():
     """Perform health check of lando-ui.
