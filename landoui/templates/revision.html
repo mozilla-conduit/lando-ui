@@ -1,120 +1,142 @@
 {% extends "partials/layout.html" %}
 {% block page_title %}D{{revision['id']}} - Lando - Mozilla{% endblock %}
 
-{% macro revision_review_status_tag(revision, outline='') %}
-  {% if revision['status_name'] == 'Accepted' %}
-    <span class="tag is-success {{ outline }}">{{ revision['status_name'] }}</span>
-  {% elif revision['status_name'] == 'Needs Revision' %}
-    <span class="tag is-danger {{ outline }}">{{ revision['status_name'] }}</span>
-  {% elif revision['status_name'] == 'Needs Review' %}
-    <span class="tag is-warning {{ outline }}">{{ revision['status_name'] }}</span>
-  {% else %}
-    <span class="tag is-info {{ outline }}">{{ revision['status_name'] }}</span>
-  {% endif %}
-{% endmacro %}
-
-{% macro revision_info_html(revision, author, repo) %}
-  <div class="columns">
-    <div class="column is-4">
-      <div>
-        <i class="fa fa-bug"></i>
-        <span class="RevisionPage-label">Bug: </span>
-        {% if revision['bug_id'] %}
-          <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{revision['bug_id']}}">#{{revision['bug_id']}}</a>
-        {% else %}
-          None
-        {% endif %}
-      </div>
-      <div>
-        <i class="fa fa-calendar"></i>
-        <span class="RevisionPage-label">Created: </span>{{revision['date_created']}}
-      </div>
-      <div>
-        <i class="fa fa-calendar-plus-o"></i>
-        <span class="RevisionPage-label">Last modified: </span>{{revision['date_modified']}}
-      </div>
-      <div>
-        <i class="fa fa-thumbs-up"></i>
-        <span class="RevisionPage-label">Review Status: </span>
-        {{ revision_review_status_tag(revision) }}
-      </div>
-    </div>
-    <div class="column is-8">
-      <div>
-        <i class="fa fa-edit"></i>
-        <span class="RevisionPage-label">Revision: </span>
-        <a href="{{revision['url']}}">{{revision['url']}}</a>
-      </div>
-      <div>
-        <i class="fa fa-code-fork"></i>
-        <span class="RevisionPage-label">Target Repository: </span>
-        <a href="{{repo['url']}}">{{repo['full_name']}}</a>
-      </div>
-      <div>
-        <i class="fa fa-user-circle"></i>
-        <span class="RevisionPage-label">Author: </span>
-        <a href="{{author['url']}}">{{author['real_name']}} ({{author['username']}})</a>
-      </div>
-    </div>
-  </div>
-{% endmacro %}
-
 {% block main %}
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
-  <div class="columns is-mobile">
-    <div class="column is-two-thirds-desktop">
-      <h1 class="RevisionPage-title">D{{revision['id']}}: {{revision['title']}}</h1>
 
-      <article class="message">
-        <div class="message-header">
-          <h2>Revision Detail</h2>
-        </div>
-        <div class="message-body">
-          {{ revision_info_html(revision, author, repo) }}
-        </div>
-      </article>
+  <form action="" method="post">
 
-      <h3>
-        <strong>Depends on {{ parents|length if parents else 'no other' }} {{ 'revision' if parents|length == 1 else 'revisions' }}</strong>
-      </h3>
-      {% for parent in parents %}
-        <div class="RevisionPage-parentRevision">
-          <div class="RevisionPage-parentRevisionHeader columns">
-            <div class="column is-1">
-              <a class="RevisionPage-collapseLink">
-                <i class="fa fa-chevron-circle-right"></i>
-              </a>
-            </div>
-            <div class="column is-8">
-              <a class="RevisionPage-collapseLink">D{{ parent['id'] }}: {{ parent['title'] }}</a>
-            </div>
-            <div class="column is-3 has-text-right">
-              <span class="tag is-danger is-outlined">Not Landed</span>
-              {{ revision_review_status_tag(parent, 'is-outlined') }}
-            </div>
-          </div>
-
-
-          <div class="RevisionPage-parentRevisionBody">
-            {{ revision_info_html(parent, parent['author'], parent['repo']) }}
-          </div>
-        </div>
-      {% endfor %}
+    <!-- page heading -->
+    <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>
+    <div class="RevisionPage-heading-statuses">
+      <span class="revision-badge revision-badge-positive">Ready to Land</span>
+      <span class="revision-badge revision-badge-negative">Landing Failed</span>
+      <span class="revision-badge revision-badge-neutral">Landed - 9e5c8fa3db7f835109de62eca34bde596fd93517</span>
+      <span class="revision-badge">Landing in Progress</span>
     </div>
-    <div class="column is-one-third-desktop">
-      <div>
-        <a class="RevisionPage-landBtn is-primary button">Land this Revision!</a>
+
+    <!-- timeline -->
+    <div class="RevisionPage-section-block">
+      <div class="RevisionPage-section-label">
+        Timeline
       </div>
-      <br />
-      <article class="message">
-        <div class="message-header">
-          <h2>Landing History</h2>
+      <div class="RevisionPage-section-contents">
+
+        <div class="Revision-Page-timeline">
+
+          <div class="Revision-Page-timeline-item">
+            <div class="Revision-Page-timeline-item-status">
+              <span class="revision-badge revision-badge-negative">
+                Failed to Land
+              </span>
+            </div>
+
+            <div class="Revision-Page-timeline-item-detail">
+              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
+              <strong>Error:</strong> An intermittent internal error occurred.
+            </div>
+          </div>
+
+          <div class="Revision-Page-timeline-item">
+            <div class="Revision-Page-timeline-item-status">
+              <span class="revision-badge revision-badge-negative">
+                Failed to Land
+              </span>
+            </div>
+
+            <div class="Revision-Page-timeline-item-detail">
+              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
+              <strong>Error:</strong> An intermittent internal error occurred.
+            </div>
+          </div>
+
+          <div class="Revision-Page-timeline-item">
+            <div class="Revision-Page-timeline-item-status">
+              <span class="revision-badge revision-badge-positive">
+                Passed on Try
+              </span>
+            </div>
+
+            <div class="Revision-Page-timeline-item-detail">
+              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com. <a href="">See on Treeherder</a>.
+            </div>
+          </div>
         </div>
-        <div class="message-body">
-          This Revision has never been landed before
-        </div>
-      </article>
+
+      </div>
     </div>
-  </div>
+
+    <!-- details -->
+    <div class="RevisionPage-section-block">
+      <div class="RevisionPage-section-label">
+        Details
+      </div>
+      <div class="RevisionPage-section-contents">
+        <div>
+          <a href="">Diff {{revision['diff']['id']}}</a> authored by
+          <strong>{{revision['diff']['authors'][0]}}</strong>
+          on {{revision['diff']['date_created']}}
+        </div>
+        <div>
+          <span class="revision-badge revision-badge-positive">
+            Review Approved
+          </span>
+          — By <strong>mcote, davidwalsh</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- commit message -->
+    <div class="RevisionPage-section-block">
+      <div class="RevisionPage-section-label">
+        Commit Message
+      </div>
+      <div class="RevisionPage-section-contents">
+        <div>
+          {{revision['commit_message_preview']}}
+        </div>
+        <div class="">
+          <button type="button">Show Full Message</button>
+          <button type="button">Edit Commit Author</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- warnings -->
+    <div class="RevisionPage-warnings">
+      <div class="RevisionPage-warning">
+        <label>
+          <input type="checkbox" value="acknowledge" />
+          This is a warning because sometimes things can go sort of wrong very quickly.
+        </label>
+      </div>
+      <div class="RevisionPage-warning">
+        <label>
+          <input type="checkbox" value="acknowledge" />
+          This is a warning because sometimes things can go sort of wrong very quickly.
+        </label>
+      </div>
+    </div>
+
+    <!-- actions -->
+    <div class="RevisionPage-actions">
+      <button>
+        <div class="RevisionPage-actions-headline">Land D1057</div>
+        <div class="RevisionPage-actions-subtitle">autoland is open</div>
+      </button>
+
+      <button disabled>
+        <div class="RevisionPage-actions-headline">Landing Disabled</div>
+        <div class="RevisionPage-actions-subtitle">autoland is closed</div>
+      </button>
+
+      <button disabled>
+        <div class="RevisionPage-actions-headline">Landing in Progress</div>
+        <div class="RevisionPage-actions-subtitle">check back soon</div>
+      </button>
+    </div>
+
+  </form>
+
 </main>
 {% endblock %}

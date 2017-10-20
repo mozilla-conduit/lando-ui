@@ -1,53 +1,123 @@
 @import "../colors";
 
+$revision-spacing: 20px;
+
+/* Page Structure */
 .RevisionPage {
   background-color: #fff;
-  padding: 1.3rem;
-  border-top: 0;
 }
 
-// Nesting to get more specificity than Bulma.
-.RevisionPage {
+h1.RevisionPage-heading {
+  margin-bottom: 0;
+}
 
-  .RevisionPage-title {
-    font-weight: bold;
+.RevisionPage-heading-statuses {
+  margin-bottom: $revision-spacing*2;
+}
+
+.RevisionPage-heading-statuses .revision-badge {
+  font-size: 1em;
+}
+
+.RevisionPage-section-block {
+  display: grid;
+  grid-template-columns: 150px auto;
+  margin-bottom: $revision-spacing;
+
+  /* TODO: How do I use the $tablet bulma column var? */
+  @media screen and (max-width: 769px) {
+    display: block;
+  }
+}
+
+.RevisionPage-section-label {
+  font-weight: bold;
+}
+
+.RevisionPage-section-contents {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: $revision-spacing;
+}
+
+.Revision-Page-timeline-item {
+  display: grid;
+  grid-template-columns: 120px auto;
+  margin-bottom: $revision-spacing/2;
+}
+
+.RevisionPage-warnings {
+  margin-bottom: $revision-spacing;
+}
+
+.RevisionPage-warning {
+  background: #fdf3da;
+  border-color: #e9dbcd;
+  color:#726f56;
+  margin-bottom: 4px;
+  padding: 3px 9px 3px 30px;
+  position: relative;
+
+  input {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+  }
+}
+
+.RevisionPage-actions {
+  text-align: right;
+
+  button {
+      border: 0;
+      text-align: center;
+      color: #ddefdd;
+      background: #326d34;
+      padding: 8px 20px;
+      border-radius: 3px;
   }
 
-  .RevisionPage-label {
-    font-weight: 600;
+  button[disabled] {
+    background: #efefef;
+    color: inherit;
+    pointer-events: none;
+    cursor: default;
   }
 
-  .RevisionPage-landBtn {
-    width: 100%;
-    box-shadow: 3px 3px 5px #bbb;
+  .RevisionPage-actions-headline {
+    font-size: 1.6rem;
   }
 
-  .RevisionPage-parentRevision {
-    border: 1px solid #7a7a7a;
-    padding: .5rem .75rem .5rem .75rem;
-    border-radius: .25rem;
-    margin-bottom: .5rem;
-    color: #4a4a4a;
-
-    a {
-      color: #4a4a4a;
-      &:hover {
-        color: $blue;
-      }
-    }
+  .RevisionPage-actions-subtitle {
+    font-size: 0.8rem;
   }
+}
 
-  .RevisionPage-parentRevisionHeader {
-    margin-bottom: 0;
-  }
+/* Utilities */
+.revision-badge {
+  white-space: nowrap;
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: #efefef;
+  font-size: 0.8rem;
+}
 
-  .RevisionPage-parentRevisionBody {
-    display: none;
-    margin-top: .5rem;
-  }
+.revision-badge-positive {
+  background: #ddefdd;
+  color: #326d34;
+}
 
-  .message-header h2 {
-    color: $white-ter;
-    margin-bottom: 0;
-  }
+.revision-badge-negative {
+  background: #f7e6e6;
+  color: #a53737;
+}
+
+.revision-badge-neutral {
+  background: #eae6f7;
+  color: #6e5cb6;
+}
+
+/* Put this somewhere */
+button, label {
+  cursor: pointer;
 }
