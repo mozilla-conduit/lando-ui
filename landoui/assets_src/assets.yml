@@ -20,7 +20,7 @@ main_js:
     # If dependency order matters, specify those files first.
     # The last two lines will catch all other files not specified.
     - ../assets_src/js/components/*.js
-    - ../assets_src/js/pages/*.js
+    - ../assets_src/js/utils/*.js
     - ../assets_src/js/main.js
 
 main_css:

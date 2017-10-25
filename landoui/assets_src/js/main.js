@@ -4,6 +4,6 @@ $(document).ready(function() {
   // Initialize components
   $('.Navbar').landoNavbar();
 
-  // Initialize pages
-  $('.RevisionPage').landoRevisionPage();
+  // Initialize plugins
+  $('time[data-timestamp]').formatTime();
 });
