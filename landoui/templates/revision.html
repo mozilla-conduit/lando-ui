@@ -4,139 +4,149 @@
 {% block main %}
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
 
-  <form action="" method="post">
+  <div class="RevisionPage-revision">
+    <form action="" method="post">
 
-    <!-- page heading -->
-    <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>
-    <div class="RevisionPage-heading-statuses">
-      <span class="revision-badge revision-badge-positive">Ready to Land</span>
-      <span class="revision-badge revision-badge-negative">Landing Failed</span>
-      <span class="revision-badge revision-badge-neutral">Landed - 9e5c8fa3db7f835109de62eca34bde596fd93517</span>
-      <span class="revision-badge">Landing in Progress</span>
-    </div>
-
-    <!-- timeline -->
-    <div class="RevisionPage-section-block">
-      <div class="RevisionPage-section-label">
-        Timeline
+      <!-- page heading -->
+      <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>
+      <div class="RevisionPage-heading-statuses">
+        <span class="revision-badge revision-badge-positive">Ready to Land</span>
+        <span class="revision-badge revision-badge-negative">Landing Failed</span>
+        <span class="revision-badge revision-badge-neutral">Landed - 9e5c8fa3db7f835109de62eca34bde596fd93517</span>
+        <span class="revision-badge">Landing in Progress</span>
       </div>
-      <div class="RevisionPage-section-contents">
 
-        <div class="Revision-Page-timeline">
+      <!-- timeline -->
+      <div class="RevisionPage-section-block">
+        <div class="RevisionPage-section-label">
+          Timeline
+        </div>
+        <div class="RevisionPage-section-contents">
 
-          <div class="Revision-Page-timeline-item">
-            <div class="Revision-Page-timeline-item-status">
-              <span class="revision-badge revision-badge-negative">
-                Failed to Land
-              </span>
+          <div class="Revision-Page-timeline">
+
+            <div class="Revision-Page-timeline-item">
+              <div class="Revision-Page-timeline-item-status">
+                <span class="revision-badge revision-badge-negative">
+                  Failed to Land
+                </span>
+              </div>
+
+              <div class="Revision-Page-timeline-item-detail">
+                With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
+                <strong>Error:</strong> An intermittent internal error occurred.
+              </div>
             </div>
 
-            <div class="Revision-Page-timeline-item-detail">
-              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
-              <strong>Error:</strong> An intermittent internal error occurred.
+            <div class="Revision-Page-timeline-item">
+              <div class="Revision-Page-timeline-item-status">
+                <span class="revision-badge revision-badge-negative">
+                  Failed to Land
+                </span>
+              </div>
+
+              <div class="Revision-Page-timeline-item-detail">
+                With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
+                <strong>Error:</strong> An intermittent internal error occurred.
+              </div>
+            </div>
+
+            <div class="Revision-Page-timeline-item">
+              <div class="Revision-Page-timeline-item-status">
+                <span class="revision-badge revision-badge-positive">
+                  Passed on Try
+                </span>
+              </div>
+
+              <div class="Revision-Page-timeline-item-detail">
+                With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com. <a href="">See on Treeherder</a>.
+              </div>
             </div>
           </div>
 
-          <div class="Revision-Page-timeline-item">
-            <div class="Revision-Page-timeline-item-status">
-              <span class="revision-badge revision-badge-negative">
-                Failed to Land
-              </span>
-            </div>
+        </div>
+      </div>
 
-            <div class="Revision-Page-timeline-item-detail">
-              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com.<br>
-              <strong>Error:</strong> An intermittent internal error occurred.
-            </div>
+      <!-- details -->
+      <div class="RevisionPage-section-block">
+        <div class="RevisionPage-section-label">
+          Details
+        </div>
+        <div class="RevisionPage-section-contents">
+          <div>
+            <a href="">Diff {{revision['diff']['id']}}</a> authored by
+            <strong>SOME USER</strong>
+            on <time data-timestamp="{{revision['diff']['date_created']}}"></time>
           </div>
-
-          <div class="Revision-Page-timeline-item">
-            <div class="Revision-Page-timeline-item-status">
-              <span class="revision-badge revision-badge-positive">
-                Passed on Try
-              </span>
-            </div>
-
-            <div class="Revision-Page-timeline-item-detail">
-              With <a href="">Diff 15</a> on Oct. 10, 2017 10:58 PM EST, by imadueme@mozilla.com. <a href="">See on Treeherder</a>.
-            </div>
+          <div>
+            <span class="revision-badge revision-badge-positive">
+              Review Approved
+            </span>
+            — By <strong>mcote, davidwalsh</strong>
           </div>
         </div>
+      </div>
 
-      </div>
-    </div>
+      <!-- commit message -->
+      <div class="RevisionPage-section-block">
+        <div class="RevisionPage-section-label">
+          Commit Message
+        </div>
+        <div class="RevisionPage-section-contents">
+          <div clss="RevisionPage-commit-preview">
+            {{revision['commit_message_preview']}}
+          </div>
+          <div class="RevisionPage-commit-full">Bug 1411137 - Create new API method bugzilla.account.search to look up phab users based on either phid or bugzilla id
 
-    <!-- details -->
-    <div class="RevisionPage-section-block">
-      <div class="RevisionPage-section-label">
-        Details
-      </div>
-      <div class="RevisionPage-section-contents">
-        <div>
-          <a href="">Diff {{revision['diff']['id']}}</a> authored by
-          <strong>SOME USER</strong>
-          on <time data-timestamp="{{revision['diff']['date_created']}}"></time>
-        </div>
-        <div>
-          <span class="revision-badge revision-badge-positive">
-            Review Approved
-          </span>
-          — By <strong>mcote, davidwalsh</strong>
-        </div>
-      </div>
-    </div>
+Reviewers: davidwalsh
 
-    <!-- commit message -->
-    <div class="RevisionPage-section-block">
-      <div class="RevisionPage-section-label">
-        Commit Message
-      </div>
-      <div class="RevisionPage-section-contents">
-        <div>
-          {{revision['commit_message_preview']}}
-        </div>
-        <div class="">
-          <button type="button">Show Full Message</button>
-          <button type="button">Edit Commit Author</button>
+Reviewed By: davidwalsh
+
+Bug #: 1411137
+
+Differential Revision: https://phabricator.services.mozilla.com/D156</div>
+          <div class="RevisionPage-commit-buttons">
+            <button type="button" class="show-full-message" data-hide-message="Hide Full Message">Toggle Full Commit Message</button>
+            <button type="button">Edit Commit Author</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- warnings -->
-    <div class="RevisionPage-warnings">
-      <div class="RevisionPage-warning">
-        <label>
-          <input type="checkbox" value="acknowledge" />
-          This is a warning because sometimes things can go sort of wrong very quickly.
-        </label>
+      <!-- warnings -->
+      <div class="RevisionPage-warnings">
+        <div class="RevisionPage-warning">
+          <label>
+            <input type="checkbox" value="acknowledge" />
+            This is a warning because sometimes things can go sort of wrong very quickly.
+          </label>
+        </div>
+        <div class="RevisionPage-warning">
+          <label>
+            <input type="checkbox" value="acknowledge" />
+            This is a warning because sometimes things can go sort of wrong very quickly.
+          </label>
+        </div>
       </div>
-      <div class="RevisionPage-warning">
-        <label>
-          <input type="checkbox" value="acknowledge" />
-          This is a warning because sometimes things can go sort of wrong very quickly.
-        </label>
+
+      <!-- actions -->
+      <div class="RevisionPage-actions">
+        <button>
+          <div class="RevisionPage-actions-headline">Land D1057</div>
+          <div class="RevisionPage-actions-subtitle">autoland is open</div>
+        </button>
+
+        <button disabled>
+          <div class="RevisionPage-actions-headline">Landing Disabled</div>
+          <div class="RevisionPage-actions-subtitle">autoland is closed</div>
+        </button>
+
+        <button disabled>
+          <div class="RevisionPage-actions-headline">Landing in Progress</div>
+          <div class="RevisionPage-actions-subtitle">check back soon</div>
+        </button>
       </div>
-    </div>
 
-    <!-- actions -->
-    <div class="RevisionPage-actions">
-      <button>
-        <div class="RevisionPage-actions-headline">Land D1057</div>
-        <div class="RevisionPage-actions-subtitle">autoland is open</div>
-      </button>
-
-      <button disabled>
-        <div class="RevisionPage-actions-headline">Landing Disabled</div>
-        <div class="RevisionPage-actions-subtitle">autoland is closed</div>
-      </button>
-
-      <button disabled>
-        <div class="RevisionPage-actions-headline">Landing in Progress</div>
-        <div class="RevisionPage-actions-subtitle">check back soon</div>
-      </button>
-    </div>
-
-  </form>
-
+    </form>
+  </div>
 </main>
 {% endblock %}

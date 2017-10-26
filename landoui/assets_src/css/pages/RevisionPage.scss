@@ -45,6 +45,15 @@ h1.RevisionPage-heading {
   margin-bottom: $revision-spacing/2;
 }
 
+.RevisionPage-commit-full {
+  white-space: pre;
+  display: none;
+  background: #efefef;
+  padding: $revision-spacing/2;
+  margin: $revision-spacing/2 0;
+  font-family: monospace;
+}
+
 .RevisionPage-warnings {
   margin-bottom: $revision-spacing;
 }
