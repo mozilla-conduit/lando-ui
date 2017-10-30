@@ -10,12 +10,15 @@ from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 
 
 class OIDCConfig:
-    """Convienience object for returning required vars to flask."""
+    """Convenience object for returning required vars to flask."""
 
     def __init__(self):
         self.OIDC_DOMAIN = os.environ['OIDC_DOMAIN']
         self.OIDC_CLIENT_ID = os.environ['OIDC_CLIENT_ID']
         self.OIDC_CLIENT_SECRET = os.environ['OIDC_CLIENT_SECRET']
+        self.LANDO_API_OIDC_IDENTIFIER = (
+            os.environ['LANDO_API_OIDC_IDENTIFIER']
+        )
         self.LOGIN_URL = 'https://{DOMAIN}/login?client={CLIENT_ID}'.format(
             DOMAIN=self.OIDC_DOMAIN, CLIENT_ID=self.OIDC_CLIENT_ID
         )
@@ -34,6 +37,9 @@ class OIDCConfig:
 
     def client_secret(self):
         return self.OIDC_CLIENT_SECRET
+
+    def lando_api_oidc_id(self):
+        return self.LANDO_API_OIDC_IDENTIFIER
 
 
 class OpenIDConnect:
@@ -58,9 +64,28 @@ class OpenIDConnect:
         )
 
     def auth(self, app):
+        """ Creates the OIDCAuthentication object to be used to protect routes.
+
+        Authentication is requested with the following audiences:
+        - lando-api: The LANDO_API_OIDC_IDENTIFIER environment variable will
+            be included as an audience. This allows lando-api to verify that
+            tokens created by lando-ui were intended to be used by the api.
+
+        Authentication is requested with the following scopes:
+        - openid - Permission to get a unique identifier for the user. This
+            also permits querying Auth0 at https://OIDC_DOMAIN/userinfo for
+            additional user information.
+        - email - Permission to get the user's email address.
+        - profile - Permission to get additional information about the user
+          such as their real name, picture url, and LDAP information.
+        """
         oidc = OIDCAuthentication(
             app,
             provider_configuration_info=self.provider_info(),
-            client_registration_info=self.client_info()
+            client_registration_info=self.client_info(),
+            extra_request_args={
+                "audience": [self.oidc_config.lando_api_oidc_id()],
+                'scope': ['openid', 'profile', 'email']
+            }
         )
         return oidc

@@ -20,6 +20,7 @@ services:
       - OIDC_DOMAIN=oidc_domain_change_me
       - OIDC_CLIENT_ID=oidc_client_id_change_me
       - OIDC_CLIENT_SECRET=oidc_client_secret_change_me
+      - LANDO_API_OIDC_IDENTIFIER=lando-api-oidc-identifier
       - VERSION_PATH=/version.json
       - SECRET_KEY=secret_key_change_me
       - SESSION_COOKIE_NAME=lando-ui.test:7777
