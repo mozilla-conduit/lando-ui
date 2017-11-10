@@ -31,7 +31,7 @@ def test_python(ctx, testargs='', keep=False):
 @task(name='flake8')
 def lint_flake8(ctx):
     """Run flake8."""
-    run('docker-compose run --rm py3-linter flake8 ./', pty=True, echo=True)
+    run('docker-compose run --rm py3-linter flake8 .', pty=True, echo=True)
 
 
 @task(name='yapf')
