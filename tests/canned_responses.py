@@ -8,7 +8,9 @@ LANDO_API_RESPONSE = {
     "author": {
         "username": "dkl",
         "url": "https://phabricator-dev.allizom.org/p/dkl/",
-        "image_url": "https://d1ro22lwo621zr.cloudfront.net/file/data/f7caskb6qt5gkxdkftlt/PHID-FILE-p2p6po32js7anduomkao/alphanumeric_aleo-white_D.png-_84c08c-0%2C0%2C0%2C0.png",
+        "image_url": "https://d1ro22lwo621zr.cloudfront.net/file/data/"
+                     "f7caskb6qt5gkxdkftlt/PHID-FILE-p2p6po32js7anduomkao/"
+                     "alphanumeric_aleo-white_D.png-_84c08c-0%2C0%2C0%2C0.png",
         "real_name": "David Lawrence",
         "phid": "PHID-USER-4wigy3sh5fc5t74vapwm"
     },

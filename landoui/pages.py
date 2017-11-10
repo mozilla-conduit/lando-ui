@@ -71,10 +71,13 @@ def logout():
         protocol=protocol, host=current_app.config['SERVER_NAME']
     )
 
-    logout_url = 'https://{auth0_host}/v2/logout?returnTo={return_url}&client_id={client_id}'.format(
-        auth0_host=os.environ['OIDC_DOMAIN'],
-        return_url=return_url,
-        client_id=os.environ['OIDC_CLIENT_ID']
+    logout_url = (
+        'https://{auth0_host}/v2/logout?returnTo={return_url}&'
+        'client_id={client_id}'.format(
+            auth0_host=os.environ['OIDC_DOMAIN'],
+            return_url=return_url,
+            client_id=os.environ['OIDC_CLIENT_ID']
+        )
     )
 
     return redirect(logout_url, code=302)

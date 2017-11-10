@@ -33,7 +33,8 @@ def create_app(
         'default-src': "'self'",
         'font-src': "'self' https://code.cdn.mozilla.net",
         'style-src': "'self' https://code.cdn.mozilla.net",
-        'img-src': "'self' *.cloudfront.net *.gravatar.com *.googleusercontent.com",
+        'img-src': "'self' *.cloudfront.net *.gravatar.com "
+                   "*.googleusercontent.com",
         'object-src': "'none'",
         'frame-ancestors': "'none'",
         'manifest-src': "'none'",
@@ -42,7 +43,7 @@ def create_app(
         'frame-src': "'none'",
         'base-uri': "'none'",
         'report-uri': "/__cspreport__"
-    } # yapf: disable
+    }  # yapf: disable
 
     initialize_logging()
 
