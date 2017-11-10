@@ -8,8 +8,8 @@ This file provides that by initializing the flask app with basic configuration.
 If you just want to build assets run `invoke build_assets`, the output can
 be found in the landoui/static/build folder.
 """
-import os
 import binascii
+import os
 
 from landoui.app import create_app
 
