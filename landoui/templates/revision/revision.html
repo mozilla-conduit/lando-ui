@@ -95,15 +95,9 @@
           <div clss="RevisionPage-commit-preview">
             {{revision['commit_message_preview']}}
           </div>
-          <div class="RevisionPage-commit-full">Bug 1411137 - Create new API method bugzilla.account.search to look up phab users based on either phid or bugzilla id
+          <div class="RevisionPage-commit-full">{{revision['commit_message_preview']}}
 
-Reviewers: davidwalsh
-
-Reviewed By: davidwalsh
-
-Bug #: 1411137
-
-Differential Revision: https://phabricator.services.mozilla.com/D156</div>
+{{revision['summary']}}</div>
           <div class="RevisionPage-commit-buttons">
             <button type="button" class="show-full-message" data-hide-message="Hide Full Message">Toggle Full Commit Message</button>
           </div>
