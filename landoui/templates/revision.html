@@ -6,6 +6,8 @@
 
   <div class="RevisionPage-revision">
     <form action="" method="post">
+      {{form.csrf_token}}
+      {{form.diff_id}}
 
       <!-- page heading -->
       <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>

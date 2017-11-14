@@ -5,6 +5,7 @@ import requests
 
 from flask import (abort, Blueprint, current_app, render_template)
 
+from landoui.forms import RevisionForm
 from landoui.helpers import set_last_local_referrer
 from landoui.sentry import sentry
 
@@ -12,8 +13,8 @@ revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
 
 
-@revisions.route('/revisions/<revision_id>')
-def get_revision(revision_id):
+@revisions.route('/revisions/<revision_id>', methods=('GET', 'POST'))
+def revision(revision_id):
     revision_api_url = '{}/revisions/{}'.format(
         current_app.config['LANDO_API_URL'], revision_id
     )
@@ -35,12 +36,28 @@ def get_revision(revision_id):
 
     revision = result.json()
 
+    form = RevisionForm()
+    if form.is_submitted():
+        if form.validate():
+            # TODO
+            # Any more validation and then request to API
+            pass
+        else:
+            # TODO
+            # Return validation errors
+            pass
+
+    # Set the diff id explicitly to avoid timing conflicts with
+    # revision diff IDs being updated
+    form.diff_id.data = revision['diff']['id']
+
     return render_template(
         'revision.html',
         revision=revision,
         author=revision['author'],
         repo=revision['repo'],
-        parents=_flatten_parent_revisions(revision)
+        parents=_flatten_parent_revisions(revision),
+        form=form
     )
 
 
