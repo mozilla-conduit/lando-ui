@@ -101,8 +101,20 @@ h1.RevisionPage-heading {
   }
 }
 
+.RevisionPage-reviewer-list {
+  display: flex;
+
+  & > div {
+    margin-right: 1rem;
+  }
+
+  &-name {
+    font-weight: 600;
+  }
+}
+
 /* Utilities */
-.revision-badge {
+.u-revision-badge {
   white-space: nowrap;
   display: inline-block;
   padding: 3px 9px;
@@ -111,17 +123,20 @@ h1.RevisionPage-heading {
   font-size: 0.8rem;
 }
 
-.revision-badge-positive {
+.u-revision-badge--positive {
+  @extend .u-revision-badge;
   background: #ddefdd;
   color: #326d34;
 }
 
-.revision-badge-negative {
+.u-revision-badge--negative {
+  @extend .u-revision-badge;
   background: #f7e6e6;
   color: #a53737;
 }
 
-.revision-badge-neutral {
+.u-revision-badge--neutral {
+  @extend .u-revision-badge;
   background: #eae6f7;
   color: #6e5cb6;
 }

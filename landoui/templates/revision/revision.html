@@ -12,10 +12,10 @@
       <!-- page heading -->
       <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>
       <div class="RevisionPage-heading-statuses">
-        <span class="revision-badge revision-badge-positive">Ready to Land</span>
-        <span class="revision-badge revision-badge-negative">Landing Failed</span>
-        <span class="revision-badge revision-badge-neutral">Landed - 9e5c8fa3db7f835109de62eca34bde596fd93517</span>
-        <span class="revision-badge">Landing in Progress</span>
+        <span class="u-revision-badge--positive">Ready to Land</span>
+        <span class="u-revision-badge--negative">Landing Failed</span>
+        <span class="u-revision-badge--neutral">Landed - 9e5c8fa3db7f835109de62eca34bde596fd93517</span>
+        <span class="u-revision-badge">Landing in Progress</span>
       </div>
 
       <!-- timeline -->
@@ -29,7 +29,7 @@
 
             <div class="Revision-Page-timeline-item">
               <div class="Revision-Page-timeline-item-status">
-                <span class="revision-badge revision-badge-negative">
+                <span class="u-revision-badge--negative">
                   Failed to Land
                 </span>
               </div>
@@ -42,7 +42,7 @@
 
             <div class="Revision-Page-timeline-item">
               <div class="Revision-Page-timeline-item-status">
-                <span class="revision-badge revision-badge-negative">
+                <span class="u-revision-badge--negative">
                   Failed to Land
                 </span>
               </div>
@@ -55,7 +55,7 @@
 
             <div class="Revision-Page-timeline-item">
               <div class="Revision-Page-timeline-item-status">
-                <span class="revision-badge revision-badge-positive">
+                <span class="u-revision-badge--positive">
                   Passed on Try
                 </span>
               </div>
@@ -80,12 +80,9 @@
             <strong>SOME USER</strong>
             on <time data-timestamp="{{revision['diff']['date_created']}}"></time>
           </div>
-          <div>
-            <span class="revision-badge revision-badge-positive">
-              Review Approved
-            </span>
-            — By <strong>mcote, davidwalsh</strong>
-          </div>
+          {% with reviewers=revision['reviewers'] %}
+            {% include "revision/partials/reviewers.html" %}
+          {% endwith %}
         </div>
       </div>
 

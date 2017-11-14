@@ -1,0 +1,44 @@
+{% set rejected = reviewers|selectattr("status", "equalto", "rejected")|list %}
+{% set accepted = reviewers|selectattr("status", "equalto", "accepted")|list %}
+{% set new = reviewers|selectattr("status", "equalto", "added")|list %}
+{% set new = new|list + reviewers|selectattr("status", "equalto", "blocking")|list %}
+{% macro list_reviewers(reviewers) %}
+  {%- for reviewer in reviewers %}
+    <span role="list" class="RevisionPage-reviewer-list-name">
+      <span role="listitem" title="{{reviewer['real_name']}}">
+        {{reviewer['username']}}
+        {{"(blocking)" if reviewer['is_blocking']}}
+      </span>
+      {{ "," if not loop.last }}
+    </span>
+  {% endfor %}
+{% endmacro %}
+
+<div class="RevisionPage-reviewer-list">
+  {% if not reviewers %}
+    <div>
+      <span class="u-revision-badge--neutral">There are no reviewers for this Revision</span>
+    </div>
+  {% endif %}
+
+  {% if rejected %}
+    <div>
+      <span class="u-revision-badge--negative">Review Rejected</span>
+      — By {{list_reviewers(rejected)}}
+    </div>
+  {% endif %}
+
+  {% if accepted %}
+    <div>
+      <span class="u-revision-badge--positive">Review Accepted</span>
+      — By {{list_reviewers(accepted)}}
+    </div>
+  {% endif %}
+
+  {% if new %}
+    <div>
+      <span class="u-revision-badge">Review Pending</span>
+      — By {{list_reviewers(new)}}
+    </div>
+  {% endif %}
+</div>

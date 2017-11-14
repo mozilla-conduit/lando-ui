@@ -52,7 +52,7 @@ def revision(revision_id):
     form.diff_id.data = revision['diff']['id']
 
     return render_template(
-        'revision.html',
+        'revision/revision.html',
         revision=revision,
         author=revision['author'],
         repo=revision['repo'],
