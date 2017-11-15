@@ -4,7 +4,9 @@
 {% block main %}
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
 
-  <div class="RevisionPage-revision">
+  <div class="RevisionPage-revision"
+    data-diff-id="{{revision['diff']['id']}}"
+    data-revision-id="D{{revision['id']}}">
     <form action="" method="post">
       {{form.csrf_token}}
       {{form.diff_id}}

@@ -13,8 +13,11 @@ revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
 
 
-@revisions.route('/revisions/<revision_id>', methods=('GET', 'POST'))
-def revision(revision_id):
+@revisions.route('/revisions/<revision_id>/<diff_id>', methods=('GET', 'POST'))
+# This route is a GET only because the diff ID will be added via JavaScript
+@revisions.route('/revisions/<revision_id>')
+def revision(revision_id, diff_id=''):
+    # TODO:  Add diff ID when the API side is complete
     revision_api_url = '{}/revisions/{}'.format(
         current_app.config['LANDO_API_URL'], revision_id
     )
