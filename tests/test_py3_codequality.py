@@ -15,7 +15,7 @@ def test_check_python_style():
 
 
 def test_check_python_flake8():
-    files = ('./', )
+    files = ('.', )
     cmd = ('flake8', )
     passed = subprocess.call(cmd + files) == 0
     assert passed, 'Flake8 did not run cleanly.'
