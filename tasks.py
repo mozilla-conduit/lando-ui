@@ -7,7 +7,9 @@ import os
 from invoke import Collection, task, run
 
 DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/landoui')
-project_root = os.path.dirname(__file__)
+# The 'pty' setting is nice, as it provides colour output, but it doesn't work
+# on Windows.
+USE_PTY = os.name != 'nt'
 
 
 @task(
@@ -23,7 +25,7 @@ def test_python(ctx, testargs='', keep=False):
     run(
         'docker-compose run {rm} lando-ui pytest {args}'
         ''.format(args=testargs, rm=('' if keep else ' --rm')),
-        pty=True,
+        pty=USE_PTY,
         echo=True
     )
 
@@ -31,7 +33,7 @@ def test_python(ctx, testargs='', keep=False):
 @task(name='flake8')
 def lint_flake8(ctx):
     """Run flake8."""
-    run('docker-compose run --rm py3-linter flake8 .', pty=True, echo=True)
+    run('docker-compose run --rm py3-linter flake8 .', pty=USE_PTY, echo=True)
 
 
 @task(name='yapf')
@@ -39,7 +41,7 @@ def lint_yapf(ctx):
     """Run yapf."""
     run(
         'docker-compose run --rm py3-linter yapf --diff --recursive ./',
-        pty=True,
+        pty=USE_PTY,
         echo=True
     )
 
