@@ -9,6 +9,26 @@ isolate the logic of automatic landings from its interface(s).
 Please read the general [Conduit contribution guidelines][] before
 getting into the specifics of lando-ui.
 
+### Prerequisites
+
+* [docker][] and [docker-compose][] (on OS X and Windows you should use
+  the full [Docker for Mac][] or [Docker for Windows][] systems,
+  respectively)
+* `pyinvoke`
+  * Because `pyinvoke` currently has no backwards-compatibility guarantees,
+    it is suggested that you install exactly version 0.21.0 via `pip`:
+    `pip install invoke==0.21.0` or `pip install --user invoke==0.21.0`.
+  * You can use a virtualenv instead of installing it system wide, but you
+    should create the virtualenv *outside* of the lando-ui source directory so
+    that the linter doesn't check the virtualenv files.
+  * If you are running Windows, you will need a special file in your user
+    directory (typically `C:\Users\<username>\`) called `.invoke.yml`.  It
+    should contain the following:
+    ```yaml
+    run:
+      shell: C:\Windows\System32\cmd.exe
+    ```
+
 ### Basic setup
 
 As Flask [requires a real server name][] to use session cookies, you
@@ -45,10 +65,25 @@ anything interesting.  The default configuration sets the location of
 lando-api to `http://lando-api.test:8888`, which is the default for a
 local installation of lando-api.
 
+### Running the tests
+
+lando-ui's tests use `pytest` with `pytest-flask`, executed within a
+Docker container.  The tests are located in `./tests/`.  You can run
+all of them via `invoke`:
+
+```bash
+$ invoke test
+```
+
+Subsets of the tests, e.g. linters, and other commands are also available.  Run
+`invoke -l` to see all tasks.
+
 [lando-api]: https://github.com/mozilla-conduit/lando-api
 [Conduit contribution guidelines]: http://moz-conduit.readthedocs.io/en/latest/contributing.html
-[Docker]: https://www.docker.com
+[docker]: https://docs.docker.com/engine/installation/
+[docker-compose]: https://docs.docker.com/compose/install/
+[Docker for Mac]: https://docs.docker.com/docker-for-mac/install/
+[Docker for Windows]: https://docs.docker.com/docker-for-windows/install/
 [requires a real server name]: http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
 [Docker Machine]: https://docs.docker.com/machine/
-[Docker for Windows]: https://docs.docker.com/docker-for-windows/
 [Git Bash]: https://git-for-windows.github.io/
