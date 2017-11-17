@@ -1,9 +1,6 @@
-{% set rejected = reviewers|selectattr("status", "equalto", "rejected")|list %}
-{% set rejected = rejected|list + reviewers|selectattr("status", "equalto", "rejected-older")|list %}
-{% set accepted = reviewers|selectattr("status", "equalto", "accepted")|list %}
-{% set accepted = accepted|list + reviewers|selectattr("status", "equalto", "accepted-older")|list %}
-{% set new = reviewers|selectattr("status", "equalto", "added")|list %}
-{% set new = new|list + reviewers|selectattr("status", "equalto", "blocking")|list %}
+{% set rejected = reviewers|select_reviewers("rejected", "rejected-older") %}
+{% set accepted = reviewers|select_reviewers("accepted", "accepted-older") %}
+{% set new = reviewers|select_reviewers("added", "blocking") %}
 {% macro list_reviewers(reviewers) %}
   {%- for reviewer in reviewers %}
     <span role="list" class="RevisionPage-reviewer-list-name">

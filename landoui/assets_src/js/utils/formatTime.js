@@ -2,9 +2,8 @@
 
 $.fn.formatTime = function() {
   return this.each(function() {
-    var time = $(this).data('timestamp');
-    var date = new Date(0);
-    date.setUTCSeconds(time);
+    let time = $(this).data('timestamp');
+    let date = new Date(time);
 
     $(this).text(date.toLocaleString(navigator.language, {
       weekday: 'short',

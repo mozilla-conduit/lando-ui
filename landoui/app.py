@@ -82,9 +82,11 @@ def create_app(
     from landoui.pages import pages
     from landoui.revisions import revisions
     from landoui.dockerflow import dockerflow
+    from landoui.filters import filters
     app.register_blueprint(pages)
     app.register_blueprint(revisions)
     app.register_blueprint(dockerflow)
+    app.register_blueprint(filters)
 
     # Setup Flask Assets
     assets = Environment(app)

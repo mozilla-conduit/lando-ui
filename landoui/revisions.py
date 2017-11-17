@@ -21,19 +21,12 @@ revisions.before_request(set_last_local_referrer)
 @revisions.route('/revisions/<revision_id>/<diff_id>', methods=('GET', 'POST'))
 # This route is a GET only because the diff ID will be added via JavaScript
 @revisions.route('/revisions/<revision_id>')
-def revision(revision_id, diff_id=''):
-    # TODO:  Add diff ID when the API side is complete
-    revision_api_url = '{host}/revisions/{revision_id}'.format(
-        host=current_app.config['LANDO_API_URL'], revision_id=revision_id
-    )
-
+def revisions_handler(revision_id, diff_id=''):
     try:
-        result = requests.get(revision_api_url)
-        result.raise_for_status()
+        revision = _get_revision(revision_id)
+        landing_statuses = _get_landing_statuses(revision_id)
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
-            # The user looked up a non-existent revision, no special treatment
-            # is necessary.
             abort(404)
         else:
             sentry.captureException()
@@ -42,46 +35,11 @@ def revision(revision_id, diff_id=''):
         sentry.captureException()
         abort(500)
 
-    revision = result.json()
-
+    # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
     if form.is_submitted():
-        if form.validate():
-            # TODO
-            # Any more basic validation
-
-            # Make request to API for landing
-            diff_id = int(form.diff_id.data)
-            land_response = requests.post(
-                '{host}/landings'.format(
-                    host=current_app.config['LANDO_API_URL']
-                ),
-                json={
-                    'revision_id': revision_id,
-                    'diff_id': diff_id,
-                },
-                headers={
-                    # TODO:  Add Phabricator API key for private revisions
-                    # 'X-Phabricator-API-Key': '',
-                    'Authorization':
-                    'Bearer {}'.format(session['access_token']),
-                    'Content-Type': 'application/json',
-                }
-            )
-            logger.info(land_response.json(), 'revision.landing.response')
-
-            if land_response.status_code == 200:
-                redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
-                    revision_id=revision_id, diff_id=diff_id
-                )
-                return redirect(redirect_url)
-            else:
-                # TODO:  Push an error on to an error stack to show in UI
-                pass
-        else:
-            # TODO
-            # Return validation errors
-            pass
+        # TODO: Handle returned errors
+        _handle_submission(form, revision, landing_statuses)
 
     # Set the diff id explicitly to avoid timing conflicts with
     # revision diff IDs being updated
@@ -90,11 +48,70 @@ def revision(revision_id, diff_id=''):
     return render_template(
         'revision/revision.html',
         revision=revision,
-        author=revision['author'],
-        repo=revision['repo'],
+        landing_statuses=landing_statuses,
         parents=_flatten_parent_revisions(revision),
         form=form
     )
+
+
+def _handle_submission(form, revision, landing_statuses):
+    if form.validate():
+        # TODO
+        # Any more basic validation
+
+        # Make request to API for landing
+        diff_id = int(form.diff_id.data)
+        land_response = requests.post(
+            '{host}/landings'.format(
+                host=current_app.config['LANDO_API_URL']
+            ),
+            json={
+                'revision_id': revision['id'],
+                'diff_id': diff_id,
+            },
+            headers={
+                # TODO:  Add Phabricator API key for private revisions
+                # 'X-Phabricator-API-Key': '',
+                'Authorization':
+                    'Bearer {}'.format(session['access_token']),
+                'Content-Type': 'application/json',
+            }
+        )
+        logger.info(land_response.json(), 'revision.landing.response')
+
+        if land_response.status_code == 200:
+            redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
+                revision_id=revision['id'], diff_id=diff_id
+            )
+            return redirect(redirect_url)
+        else:
+            # TODO:  Push an error on to an error stack to show in UI
+            pass
+    else:
+        # TODO
+        # Return validation errors
+        pass
+
+
+def _get_revision(revision_id):
+    # TODO:  Add diff ID when the API side is complete
+    revision_api_url = '{host}/revisions/{revision_id}'.format(
+        host=current_app.config['LANDO_API_URL'], revision_id=revision_id
+    )
+    result = requests.get(revision_api_url)
+    result.raise_for_status()
+    return result.json()
+
+
+def _get_landing_statuses(revision_id):
+    landing_api_status_url = '{host}/landings'.format(
+        host=current_app.config['LANDO_API_URL']
+    )
+    result = requests.get(
+        landing_api_status_url, params={'revision_id': revision_id}
+    )
+    result.raise_for_status()
+    return result.json()
 
 
 def _flatten_parent_revisions(revision):

@@ -8,7 +8,7 @@ $revision-spacing: 20px;
 }
 
 h1.RevisionPage-heading {
-  margin-bottom: 0;
+  margin-bottom: .5em;
 }
 
 .RevisionPage-heading-statuses {
@@ -41,7 +41,7 @@ h1.RevisionPage-heading {
 
 .Revision-Page-timeline-item {
   display: grid;
-  grid-template-columns: 120px auto;
+  grid-template-columns: 150px auto;
   margin-bottom: $revision-spacing/2;
 }
 
