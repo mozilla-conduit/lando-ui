@@ -4,11 +4,17 @@
 import requests
 import requests_mock
 
-from tests.canned_responses import LANDO_API_RESPONSE
+from tests.canned_responses import (
+    LANDO_API_RESPONSE, LANDO_API_LANDINGS_RESPONSE
+)
 
 
 def test_render_valid_revision(client, api_url):
     with requests_mock.mock() as m:
+        m.get(
+            api_url + '/landings?revision_id=D1',
+            json=LANDO_API_LANDINGS_RESPONSE
+        )
         m.get(api_url + '/revisions/D1', json=LANDO_API_RESPONSE)
         response = client.get('/revisions/D1')
     assert response.status_code == 200

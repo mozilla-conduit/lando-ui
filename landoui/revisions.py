@@ -62,9 +62,7 @@ def _handle_submission(form, revision, landing_statuses):
         # Make request to API for landing
         diff_id = int(form.diff_id.data)
         land_response = requests.post(
-            '{host}/landings'.format(
-                host=current_app.config['LANDO_API_URL']
-            ),
+            '{host}/landings'.format(host=current_app.config['LANDO_API_URL']),
             json={
                 'revision_id': revision['id'],
                 'diff_id': diff_id,
@@ -72,8 +70,7 @@ def _handle_submission(form, revision, landing_statuses):
             headers={
                 # TODO:  Add Phabricator API key for private revisions
                 # 'X-Phabricator-API-Key': '',
-                'Authorization':
-                    'Bearer {}'.format(session['access_token']),
+                'Authorization': 'Bearer {}'.format(session['access_token']),
                 'Content-Type': 'application/json',
             }
         )

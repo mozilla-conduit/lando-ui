@@ -47,3 +47,5 @@ LANDO_API_RESPONSE = {
         "vcs_base_revision": "2cb40959b19124b2de7aea328073d542e283f4c0"
     }
 }
+
+LANDO_API_LANDINGS_RESPONSE = []
