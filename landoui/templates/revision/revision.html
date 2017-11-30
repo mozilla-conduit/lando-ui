@@ -1,18 +1,18 @@
 {% extends "partials/layout.html" %}
-{% block page_title %}D{{revision['id']}} - Lando - Mozilla{% endblock %}
+{% block page_title %}{{revision['id']}} - Lando - Mozilla{% endblock %}
 
 {% block main %}
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
 
   <div class="RevisionPage-revision"
     data-diff-id="{{revision['diff']['id']}}"
-    data-revision-id="D{{revision['id']}}">
+    data-revision-id="{{revision['id']}}">
     <form action="" method="post">
       {{form.csrf_token}}
       {{form.diff_id}}
 
       <!-- page heading -->
-      <h1 class="RevisionPage-heading">D{{revision['id']}}: {{revision['title']}}</h1>
+      <h1 class="RevisionPage-heading">{{revision['id']}}: {{revision['title']}}</h1>
 
       <!-- timeline -->
       <div class="RevisionPage-section-block">
