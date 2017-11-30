@@ -38,8 +38,10 @@ def revisions_handler(revision_id, diff_id=''):
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
     if form.is_submitted():
-        # TODO: Handle returned errors
-        _handle_submission(form, revision, landing_statuses)
+        # If successful return the redirect to the GET page, if not then
+        # handle errors. FIXME: currently crashes for the error cases,
+        # though, better than the original silent failure.
+        return _handle_submission(form, revision, landing_statuses)
 
     # Set the diff id explicitly to avoid timing conflicts with
     # revision diff IDs being updated
@@ -56,8 +58,7 @@ def revisions_handler(revision_id, diff_id=''):
 
 def _handle_submission(form, revision, landing_statuses):
     if form.validate():
-        # TODO
-        # Any more basic validation
+        # TODO: Any more basic validation
 
         # Make request to API for landing
         diff_id = int(form.diff_id.data)
@@ -76,7 +77,7 @@ def _handle_submission(form, revision, landing_statuses):
         )
         logger.info(land_response.json(), 'revision.landing.response')
 
-        if land_response.status_code == 200:
+        if land_response.status_code == 202:
             redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
                 revision_id=revision['id'], diff_id=diff_id
             )
