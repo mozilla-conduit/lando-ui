@@ -52,11 +52,11 @@
         </div>
         <div class="RevisionPage-section-contents">
           <div clss="RevisionPage-commit-preview">
-            {{revision['commit_message_preview']}}
+            {{revision['commit_message_title']}}
           </div>
-          <div class="RevisionPage-commit-full">{{revision['commit_message_preview']}}
-
-{{revision['summary']}}</div>
+          <div class="RevisionPage-commit-full">
+            {{revision['commit_message']}}
+          </div>
           <div class="RevisionPage-commit-buttons">
             <button type="button" class="show-full-message" data-hide-message="Hide Full Message">Toggle Full Commit Message</button>
           </div>
