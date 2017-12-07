@@ -5,6 +5,8 @@ $revision-spacing: 20px;
 /* Page Structure */
 .RevisionPage {
   background-color: #fff;
+  padding-left: 5rem;
+  padding-right: 5rem;
 }
 
 h1.RevisionPage-heading {
@@ -77,12 +79,14 @@ h1.RevisionPage-heading {
   text-align: right;
 
   button {
-      border: 0;
-      text-align: center;
-      color: #ddefdd;
-      background: #326d34;
-      padding: 8px 20px;
-      border-radius: 3px;
+    border: 0;
+    text-align: center;
+    color: #fff;
+    background: #3F9B47;
+    padding: 8px 20px;
+    border-radius: 5px;
+    min-width: 16rem;
+    min-height: 4.5rem;
   }
 
   button[disabled] {
@@ -92,11 +96,16 @@ h1.RevisionPage-heading {
     cursor: default;
   }
 
-  .RevisionPage-actions-headline {
+  button[inprogress] {
+    background: #e5ac00;
+    color: white;
+  }
+
+  &-headline {
     font-size: 1.6rem;
   }
 
-  .RevisionPage-actions-subtitle {
+  &-subtitle {
     font-size: 0.8rem;
   }
 }
@@ -133,6 +142,12 @@ h1.RevisionPage-heading {
   @extend .u-revision-badge;
   background: #f7e6e6;
   color: #a53737;
+}
+
+.u-revision-badge--warning {
+  @extend .u-revision-badge;
+  background: #e5ac00;
+  color: #fff;
 }
 
 .u-revision-badge--neutral {

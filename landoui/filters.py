@@ -15,7 +15,7 @@ def select_reviewers(reviewers, *args):
 def tostatusbadgeclass(status):
     mapping = {
         'aborted': 'u-revision-badge--negative',
-        'submitted': 'u-revision-badge--neutral',
+        'submitted': 'u-revision-badge--warning',
         'landed': 'u-revision-badge--positive',
         'failed': 'u-revision-badge--negative'
     }
@@ -26,8 +26,17 @@ def tostatusbadgeclass(status):
 def tostatusbadgename(status):
     mapping = {
         'aborted': 'Aborted',
-        'submitted': 'Landing In Progress',
+        'submitted': 'Landing Queued',
         'landed': 'Successfully Landed',
         'failed': 'Failed to Land'
     }
     return mapping.get(status['status'], status['status'].capitalize())
+
+
+@filters.app_template_filter()
+def latest_status(statuses):
+    if not statuses:
+        return None
+
+    statuses = sorted(statuses, key=lambda k: k['updated_at'], reverse=True)
+    return statuses[0]['status']

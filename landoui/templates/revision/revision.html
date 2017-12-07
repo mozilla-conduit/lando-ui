@@ -67,23 +67,7 @@
       {% include "revision/partials/warnings.html" %}
 
       <!-- actions -->
-      <div class="RevisionPage-actions">
-        <button>
-          <div class="RevisionPage-actions-headline">Land D1057</div>
-          <div class="RevisionPage-actions-subtitle">autoland is open</div>
-        </button>
-
-        <button disabled>
-          <div class="RevisionPage-actions-headline">Landing Disabled</div>
-          <div class="RevisionPage-actions-subtitle">autoland is closed</div>
-        </button>
-
-        <button disabled>
-          <div class="RevisionPage-actions-headline">Landing in Progress</div>
-          <div class="RevisionPage-actions-subtitle">check back soon</div>
-        </button>
-      </div>
-
+      {% include "revision/partials/actions.html" %}
     </form>
   </div>
 </main>
