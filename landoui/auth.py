@@ -85,7 +85,7 @@ class OpenIDConnect:
             client_registration_info=self.client_info(),
             extra_request_args={
                 "audience": [self.oidc_config.lando_api_oidc_id()],
-                'scope': ['openid', 'profile', 'email']
+                'scope': ['openid', 'profile', 'email', 'lando']
             }
         )
         return oidc
