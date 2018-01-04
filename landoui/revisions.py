@@ -27,7 +27,7 @@ def revisions_handler(revision_id, diff_id=''):
         landing_statuses = _get_landing_statuses(revision_id)
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
-            abort(404)
+            return render_template('revision/404.html'), 404
         else:
             sentry.captureException()
             abort(500)
