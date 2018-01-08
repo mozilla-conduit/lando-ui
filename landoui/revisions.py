@@ -35,6 +35,10 @@ def revisions_handler(revision_id, diff_id=''):
         sentry.captureException()
         abort(500)
 
+    # Initialize and calculate any required warnings
+    # Format should be { 'id: 'unique-id', 'text': 'Visible warning text'}
+    warnings = []
+
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
     if form.is_submitted():
@@ -52,7 +56,8 @@ def revisions_handler(revision_id, diff_id=''):
         revision=revision,
         landing_statuses=landing_statuses,
         parents=_flatten_parent_revisions(revision),
-        form=form
+        form=form,
+        warnings=warnings,
     )
 
 

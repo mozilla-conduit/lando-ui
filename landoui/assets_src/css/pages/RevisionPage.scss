@@ -56,8 +56,10 @@ h1.RevisionPage-heading {
   font-family: monospace;
 }
 
-.RevisionPage-warnings {
+ul.RevisionPage-warnings {
+  list-style-type: none;
   margin-bottom: $revision-spacing;
+  margin-left: 0;
 }
 
 .RevisionPage-warning {
