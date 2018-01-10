@@ -39,6 +39,19 @@ def revisions_handler(revision_id, diff_id=''):
     # Format should be { 'id: 'unique-id', 'text': 'Visible warning text'}
     warnings = []
 
+    # Add warning if latest diff is not accepted
+    unaccepted_reviewers = [
+        reviewer['status'] for reviewer in revision['reviewers']
+        if reviewer['status'] != 'accepted'
+    ]
+    if (len(unaccepted_reviewers)):
+        warnings.append(
+            {
+                'id': 'reviews-pending',
+                'text': 'Not all reviewers have approved this revision.'
+            }
+        )
+
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
     if form.is_submitted():
