@@ -35,23 +35,6 @@ def revisions_handler(revision_id, diff_id=None):
         sentry.captureException()
         abort(500)
 
-    # Initialize and calculate any required warnings
-    # Format should be { 'id: 'unique-id', 'text': 'Visible warning text'}
-    warnings = []
-
-    # Add warning if latest diff is not accepted
-    unaccepted_reviewers = [
-        reviewer['status'] for reviewer in revision['reviewers']
-        if reviewer['status'] != 'accepted'
-    ]
-    if (len(unaccepted_reviewers)):
-        warnings.append(
-            {
-                'id': 'reviews-pending',
-                'text': 'Not all reviewers have approved this revision.'
-            }
-        )
-
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
     if form.is_submitted():
@@ -70,7 +53,7 @@ def revisions_handler(revision_id, diff_id=None):
         landing_statuses=landing_statuses,
         parents=_flatten_parent_revisions(revision),
         form=form,
-        warnings=warnings,
+        warnings=_check_warnings(revision),
     )
 
 
@@ -143,3 +126,37 @@ def _flatten_parent_revisions(revision):
     for parent in parents:
         parents_of_parents += _flatten_parent_revisions(parent)
     return parents + parents_of_parents
+
+
+def _check_warnings(revision):
+    """ Checks for warnings to be shown to users before landing.
+
+    Returns an array of warnings with the format:
+        { 'id': 'unique-id', 'text': 'Warning text' }
+    """
+    warnings = []
+
+    def add_warning(id, text):
+        warnings.append({'id': id, 'text': text})
+
+    # Check if all reviewers have accepted the revision.
+    for reviewer in revision['reviewers']:
+        if reviewer['status'] != 'accepted':
+            add_warning(
+                id='warning-reviews-pending',
+                text='Not all reviewers have approved this revision.'
+            )
+            break
+
+    # Check if a newer diff is available to land.
+    if revision['diff']['id'] < revision['latest_diff_id']:
+        add_warning(
+            id='warning-not-latest-diff',
+            text='You are viewing Diff {old_diff_id}, but, Diff {new_diff_id} '
+            'is now the latest diff of this revision.'.format(
+                old_diff_id=revision['diff']['id'],
+                new_diff_id=revision['latest_diff_id']
+            )
+        )
+
+    return warnings
