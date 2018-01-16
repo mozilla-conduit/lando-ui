@@ -21,9 +21,9 @@ revisions.before_request(set_last_local_referrer)
 @revisions.route('/revisions/<revision_id>/<diff_id>', methods=('GET', 'POST'))
 # This route is a GET only because the diff ID will be added via JavaScript
 @revisions.route('/revisions/<revision_id>')
-def revisions_handler(revision_id, diff_id=''):
+def revisions_handler(revision_id, diff_id=None):
     try:
-        revision = _get_revision(revision_id)
+        revision = _get_revision(revision_id, diff_id)
         landing_statuses = _get_landing_statuses(revision_id)
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
@@ -109,12 +109,11 @@ def _handle_submission(form, revision, landing_statuses):
         pass
 
 
-def _get_revision(revision_id):
-    # TODO:  Add diff ID when the API side is complete
+def _get_revision(revision_id, diff_id):
     revision_api_url = '{host}/revisions/{revision_id}'.format(
         host=current_app.config['LANDO_API_URL'], revision_id=revision_id
     )
-    result = requests.get(revision_api_url)
+    result = requests.get(revision_api_url, params={'diff_id': diff_id})
     result.raise_for_status()
     return result.json()
 
