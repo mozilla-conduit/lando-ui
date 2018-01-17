@@ -4,13 +4,10 @@
 import logging
 import requests
 
-from flask import (
-    abort, Blueprint, current_app, redirect, render_template, session
-)
+from flask import Blueprint, current_app, redirect, render_template, session
 
 from landoui.forms import RevisionForm
 from landoui.helpers import set_last_local_referrer
-from landoui.sentry import sentry
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +25,7 @@ def revisions_handler(revision_id, diff_id=None):
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
             return render_template('revision/404.html'), 404
-        else:
-            sentry.captureException()
-            abort(500)
-    except requests.ConnectionError:
-        sentry.captureException()
-        abort(500)
+        raise
 
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()

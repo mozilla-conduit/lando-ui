@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import pytest
 import requests
 import requests_mock
 
@@ -27,15 +28,9 @@ def test_missing_revision_returns_404(client, api_url):
     assert response.status_code == 404
 
 
-def test_lando_api_connection_error_returns_500(client, api_url):
-    with requests_mock.mock() as m:
-        m.get(api_url + '/revisions/D1', exc=requests.ConnectionError)
-        response = client.get('/revisions/D1')
-    assert response.status_code == 500
-
-
-def test_lando_api_response_insanity_returns_500(client, api_url):
+def test_lando_api_response_insanity_raises_error(client, api_url):
     with requests_mock.mock() as m:
         m.get(api_url + '/revisions/D1', status_code=500)
-        response = client.get('/revisions/D1')
-    assert response.status_code == 500
+        with pytest.raises(requests.HTTPError) as err:
+            client.get('/revisions/D1')
+            assert err.status_code == 500
