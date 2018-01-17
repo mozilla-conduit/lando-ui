@@ -17,12 +17,6 @@ pages = Blueprint('page', __name__)
 pages.before_request(set_last_local_referrer)
 
 
-def is_logged_in():
-    # TODO:  There surely must be a better/more secure way to establish
-    # if the user is logged in or not.  Maybe from oidc?
-    return 'id_token' in session
-
-
 @pages.route('/info')
 @oidc.oidc_auth
 def info():
@@ -36,7 +30,7 @@ def info():
 
 @pages.route('/')
 def home():
-    return render_template('home.html', logged_in=is_logged_in())
+    return render_template('home.html')
 
 
 @pages.route('/signin')

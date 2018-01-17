@@ -77,6 +77,7 @@ def create_app(
     global oidc
     authentication = auth.OpenIDConnect(auth.OIDCConfig())
     oidc = authentication.auth(app)
+    app.context_processor(auth.inject_user_authenticated)
 
     # Register routes via Flask Blueprints
     from landoui.pages import pages

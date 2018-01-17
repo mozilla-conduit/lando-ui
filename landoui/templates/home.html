@@ -7,8 +7,8 @@
   </div>
 
   <p>
-    <em>You are {{ '' if logged_in else 'not' }} logged in!</em>
-    {% if logged_in %}
+    <em>You are {{ '' if user_authenticated else 'not' }} logged in!</em>
+    {% if user_authenticated %}
       <a href="/logout">Sign Out</a>
     {% else %}
       <a href="/protected">Sign In</a>
