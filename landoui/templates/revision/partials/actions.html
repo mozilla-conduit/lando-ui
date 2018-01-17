@@ -1,25 +1,27 @@
 {% set latest_status = landing_statuses|latest_status %}
 {% set disabled = 'disabled' if warnings|length else '' %}
 <div class="RevisionPage-actions">
-  {% if latest_status == None or latest_status == 'failed' or latest_status == 'aborted' %}
-    <button {{disabled}}>
-      <div class="RevisionPage-actions-headline">Land {{revision['id']}}</div>
-      <div class="RevisionPage-actions-subtitle">autoland is open</div>
-    </button>
-  {% elif latest_status == 'landed' %}
-    <button {{disabled}}>
-      <div class="RevisionPage-actions-headline">Re-land {{revision['id']}} </div>
-      <div class="RevisionPage-actions-subtitle">autoland is open</div>
-    </button>
-  {% elif latest_status == 'submitted' %}
-    <button disabled>
-      <div class="RevisionPage-actions-headline">Landing Queued</div>
-      <div class="RevisionPage-actions-subtitle">please wait</div>
-    </button>
-  {% else %}
-    <button disabled>
-      <div class="RevisionPage-actions-headline">Landing Disabled</div>
-      <div class="RevisionPage-actions-subtitle">disabled reason</div>
-    </button>
+  {% if 'id_token' in session %}
+    {% if latest_status == None or latest_status == 'failed' or latest_status == 'aborted' %}
+      <button {{disabled}}>
+        <div class="RevisionPage-actions-headline">Land {{revision['id']}}</div>
+        <div class="RevisionPage-actions-subtitle">autoland is open</div>
+      </button>
+    {% elif latest_status == 'landed' %}
+      <button {{disabled}}>
+        <div class="RevisionPage-actions-headline">Re-land {{revision['id']}} </div>
+        <div class="RevisionPage-actions-subtitle">autoland is open</div>
+      </button>
+    {% elif latest_status == 'submitted' %}
+      <button disabled>
+        <div class="RevisionPage-actions-headline">Landing Queued</div>
+        <div class="RevisionPage-actions-subtitle">please wait</div>
+      </button>
+    {% else %}
+      <button disabled>
+        <div class="RevisionPage-actions-headline">Landing Disabled</div>
+        <div class="RevisionPage-actions-subtitle">disabled reason</div>
+      </button>
+    {% endif %}
   {% endif %}
 </div>
