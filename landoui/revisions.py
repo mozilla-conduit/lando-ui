@@ -25,6 +25,10 @@ def revisions_handler(revision_id, diff_id=None):
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
             return render_template('revision/404.html'), 404
+        elif exc.response.status_code == 400:
+            error_msg = exc.response.json()['title']
+            if error_msg == 'Diff not related to the revision':
+                return render_template('revision/400_wrong_diff.html'), 400
         raise
 
     # Creates a new form on GET or loads the submitted form on a POST
