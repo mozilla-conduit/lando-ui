@@ -61,11 +61,21 @@
         </div>
       </div>
 
-      <!-- warnings -->
-      {% include "revision/partials/warnings.html" %}
+      {% if is_user_authenticated() %}
+        {% if blockers %}
+          {% include "revision/partials/blockers.html" %}
+        {% else %}
+          {% include "revision/partials/warnings.html" %}
+          {% include "revision/partials/actions.html" %}
+        {% endif %}
+      {% else %}
+        <ul class="RevisionPage-warnings">
+            <li class="RevisionPage-warning">
+              You must be logged in to initiate a landing.
+            </li>
+        </ul>
+      {% endif %}
 
-      <!-- actions -->
-      {% include "revision/partials/actions.html" %}
     </form>
   </div>
 </main>

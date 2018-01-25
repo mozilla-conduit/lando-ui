@@ -90,20 +90,3 @@ class OpenIDConnect:
             }
         )
         return oidc
-
-
-def inject_user_authenticated():
-    """Sets the value of the 'user_authenticated' template variable.
-
-    This function should be passed to app.context_processor() so the
-    'user_authenticated' flag is available in templates.
-    """
-    # We can use the presence of the 'id_token' key in the flask session to
-    # check the user's authentication status.  'id_token' is a serialized
-    # copy of the JWT from Auth0.  flask_pyoidc will add this item to the
-    # session iff the user signed in with Auth0, and will remove the key from
-    # the session if the user logs out.  Flask has cryptographically signed
-    # all session vars, including the JWT, so it can't be tampered with and
-    # used to fake a successful login.
-    user_authenticated = 'id_token' in flask.session
-    return dict(user_authenticated=user_authenticated)

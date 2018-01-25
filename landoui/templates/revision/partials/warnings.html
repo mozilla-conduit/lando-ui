@@ -1,10 +1,12 @@
-{% for warning in warnings %}
+{% if warnings %}
 <ul class="RevisionPage-warnings">
-    <li class="RevisionPage-warning">
-        <label>
-            <input type="checkbox" name="warnings['{{ warning['id'] }}']" id="{{ warning['id'] }}" value="1" />
-            {{ warning['text'] }}
-        </label>
-    </li>
+    {% for warning in warnings %}
+        <li class="RevisionPage-warning">
+            <label>
+                <input type="checkbox" name="warnings['{{ warning['id'] }}']" id="{{ warning['id'] }}" value="1" />
+                {{ warning['message'] }}
+            </label>
+        </li>
+    {% endfor %}
 </ul>
-{% endfor %}
+{% endif %}

@@ -1,0 +1,9 @@
+{% if blockers %}
+<ul class="RevisionPage-blockers">
+    {% for blocker in blockers %}
+        <li class="RevisionPage-blocker">
+            {{ blocker['message'] }}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}

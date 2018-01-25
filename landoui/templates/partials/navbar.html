@@ -19,7 +19,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="field is-grouped">
-          {% if user_authenticated %}
+          {% if is_user_authenticated() %}
             <p class="control">
               <a class="Navbar-userSettingsBtn button">
                 <span class="icon">
@@ -31,7 +31,7 @@
             </p>
           {% endif %}
           <p class="control">
-            {% if user_authenticated %}
+            {% if is_user_authenticated() %}
               <a class="button" href="/logout">
                 <span class="icon">
                   <i class="fa fa-sign-out"></i>

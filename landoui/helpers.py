@@ -4,6 +4,11 @@
 from flask import (request, session)
 
 
+def is_user_authenticated():
+    """Returns whether the user is logged in or not."""
+    return 'id_token' in session and 'access_token' in session
+
+
 def set_last_local_referrer():
     """
     Sets the url of the last route that the user visited on this server.

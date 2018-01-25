@@ -77,17 +77,18 @@ def create_app(
     global oidc
     authentication = auth.OpenIDConnect(auth.OIDCConfig())
     oidc = authentication.auth(app)
-    app.context_processor(auth.inject_user_authenticated)
 
     # Register routes via Flask Blueprints
     from landoui.pages import pages
     from landoui.revisions import revisions
     from landoui.dockerflow import dockerflow
-    from landoui.filters import filters
     app.register_blueprint(pages)
     app.register_blueprint(revisions)
     app.register_blueprint(dockerflow)
-    app.register_blueprint(filters)
+
+    # Register template helpers
+    from landoui.template_helpers import template_helpers
+    app.register_blueprint(template_helpers)
 
     # Register error pages
     app.register_error_handler(404, errorhandlers.page_not_found)

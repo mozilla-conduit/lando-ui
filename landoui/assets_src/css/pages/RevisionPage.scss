@@ -77,6 +77,21 @@ ul.RevisionPage-warnings {
   }
 }
 
+ul.RevisionPage-blockers {
+  list-style-type: none;
+  margin-bottom: $revision-spacing;
+  margin-left: 0;
+
+  & li {
+    background: #E8A2A2;
+    border-color: #A53030;
+    color:#A53030;
+    margin-bottom: 4px;
+    padding: 3px 9px 3px 30px;
+    position: relative;
+  }
+}
+
 .RevisionPage-actions {
   text-align: right;
 

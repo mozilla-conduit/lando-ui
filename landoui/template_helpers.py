@@ -3,15 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flask import (Blueprint)
 
-filters = Blueprint('filters', __name__)
+from landoui import helpers
 
 
-@filters.app_template_filter()
+template_helpers = Blueprint('template_helpers', __name__)
+
+
+@template_helpers.app_template_global()
+def is_user_authenticated():
+    return helpers.is_user_authenticated()
+
+
+@template_helpers.app_template_filter()
 def select_reviewers(reviewers, *args):
     return [r for r in reviewers if r['status'] in args]
 
 
-@filters.app_template_filter()
+@template_helpers.app_template_filter()
 def tostatusbadgeclass(status):
     mapping = {
         'aborted': 'u-revision-badge--negative',
@@ -22,7 +30,7 @@ def tostatusbadgeclass(status):
     return mapping.get(status['status'], 'u-revision-badge--negative')
 
 
-@filters.app_template_filter()
+@template_helpers.app_template_filter()
 def tostatusbadgename(status):
     mapping = {
         'aborted': 'Aborted',
@@ -33,7 +41,7 @@ def tostatusbadgename(status):
     return mapping.get(status['status'], status['status'].capitalize())
 
 
-@filters.app_template_filter()
+@template_helpers.app_template_filter()
 def latest_status(statuses):
     if not statuses:
         return None
