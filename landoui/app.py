@@ -11,7 +11,7 @@ from flask_assets import Environment
 from flask_talisman import Talisman
 from webassets.loaders import YAMLLoader
 
-from landoui import auth
+from landoui import auth, errorhandlers
 from landoui.logging import initialize_logging, log_config_change
 from landoui.sentry import initialize_sentry
 
@@ -89,6 +89,9 @@ def create_app(
     app.register_blueprint(dockerflow)
     app.register_blueprint(filters)
 
+    # Register error pages
+    app.register_error_handler(404, errorhandlers.page_not_found)
+
     # Setup Flask Assets
     assets = Environment(app)
     if enable_asset_pipeline:
@@ -139,4 +142,5 @@ def run_dev_server(
     )
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+
     app.run(debug=debug, port=port, host=host)

@@ -4,15 +4,15 @@
 {% block main %}
 <main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
 
+  <!-- page heading -->
+  <h1 class="RevisionPage-heading">{{revision['id']}}: {{revision['title']}}</h1>
+
   <div class="RevisionPage-revision"
     data-diff-id="{{revision['diff']['id']}}"
     data-revision-id="{{revision['id']}}">
     <form action="" method="post">
       {{form.csrf_token}}
       {{form.diff_id}}
-
-      <!-- page heading -->
-      <h1 class="RevisionPage-heading">{{revision['id']}}: {{revision['title']}}</h1>
 
       <!-- timeline -->
       <div class="RevisionPage-section-block">
