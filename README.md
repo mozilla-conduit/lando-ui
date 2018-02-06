@@ -80,8 +80,8 @@ Subsets of the tests, e.g. linters, and other commands are also available.  Run
 
 ### Setting up Auth0
 
-We use [Auth0][] to authenticate application users.  You will need to sign up 
-for a personal Auth0 account to manually test code landing workflows and 
+We use [Auth0][] to authenticate application users.  You will need to sign up
+for a personal Auth0 account to manually test code landing workflows and
 protected pages.
 
 After signing up you must create an Auth0 Client for lando-ui testing.
@@ -107,10 +107,11 @@ Create an Auth0 API (click `API` in the Auth0 left side bar)
     * `Description: Bearer has authorized Lando to land code on their behalf`
 
 
-Edit your lando-ui `docker-compose.override.yml` and set the following:
+Create a `docker-compose.override.yml` file in repository's root directory with
+the following:
 
 ```yaml
-version: 2
+version: '2'
 services:
   lando-ui:
     environment:
@@ -122,8 +123,8 @@ services:
 
 Restart the lando-ui service with docker-compose.
 
-Visit `http://lando-ui.test:7777/` in your browser. You should now be able to 
-use the lando-ui "Log in" and "Log out" buttons with your personal email 
+Visit `http://lando-ui.test:7777/` in your browser. You should now be able to
+use the lando-ui "Log in" and "Log out" buttons with your personal email
 account.
 
 ###  How do I make the Land button work?
