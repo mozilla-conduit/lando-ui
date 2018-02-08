@@ -5,7 +5,6 @@ from flask import (Blueprint)
 
 from landoui import helpers
 
-
 template_helpers = Blueprint('template_helpers', __name__)
 
 

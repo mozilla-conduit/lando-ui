@@ -39,7 +39,7 @@ def revisions_handler(revision_id, diff_id=None):
     # TODO: We shouldn't check the dryrun result before a POST to actually
     # submit the landing request. We do this now because the UI would otherwise
     # lack data. When the landing request is submitted if there are any new
-    # warnings or blockers, they are returned and should be used. If the landing
+    # warnings or blockers, they are returned and should be used. If landing
     # is successful, we must redirect to the GET revision handler so that
     # fresh revision and landing history is loaded.
     # Also consider splitting into two routes: https://trello.com/c/Oo3RUzUR.

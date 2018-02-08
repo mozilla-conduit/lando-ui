@@ -6,7 +6,6 @@ A set of classes to facilitate Auth0 login using OIDC methodology
 """
 import os
 
-import flask
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 
 
