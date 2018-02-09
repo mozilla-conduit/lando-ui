@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import json
 import logging
 import requests
 
@@ -54,12 +55,17 @@ def revisions_handler(revision_id, diff_id=None):
 
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
-    error = None
+    errors = []
     if form.is_submitted():
-        # If successful return the redirect to the GET page, if not then
-        # handle errors. FIXME: currently crashes for the error cases,
-        # though, better than the original silent failure.
-        return _handle_submission(form, revision, landing_statuses)
+        if form.validate():
+            try:
+                return _post_landings(revision['id'], form.diff_id.data)
+            except LandingSubmissionError as e:
+                errors.append(e.message)
+        else:
+            for field, field_errors in form.errors.items():
+                for error in field_errors:
+                    errors.append(error)
 
     # Set the diff id explicitly to avoid timing conflicts with
     # revision diff IDs being updated
@@ -73,43 +79,87 @@ def revisions_handler(revision_id, diff_id=None):
         form=form,
         warnings=warnings,
         blockers=blockers,
-        error=error
+        errors=errors
     )
 
 
-def _handle_submission(form, revision, landing_statuses):
-    if form.validate():
-        # TODO: Any more basic validation
+def _post_landings(revision_id, diff_id):
+    """Submit a landing request to lando-api.
 
-        # Make request to API for landing
-        diff_id = int(form.diff_id.data)
-        land_response = requests.post(
-            '{host}/landings'.format(host=current_app.config['LANDO_API_URL']),
-            json={
-                'revision_id': revision['id'],
-                'diff_id': diff_id,
-            },
-            headers={
-                # TODO:  Add Phabricator API key for private revisions
-                # 'X-Phabricator-API-Key': '',
-                'Authorization': 'Bearer {}'.format(session['access_token']),
-                'Content-Type': 'application/json',
-            }
-        )
-        logger.info(land_response.json(), 'revision.landing.response')
+    Args:
+        revision_id: The id of the revision to land in 'D123' format.
+        diff_id: The id of the specific diff of the revision to land.
 
-        if land_response.status_code == 202:
-            redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
-                revision_id=revision['id'], diff_id=diff_id
+    Returns:
+        If successful, returns a redirect to the GET /revision page for the
+        revision id. Does not return if unsuccessful.
+
+    Exceptions:
+        If the landing submission fails for any reason, a
+        LandingSubmissionError will be raised.
+    """
+    # Double check the user is logged in so we can provide a helpful message.
+    if not is_user_authenticated():
+        raise LandingSubmissionError('You must be logged to land.')
+
+    # Setup request
+    land_url = '{host}/landings'.format(
+        host=current_app.config['LANDO_API_URL']
+    )
+    params = {
+        'revision_id': revision_id,
+        'diff_id': int(diff_id),
+    }
+    headers = {
+        'Authorization': 'Bearer {}'.format(session['access_token']),
+        'Content-Type': 'application/json',
+    }
+
+    # Make request and handle response
+    try:
+        land_response = requests.post(land_url, json=params, headers=headers)
+        land_response.raise_for_status()
+        if land_response.status_code not in (200, 202):
+            # TODO logging/sentry of the request?
+            raise LandingSubmissionError(
+                message=(
+                    'Lando API did not respond successfully. '
+                    'Please try again later.'
+                )
             )
-            return redirect(redirect_url)
-        else:
-            # TODO:  Push an error on to an error stack to show in UI
-            pass
-    else:
-        # TODO
-        # Return validation errors
-        pass
+
+        redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
+            revision_id=revision_id, diff_id=diff_id
+        )
+        return redirect(redirect_url)
+    except requests.HTTPError as e:
+        # All HTTP errors from Lando API should be in the Connexions
+        # problem exception format and include title, detail, and type.
+        try:
+            problem = e.response.json()
+            problem_message = (
+                '{title}: {detail}'
+                .format(title=problem['title'], detail=problem['detail'])
+            )
+        except (json.JSONDecodeError, KeyError):
+            # TODO: logging/sentry
+            raise LandingSubmissionError(
+                message=(
+                    'Lando API did not respond successfully. '
+                    'Please try again later.'
+                )
+            )
+
+        # TODO: logging?
+        raise LandingSubmissionError(
+            message=problem_message, link=problem['type']
+        )
+    except requests.RequestException:
+        # TODO: How best to do logging?
+        raise LandingSubmissionError(
+            'Failed to connect to Lando API. '
+            'Please try again later.'
+        )
 
 
 def _get_revision(revision_id, diff_id):
@@ -178,3 +228,18 @@ def _flatten_parent_revisions(revision):
     for parent in parents:
         parents_of_parents += _flatten_parent_revisions(parent)
     return parents + parents_of_parents
+
+
+class LandingSubmissionError(Exception):
+    """Custom Exception to hold information when a landing immediately fails.
+
+    Attributes:
+        message: Human readable message with details of what happened.
+        link: An optional link to a resource that further describes the error.
+    """
+
+    def __init__(self, message, link=None):
+        full_message = '{} ({})'.format(message, link) if link else message
+        super().__init__(full_message)
+        self.message = message
+        self.link = link

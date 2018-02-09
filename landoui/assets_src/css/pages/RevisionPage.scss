@@ -94,12 +94,17 @@ ul.RevisionPage-blockers {
   }
 }
 
-.RevisionPage-error {
+.RevisionPage-errors {
   background: #E8A2A2;
   border: 1px solid #A53030;
   color:#A53030;
   padding: 6px 12px 6px 12px;
   width: 100%;
+
+  & ul {
+    list-style: disc outside;
+    margin-left: 2em;
+  }
 }
 
 .RevisionPage-actions {

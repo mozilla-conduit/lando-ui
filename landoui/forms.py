@@ -8,5 +8,9 @@ from wtforms.validators import InputRequired, Regexp
 
 class RevisionForm(FlaskForm):
     diff_id = HiddenField(
-        'diff_id', validators=[InputRequired(), Regexp('^[0-9]+$')]
+        'diff_id',
+        validators=[
+            InputRequired(message='Diff Id is required'),
+            Regexp('\A[0-9]+\Z', message='Diff Id must be a number')
+        ]
     )

@@ -4,11 +4,16 @@
 {% block main %}
 <main class="RevisionPage container" data-state='{{ revision|tojson }}'>
 
-  <!-- optional error message -->
-  {% if error %}
-  <div class="RevisionPage-error">
-    Landing Error: {{ error }}
-  </div>
+  {% if errors %}
+    <!-- error messages -->
+    <div class="RevisionPage-errors">
+      <span>Landing Failed</span>
+      <ul>
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
   {% endif %}
 
   <!-- page heading -->
