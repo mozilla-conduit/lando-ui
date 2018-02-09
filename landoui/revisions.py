@@ -54,6 +54,7 @@ def revisions_handler(revision_id, diff_id=None):
 
     # Creates a new form on GET or loads the submitted form on a POST
     form = RevisionForm()
+    error = None
     if form.is_submitted():
         # If successful return the redirect to the GET page, if not then
         # handle errors. FIXME: currently crashes for the error cases,
@@ -71,7 +72,8 @@ def revisions_handler(revision_id, diff_id=None):
         parents=parent_revisions,
         form=form,
         warnings=warnings,
-        blockers=blockers
+        blockers=blockers,
+        error=error
     )
 
 

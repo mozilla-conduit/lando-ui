@@ -2,7 +2,14 @@
 {% block page_title %}{{revision['id']}} - Lando - Mozilla{% endblock %}
 
 {% block main %}
-<main class="RevisionPage container content" data-state='{{ revision|tojson }}'>
+<main class="RevisionPage container" data-state='{{ revision|tojson }}'>
+
+  <!-- optional error message -->
+  {% if error %}
+  <div class="RevisionPage-error">
+    Landing Error: {{ error }}
+  </div>
+  {% endif %}
 
   <!-- page heading -->
   <h1 class="RevisionPage-heading">{{revision['id']}}: {{revision['title']}}</h1>
