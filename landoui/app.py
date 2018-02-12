@@ -91,7 +91,7 @@ def create_app(
     app.register_blueprint(template_helpers)
 
     # Register error pages
-    app.register_error_handler(404, errorhandlers.page_not_found)
+    errorhandlers.register_error_handlers(app)
 
     # Setup Flask Assets
     assets = Environment(app)
