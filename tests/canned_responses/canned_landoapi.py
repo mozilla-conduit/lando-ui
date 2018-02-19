@@ -60,14 +60,6 @@ GET_REVISION_DEFAULT = {
 }
 
 
-GET_REVISION_NOT_FOUND = {
-    'detail': 'The requested revision does not exist',
-    'status': 404,
-    'title': 'Revision not found',
-    'type': 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404'
-}
-
-
 GET_LANDINGS_DEFAULT = [
     {
         'active_diff_id': 1,
@@ -87,10 +79,29 @@ GET_LANDINGS_DEFAULT = [
 
 
 POST_LANDINGS_SUCCESS = {
-  'id': 1
+    'id': 1
 }
 
-POST_LANDINGS_FAILURE_400 = {
+
+POST_LANDINGS_DRYRUN_SUCCESS = {
+    'confirmation_token': 'sha123',
+    'warnings': [{'id': 'W1', 'message': 'Warning 1'}],
+    'blockers': [
+        {'id': 'B1', 'message': 'Blocker 1'},
+        {'id': 'B2', 'message': 'Blocker 2'}
+    ]
+}
+
+
+PROBLEM_REVISION_NOT_FOUND = {
+    'detail': 'The requested revision does not exist',
+    'status': 404,
+    'title': 'Revision not found',
+    'type': 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404'
+}
+
+
+PROBLEM_BAD_REQUEST = {
     'detail': 'Bad Request Detail',
     'status': 400,
     'title': 'Bad Request',

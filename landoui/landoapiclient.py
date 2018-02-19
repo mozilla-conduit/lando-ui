@@ -159,6 +159,9 @@ class LandoAPIClient:
     def post_landings(self, revision_id, diff_id):
         """Submit a land request to lando-api via the POST /landings endpoint.
 
+        The LandoAPIClient must be initialized with an auth0 access token to
+        use this method.
+
         Args:
             revision_id: The id of the revision to land in 'D123' format.
             diff_id: The id of the specific diff of the revision to land.
@@ -167,12 +170,14 @@ class LandoAPIClient:
             If successful, returns True. Does not return if unsuccessful.
 
         Exceptions:
-            If the landing submission fails for any reason, a
-            LandingSubmissionError will be raised.
+            Raises an AssertionError if the LandoAPIClient wasn't initialized
+            with an auth0_access_token.
+
+            Raises a LandingSubmissionError if the landing submission fails for
+            any reason.
         """
-        # Double check the user is logged in to provide a helpful message.
-        if not self.auth0_access_token:
-            raise LandingSubmissionError('You must be logged in to land.')
+        # Callers should not be using this method if the user is not logged in.
+        assert self.auth0_access_token
 
         # Setup request
         post_landings_url = '{host}/landings'.format(host=self.landoapi_url)
@@ -276,23 +281,110 @@ class LandoAPIClient:
         tells the API that we've properly tried a dryrun first and acknowledged
         any warnings.
 
-        Returns a dictionary with the following format:
-        {
-            'confirmation_token': token,
-            'warnings': [{'id': id, 'message': message}, ...],
-            'blockers': [{'id': id, 'message': message}, ...]
+        The LandoAPIClient must be initialized with an auth0 access token to
+        use this endpoint. If a user is not logged in, they should not be able
+        to see warnings and blockers for landing.
+
+        Args:
+            revision_id: The id of the revision to land in 'D123' format.
+            diff_id: The id of the specific diff of the revision to land.
+
+        Returns:
+            A dictionary with the following format:
+            {
+                'confirmation_token': token,
+                'warnings': [{'id': id, 'message': message}, ...],
+                'blockers': [{'id': id, 'message': message}, ...]
+            }
+            Does not return if unsuccessful.
+
+        Exceptions:
+            Raises an AssertionError if the LandoAPIClient was not initialized
+            with an auth0_access_token.
+
+            Raises a UIError in all cases where communication with lando-api
+            and parsing the response fails.
+        """
+        # Callers should not be using this method if the user is not logged in.
+        assert self.auth0_access_token
+
+        # Setup request
+        dryrun_url = '{host}/landings/dryrun'.format(host=self.landoapi_url)
+        params = {
+            'revision_id': revision_id,
+            'diff_id': int(diff_id),
+        }
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.auth0_access_token),
+            'Content-Type': 'application/json',
         }
 
-        TODO: Exception Handling
-        """
-        # TODO Replace me with a query to the real dryrun endpoint.
-        # Tracked in: https://trello.com/c/dh0c0YTs/
-        result = {
-            'confirmation_token': 'placeholder',
-            'warnings': [],
-            'blockers': []
-        }
-        return result
+        # Make request and handle response
+        try:
+            dryrun_response = requests.post(
+                dryrun_url, json=params, headers=headers
+            )
+            dryrun_response.raise_for_status()
+            return dryrun_response.json()
+        except requests.HTTPError as e:
+            # All HTTP errors from Lando API should be in the Connexions
+            # problem exception format and include title, detail, and type.
+            try:
+                problem = e.response.json()
+                uierror = UIError(
+                    title=problem['title'],
+                    message=problem['detail'],
+                    status_code=e.response.status_code
+                )
+            except (json.JSONDecodeError, KeyError) as e2:
+                logger.error(
+                    {
+                        'url': dryrun_url,
+                        'revision_id': revision_id,
+                        'diff_id': diff_id,
+                        'status_code': e.response.status_code,
+                        'response_body': e.response.text,
+                        'exception_type': str(type(e2)),
+                        'exception_message': str(e2)
+                    }, 'post_landings_dryrun.failed_reading_http_error'
+                )
+                sentry.captureException()
+                raise UIError(
+                    title='Lando API did not respond successfully.',
+                    message=(
+                        'Unable to communicate with Lando API at this '
+                        'time. Please try again later.'
+                    ),
+                    status_code=e.response.status_code
+                )
+
+            logger.debug(
+                {
+                    'url': dryrun_url,
+                    'revision_id': revision_id,
+                    'diff_id': diff_id,
+                    'status_code': e.response.status_code,
+                    'problem_title': problem['title'],
+                    'problem_message': problem['detail'],
+                    'problem_type': problem.get('type')
+                }, 'post_landings_dryrun.failed_dryrun'
+            )
+            raise uierror
+        except requests.RequestException:
+            logger.debug(
+                {
+                    'url': dryrun_url,
+                    'revision_id': revision_id,
+                    'diff_id': diff_id,
+                }, 'post_landings_dryrun.failed_connection_to_landoapi'
+            )
+            raise UIError(
+                title='Failed to connect to Lando API.',
+                message=(
+                    'Unable to communicate with Lando API at this '
+                    'time. Please try again later.'
+                ),
+            )
 
 
 class LandingSubmissionError(Exception):

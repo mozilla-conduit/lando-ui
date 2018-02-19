@@ -30,7 +30,9 @@ def revisions_handler(revision_id, diff_id=None):
 
     # Submit the landing request if this is a POST
     if form.is_submitted():
-        if form.validate():
+        if not is_user_authenticated():
+            errors.append('You must be logged in to land a revision.')
+        elif form.validate():
             try:
                 # Returns True or raises a LandingSubmissionError
                 if landoapi.post_landings(revision_id, form.diff_id.data):
