@@ -94,7 +94,7 @@ class LandoAPIClient:
                     'Try again later.'
                 ),
             }  # yapf: disable
-            if hasattr(e, 'response'):
+            if hasattr(e, 'response') and hasattr(e.response, 'status_code'):
                 error_details['status_code'] = e.response.status_code
             raise UIError(**error_details)
 
@@ -152,7 +152,7 @@ class LandoAPIClient:
                     'Try again later.'
                 ),
             }  # yapf: disable
-            if hasattr(e, 'response'):
+            if hasattr(e, 'response') and hasattr(e.response, 'status_code'):
                 error_details['status_code'] = e.response.status_code
             raise UIError(**error_details)
 

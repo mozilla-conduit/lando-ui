@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
+import requests
 import requests_mock
 
 from tests.canned_responses import canned_landoapi
@@ -50,6 +51,18 @@ def test_get_revision_500_failure(api_url):
         assert 'Failed to reach Lando API' == exc_info.value.title
 
 
+def test_get_revision_connection_failure(api_url):
+    landoapi = LandoAPIClient(api_url)
+    with requests_mock.mock() as m:
+        m.get(
+            api_url + '/revisions/D1', exc=requests.exceptions.ConnectTimeout
+        )
+        with pytest.raises(UIError) as exc_info:
+            landoapi.get_revision('D1')
+
+        assert 'Failed to reach Lando API' == exc_info.value.title
+
+
 def test_get_landings_success(api_url):
     landoapi = LandoAPIClient(api_url)
     with requests_mock.mock() as m:
@@ -67,6 +80,19 @@ def test_get_landings_500_failure(api_url):
         m.get(
             api_url + '/landings?revision_id=D1',
             status_code=500,
+        )
+        with pytest.raises(UIError) as exc_info:
+            landoapi.get_landings('D1')
+
+        assert 'Failed to reach Lando API' == exc_info.value.title
+
+
+def test_get_landings_connection_failure(api_url):
+    landoapi = LandoAPIClient(api_url)
+    with requests_mock.mock() as m:
+        m.get(
+            api_url + '/landings?revision_id=D1',
+            exc=requests.exceptions.ConnectTimeout
         )
         with pytest.raises(UIError) as exc_info:
             landoapi.get_landings('D1')
