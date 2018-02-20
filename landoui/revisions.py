@@ -49,6 +49,7 @@ def revisions_handler(revision_id, diff_id=None):
 
     # If this is a GET or the POST fails, load data to display revision page.
     revision = landoapi.get_revision(revision_id, diff_id)
+    diff_id = diff_id or revision['diff']['id']
     parent_revisions = _flatten_parent_revisions(revision)
     landing_statuses = landoapi.get_landings(revision_id)
     dryrun_result = {}
@@ -56,7 +57,7 @@ def revisions_handler(revision_id, diff_id=None):
         dryrun_result = landoapi.post_landings_dryrun(revision_id, diff_id)
         # TODO: Save the dryrun confirmation token in the form so it is
         # used when making the real landing request.
-    form.diff_id.data = revision['diff']['id']
+    form.diff_id.data = diff_id
 
     return render_template(
         'revision/revision.html',
