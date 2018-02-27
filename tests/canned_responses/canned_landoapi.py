@@ -43,10 +43,8 @@ GET_REVISION_DEFAULT = {
         'username': 'test_user'
     },
     'repo': {
-        'full_name': 'rMOZILLACENTRAL mozilla-central',
         'phid': 'PHID-REPO-mozillacentral',
-        'short_name': 'rMOZILLACENTRAL',
-        'url': 'http://phabricator.test/source/mozilla-central/'
+        'name': 'mozilla-central',
     },
     'reviewers': [
         {
