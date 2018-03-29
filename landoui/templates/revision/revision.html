@@ -44,11 +44,12 @@
         <div class="RevisionPage-section-contents">
           <div>
             <a href="{{revision['url']}}?id={{revision['diff']['id']}}">Diff {{revision['diff']['id']}}</a> authored by
-            {% if revision['diff']['authors'] %}
-            <strong>{{revision['diff']['authors'][0]['name']}} &lt;{{revision['diff']['authors'][0]['email']}}&gt;</strong>
-            {% else %}
-            Unknown
-            {% endif %}
+            <strong>
+              {{revision['diff']['author']['name'] or 'Unknown'}}
+              {% if revision['diff']['author']['email'] %}
+                &lt;{{revision['diff']['author']['email']}}&gt;
+              {% endif %}
+            </strong>
             on <time data-timestamp="{{revision['diff']['date_created']}}"></time>
           </div>
           {% with reviewers=revision['reviewers'] %}

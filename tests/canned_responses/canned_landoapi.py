@@ -28,10 +28,7 @@ GET_REVISION_DEFAULT = {
         'id': 1,
         'revision_id': 'D1',
         'vcs_base_revision': '39d5cc0fda5e16c49a59d29d4ca186a5534cc88b',
-        'authors': [
-            {'email': 'testuser@mozilla.example', 'name': 'Test User'},
-            {'email': 'testuser@mozilla.example', 'name': 'Other User'}
-        ],
+        'author': {'email': 'testuser@mozilla.example', 'name': 'Test User'},
     },
     'latest_diff_id': 1,
     'author': {
