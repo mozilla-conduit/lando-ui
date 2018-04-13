@@ -20,7 +20,6 @@ GET_REVISION_DEFAULT = {
     'date_created': "2017-05-24T15:04:30+00:00",
     'date_modified': "2017-05-31T13:59:01+00:00",
     'id': 'D1',
-    'parent_revisions': [],
     'bug_id': 1,
     'phid': 'PHID-DREV-1',
     'diff': {

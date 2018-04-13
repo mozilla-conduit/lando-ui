@@ -50,7 +50,6 @@ def revisions_handler(revision_id, diff_id=None):
     # If this is a GET or the POST fails, load data to display revision page.
     revision = landoapi.get_revision(revision_id, diff_id)
     diff_id = diff_id or revision['diff']['id']
-    parent_revisions = _flatten_parent_revisions(revision)
     landing_statuses = landoapi.get_landings(revision_id)
     dryrun_result = {}
     if is_user_authenticated():
@@ -63,26 +62,9 @@ def revisions_handler(revision_id, diff_id=None):
         'revision/revision.html',
         revision=revision,
         landing_statuses=landing_statuses,
-        parents=parent_revisions,
         form=form,
         dryrun_confirmation_token=dryrun_result.get('confirmation_token'),
         warnings=dryrun_result.get('warnings', []),
         blockers=dryrun_result.get('blockers', []),
         errors=errors
     )
-
-
-def _flatten_parent_revisions(revision):
-    """ Transforms a JSON tree of parent revisions into a flat array.
-
-    Args:
-        revision: A revision (dictionary) which has parent revisions, which
-            can themselves have parent revisions, and so on.
-    Returns:
-        A new array containing the parent revisions in breath first order.
-    """
-    parents = revision.get('parent_revisions', [])
-    parents_of_parents = []
-    for parent in parents:
-        parents_of_parents += _flatten_parent_revisions(parent)
-    return parents + parents_of_parents
