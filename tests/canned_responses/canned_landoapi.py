@@ -6,11 +6,8 @@
 # flake8: noqa
 
 GET_REVISION_DEFAULT = {
-    'status': 1,
-    'status_name': 'Needs Revision',
     'title': 'My test diff 1',
     'summary': 'Summary 1',
-    'test_plan': 'Test Plan 1',
     'commit_message_title': 'Bug 1 - My test diff 1 r=review_bot',
     'commit_message': (
         'Bug 1 - My test diff 1 r=review_bot\n\n'
@@ -32,15 +29,10 @@ GET_REVISION_DEFAULT = {
     },
     'latest_diff_id': 1,
     'author': {
-        'image_url': 'https://test.cloudfront.example/file/data/testuser.png', # noqa
         'phid': 'PHID-USER-testuser',
         'real_name': 'Test User',
         'url': 'http://phabricator.test/p/test_user/',
         'username': 'test_user'
-    },
-    'repo': {
-        'phid': 'PHID-REPO-mozillacentral',
-        'name': 'mozilla-central',
     },
     'reviewers': [
         {
