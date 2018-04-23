@@ -23,8 +23,6 @@ GET_REVISION_DEFAULT = {
         'date_created': "2017-05-30T20:16:20+00:00",
         'date_modified': "2017-05-30T20:16:22+00:00",
         'id': 1,
-        'revision_id': 'D1',
-        'vcs_base_revision': '39d5cc0fda5e16c49a59d29d4ca186a5534cc88b',
         'author': {'email': 'testuser@mozilla.example', 'name': 'Test User'},
     },
     'latest_diff_id': 1,
