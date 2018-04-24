@@ -1,43 +1,57 @@
-{% set rejected = reviewers|select_reviewers("rejected", "rejected-older") %}
-{% set accepted = reviewers|select_reviewers("accepted", "accepted-older") %}
+{% set rejected = reviewers|select_reviewers("rejected", other_diffs=False) %}
+{% set rejected_other = reviewers|select_reviewers("rejected", other_diffs=True) %}
+{% set accepted = reviewers|select_reviewers("accepted", other_diffs=False) %}
+{% set accepted_other = reviewers|select_reviewers("accepted", other_diffs=True) %}
 {% set new = reviewers|select_reviewers("added", "blocking") %}
 {% macro list_reviewers(reviewers) %}
-  {%- for reviewer in reviewers %}
-    <span role="list" class="RevisionPage-reviewer-list-name">
-      <span role="listitem" title="{{reviewer['real_name']}}">
-        {{reviewer['username']}}
-        {{"(blocking)" if reviewer['is_blocking']}}
-      </span>
-      {{ "," if not loop.last }}
-    </span>
+  <span role="list">
+    {%- for reviewer in reviewers %}
+      {{ "and" if loop.last and loop.length > 1 }}
+      <span role="listitem" class="RevisionPage-reviewer-list-name" title="{{reviewer['real_name']}}">@{{reviewer['username']}}</span>{{
+        " (Blocks Landing)" if reviewer['blocking_landing']
+      }}{{
+        "," if not loop.last and not (loop.length == 2 and loop.index == 1)
+      }}
   {% endfor %}
+  </span>
 {% endmacro %}
 
 <div class="RevisionPage-reviewer-list">
-  {% if not reviewers %}
-    <div>
-      <span class="u-revision-badge--neutral">There are no reviewers for this Revision</span>
-    </div>
-  {% endif %}
-
-  {% if rejected %}
-    <div>
-      <span class="u-revision-badge--negative">Review Rejected</span>
-      — By {{list_reviewers(rejected)}}
-    </div>
-  {% endif %}
-
-  {% if accepted %}
-    <div>
-      <span class="u-revision-badge--positive">Review Accepted</span>
-      — By {{list_reviewers(accepted)}}
-    </div>
-  {% endif %}
-
-  {% if new %}
-    <div>
-      <span class="u-revision-badge">Review Pending</span>
-      — By {{list_reviewers(new)}}
-    </div>
-  {% endif %}
+  <ul>
+    {% if not reviewers %}
+      <li>
+        <span class="u-revision-badge--neutral">There are no reviewers for this Revision</span>
+      </li>
+    {% endif %}
+    {% if new %}
+      <li>
+        <span class="u-revision-badge">Pending Review</span>
+        — From {{list_reviewers(new)}}
+      </li>
+    {% endif %}
+    {% if rejected %}
+      <li>
+        <span class="u-revision-badge--negative">Rejected</span>
+        — By {{list_reviewers(rejected)}}
+      </li>
+    {% endif %}
+    {% if accepted %}
+      <li>
+        <span class="u-revision-badge--positive">Accepted</span>
+        — By {{list_reviewers(accepted)}}
+      </li>
+    {% endif %}
+    {% if rejected_other %}
+      <li>
+        <span class="u-revision-badge--warning">Other Diff Rejected</span>
+        — By {{list_reviewers(rejected_other)}}
+      </li>
+    {% endif %}
+    {% if accepted_other %}
+      <li>
+        <span class="u-revision-badge--neutral">Other Diff Accepted</span>
+        — By {{list_reviewers(accepted_other)}}
+      </li>
+    {% endif %}
+  </ul>
 </div>

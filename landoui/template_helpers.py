@@ -14,8 +14,16 @@ def is_user_authenticated():
 
 
 @template_helpers.app_template_filter()
-def select_reviewers(reviewers, *args):
-    return [r for r in reviewers if r['status'] in args]
+def select_reviewers(reviewers, *args, other_diffs=None):
+    if args:
+        reviewers = [r for r in reviewers if r['status'] in args]
+
+    if other_diffs is not None:
+        reviewers = [
+            r for r in reviewers if r['for_other_diff'] == other_diffs
+        ]
+
+    return reviewers
 
 
 @template_helpers.app_template_filter()

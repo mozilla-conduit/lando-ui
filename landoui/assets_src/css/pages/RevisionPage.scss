@@ -152,6 +152,10 @@ ul.RevisionPage-blockers {
   &-name {
     font-weight: 600;
   }
+
+  & ul > li {
+    margin-bottom: 0.5rem;
+  }
 }
 
 /* Utilities */
@@ -178,8 +182,8 @@ ul.RevisionPage-blockers {
 
 .u-revision-badge--warning {
   @extend .u-revision-badge;
-  background: #e5ac00;
-  color: #fff;
+  background: #fdf3da;
+  color: #77612d;
 }
 
 .u-revision-badge--neutral {
