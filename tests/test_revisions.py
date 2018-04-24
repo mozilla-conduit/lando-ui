@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import time
+
 import requests_mock
 
 from tests.canned_responses import canned_landoapi, canned_auth0
@@ -42,6 +44,10 @@ def test_render_valid_revision_logged_in(app, api_url):
                 session['access_token'] = canned_auth0.VALID_ACCESS_TOKEN
                 session['id_token'] = canned_auth0.VALID_ID_TOKEN
                 session['userinfo'] = canned_auth0.VALID_USERINFO
+
+                # Pretend we don't need to refresh.
+                session['id_token_jwt'] = 'bogus'
+                session['last_authenticated'] = time.time() + 100000
 
             response = client.get('/revisions/D1')
     assert response.status_code == 200

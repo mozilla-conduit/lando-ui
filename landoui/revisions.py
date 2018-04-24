@@ -5,6 +5,7 @@ import logging
 
 from flask import Blueprint, current_app, render_template, redirect, session
 
+from landoui.app import oidc
 from landoui.forms import RevisionForm
 from landoui.helpers import is_user_authenticated, set_last_local_referrer
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
@@ -18,6 +19,15 @@ revisions.before_request(set_last_local_referrer)
 @revisions.route('/revisions/<revision_id>/<diff_id>', methods=('GET', 'POST'))
 @revisions.route('/revisions/<revision_id>')
 def revisions_handler(revision_id, diff_id=None):
+    if not is_user_authenticated():
+        handler = _revisions_handler
+    else:
+        handler = _revisions_handler_with_auth
+
+    return handler(revision_id, diff_id=diff_id)
+
+
+def _revisions_handler(revision_id, diff_id=None):
     landoapi = LandoAPIClient(
         landoapi_url=current_app.config['LANDO_API_URL'],
         phabricator_api_token=None,
@@ -68,3 +78,6 @@ def revisions_handler(revision_id, diff_id=None):
         blockers=dryrun_result.get('blockers', []),
         errors=errors
     )
+
+
+_revisions_handler_with_auth = oidc.oidc_auth(_revisions_handler)
