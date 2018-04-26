@@ -37,9 +37,9 @@ GET_REVISION_DEFAULT = {
             'phid': 'PHID-USER-review_bot',
             'for_other_diff': False,
             'blocking_landing': False,
-            'real_name': 'review_bot Name',
+            'full_name': 'review_bot Name',
             'status': 'added',
-            'username': 'review_bot'
+            'identifier': 'review_bot'
         }
     ]
 }

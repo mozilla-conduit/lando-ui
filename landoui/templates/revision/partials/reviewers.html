@@ -7,7 +7,7 @@
   <span role="list">
     {%- for reviewer in reviewers %}
       {{ "and" if loop.last and loop.length > 1 }}
-      <span role="listitem" class="RevisionPage-reviewer-list-name" title="{{reviewer['real_name']}}">@{{reviewer['username']}}</span>{{
+      <span role="listitem" class="RevisionPage-reviewer-list-name" title="{{reviewer['full_name']}}">@{{reviewer['identifier']}}</span>{{
         " (Blocks Landing)" if reviewer['blocking_landing']
       }}{{
         "," if not loop.last and not (loop.length == 2 and loop.index == 1)
