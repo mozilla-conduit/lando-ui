@@ -45,7 +45,10 @@ def _revisions_handler(revision_id, diff_id=None):
         elif form.validate():
             try:
                 # Returns True or raises a LandingSubmissionError
-                if landoapi.post_landings(revision_id, form.diff_id.data):
+                if landoapi.post_landings(
+                    revision_id, form.diff_id.data,
+                    form.confirmation_token.data
+                ):
                     redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
                         revision_id=revision_id, diff_id=diff_id
                     )
@@ -64,8 +67,8 @@ def _revisions_handler(revision_id, diff_id=None):
     dryrun_result = {}
     if is_user_authenticated():
         dryrun_result = landoapi.post_landings_dryrun(revision_id, diff_id)
-        # TODO: Save the dryrun confirmation token in the form so it is
-        # used when making the real landing request.
+        form.confirmation_token.data = dryrun_result.get('confirmation_token')
+
     form.diff_id.data = diff_id
 
     return render_template(
@@ -73,7 +76,6 @@ def _revisions_handler(revision_id, diff_id=None):
         revision=revision,
         landing_statuses=landing_statuses,
         form=form,
-        dryrun_confirmation_token=dryrun_result.get('confirmation_token'),
         warnings=dryrun_result.get('warnings', []),
         blockers=dryrun_result.get('blockers', []),
         errors=errors

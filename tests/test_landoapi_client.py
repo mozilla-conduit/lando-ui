@@ -9,7 +9,7 @@ from landoui.errorhandlers import UIError, RevisionNotFound
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
 
 from tests.canned_responses import canned_landoapi
-from tests.utils import match_revision_and_diff_in_body
+from tests.utils import match_landing_request
 
 
 def test_get_revision_success(api_url):
@@ -106,10 +106,10 @@ def test_post_landings_success(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1, 'confirmed'),
             json=canned_landoapi.POST_LANDINGS_SUCCESS
         )
-        assert landoapi.post_landings('D1', 1)
+        assert landoapi.post_landings('D1', 1, 'confirmed')
 
 
 def test_post_landings_no_access_token(api_url):
@@ -117,11 +117,11 @@ def test_post_landings_no_access_token(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.POST_LANDINGS_SUCCESS
         )
         with pytest.raises(AssertionError):
-            landoapi.post_landings('D1', 1)
+            landoapi.post_landings('D1', 1, None)
 
 
 def test_post_landings_unexpected_2xx_code(api_url):
@@ -129,12 +129,12 @@ def test_post_landings_unexpected_2xx_code(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json={},
             status_code=204
         )
         with pytest.raises(LandingSubmissionError) as exc_info:
-            landoapi.post_landings('D1', 1)
+            landoapi.post_landings('D1', 1, None)
 
     assert 'Lando API did not respond successfully.' in exc_info.value.error
 
@@ -144,12 +144,12 @@ def test_post_landings_http_error_with_valid_response(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.PROBLEM_BAD_REQUEST,
             status_code=400
         )
         with pytest.raises(LandingSubmissionError) as exc_info:
-            landoapi.post_landings('D1', 1)
+            landoapi.post_landings('D1', 1, None)
 
     assert 'Bad Request: Bad Request Detail' in exc_info.value.error
 
@@ -159,11 +159,11 @@ def test_post_landings_http_error_without_valid_response(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             status_code=400
         )
         with pytest.raises(LandingSubmissionError) as exc_info:
-            landoapi.post_landings('D1', 1)
+            landoapi.post_landings('D1', 1, None)
 
     assert 'Lando API did not respond successfully.' in exc_info.value.error
 
@@ -173,11 +173,11 @@ def test_post_landings_connection_error(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             exc=requests.exceptions.ConnectTimeout
         )
         with pytest.raises(LandingSubmissionError) as exc_info:
-            landoapi.post_landings('D1', 1)
+            landoapi.post_landings('D1', 1, None)
 
     assert 'Failed to connect to Lando API.' in exc_info.value.error
 
@@ -187,7 +187,7 @@ def test_post_landings_dryrun_success(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.POST_LANDINGS_DRYRUN_SUCCESS
         )
         result = landoapi.post_landings_dryrun('D1', 1)
@@ -200,7 +200,7 @@ def test_post_landings_dryrun_no_access_token(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.POST_LANDINGS_DRYRUN_SUCCESS
         )
         with pytest.raises(AssertionError):
@@ -212,7 +212,7 @@ def test_post_landings_dryrun_http_error_with_valid_response(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.PROBLEM_BAD_REQUEST,
             status_code=400
         )
@@ -229,7 +229,7 @@ def test_post_landings_dryrun_http_error_without_valid_response(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             status_code=400
         )
         with pytest.raises(UIError) as exc_info:
@@ -244,7 +244,7 @@ def test_post_landings_dryrun_connection_error(api_url):
     with requests_mock.mock() as m:
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             exc=requests.exceptions.ConnectTimeout
         )
         with pytest.raises(UIError) as exc_info:

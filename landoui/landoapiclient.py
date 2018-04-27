@@ -156,7 +156,7 @@ class LandoAPIClient:
                 error_details['status_code'] = e.response.status_code
             raise UIError(**error_details)
 
-    def post_landings(self, revision_id, diff_id):
+    def post_landings(self, revision_id, diff_id, confirmation_token):
         """Submit a land request to lando-api via the POST /landings endpoint.
 
         The LandoAPIClient must be initialized with an auth0 access token to
@@ -184,6 +184,7 @@ class LandoAPIClient:
         params = {
             'revision_id': revision_id,
             'diff_id': int(diff_id),
+            'confirmation_token': confirmation_token,
         }
         headers = {
             'Authorization': 'Bearer {}'.format(self.auth0_access_token),

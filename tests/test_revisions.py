@@ -6,7 +6,7 @@ import time
 import requests_mock
 
 from tests.canned_responses import canned_landoapi, canned_auth0
-from tests.utils import match_revision_and_diff_in_body
+from tests.utils import match_landing_request
 
 
 def test_render_valid_revision_logged_out(client, api_url):
@@ -35,7 +35,7 @@ def test_render_valid_revision_logged_in(app, api_url):
         )
         m.post(
             api_url + '/landings/dryrun',
-            additional_matcher=match_revision_and_diff_in_body('D1', 1),
+            additional_matcher=match_landing_request('D1', 1),
             json=canned_landoapi.POST_LANDINGS_DRYRUN_SUCCESS
         )
 
