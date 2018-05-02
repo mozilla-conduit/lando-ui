@@ -24,7 +24,7 @@ def initialize_sentry(app, release):
     """
     sentry_dsn = os.environ.get('SENTRY_DSN', None)
     if sentry_dsn:
-        log_config_change('SENTRY_DSN', sentry_dsn)
+        log_config_change('SENTRY_DSN', '********')
     else:
         log_config_change('SENTRY_DSN', 'none (sentry disabled)')
 
