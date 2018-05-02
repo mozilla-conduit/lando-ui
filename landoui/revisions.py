@@ -16,8 +16,10 @@ revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
 
 
-@revisions.route('/revisions/<revision_id>/<diff_id>', methods=('GET', 'POST'))
-@revisions.route('/revisions/<revision_id>')
+@revisions.route(
+    '/revisions/<revision_id>/<diff_id>/', methods=('GET', 'POST')
+)
+@revisions.route('/revisions/<revision_id>/')
 def revisions_handler(revision_id, diff_id=None):
     if not is_user_authenticated():
         handler = _revisions_handler
@@ -49,8 +51,10 @@ def _revisions_handler(revision_id, diff_id=None):
                     revision_id, form.diff_id.data,
                     form.confirmation_token.data
                 ):
-                    redirect_url = '/revisions/{revision_id}/{diff_id}'.format(
-                        revision_id=revision_id, diff_id=diff_id
+                    redirect_url = (
+                        '/revisions/{revision_id}/{diff_id}/'.format(
+                            revision_id=revision_id, diff_id=diff_id
+                        )
                     )
                     return redirect(redirect_url)
             except LandingSubmissionError as e:

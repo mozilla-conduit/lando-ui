@@ -11,7 +11,7 @@ $(document).ready(function() {
   if($revision.length) {
       let revisionId = $revision.data('revision-id');
       let diffId = $revision.data('diff-id');
-      let completePath = `/revisions/${revisionId}/${diffId}`;
+      let completePath = `/revisions/${revisionId}/${diffId}/`;
       if(window.location.pathname != completePath) {
         history.replaceState({}, `${revisionId}: ${diffId}`, completePath);
       }
