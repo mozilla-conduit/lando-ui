@@ -23,11 +23,11 @@ by account one. If you have a colleague that can do this for you, feel free to a
 ### Auth0 Accounts
 
 1. You will need to be able to login through Mozilla Single Sign On (Auth0) with
-LDAP credentials that have L3 permissions. See the [Mozilla Commit Access Policy][]
+LDAP credentials that have at least L1 permissions. See the [Mozilla Commit Access Policy][]
 for more information.
 
 2. You will also need to be able to login with another account that does NOT have
-L3 permissions. Having 2 LDAP accounts may prove tricky, so it may be helpful to
+L1 permissions. Having 2 LDAP accounts may prove tricky, so it may be helpful to
 have a colleague that can help test. Or talk to the LDAP team to see if they can
 help out.
 
@@ -39,7 +39,7 @@ You will need to do this setup initially once when you start this test plan.
 ### Create a revision.
 
 1. Create a new bug on https://bugzilla-dev.allizom.org/.
-2. Run `hg clone https://hg.mozilla.org/automation/phabricator-qa-dev/`
+2. Run `hg clone https://autolandhg.devsvcdev.mozaws.net/ phabqa`
     - If you have already cloned the repo, run `hg pull` instead.
 3. Make some realistic changes in the repo.
     - Change a several lines in a few files.
@@ -73,7 +73,7 @@ the [Phabricator Test Plan][].
 
 **Test Plan**
 1. Click the "Login with Auth0" button.
-2. Login with the LDAP account that has L3 permissions.
+2. Login with the LDAP account that has L1 permissions.
 
 **Result**
 1. You should be taken through the standard Mozilla Single Sign On Login process.
@@ -96,7 +96,7 @@ the [Phabricator Test Plan][].
 ## Test: Display a Revision - Single Diff
 
 **Test Plan**
-1. Double check that you are logged in with the account that has L3 permissions.
+1. Double check that you are logged in with the account that has L1 permissions.
 2. View the revision you created at https://lando.devsvcdev.mozaws.net/revisions/<REVISION_ID>.
     - Change <REVISION_ID> in this URL to the D-prefixed revision number (e.g. D123).
 
@@ -127,7 +127,7 @@ the [Phabricator Test Plan][].
 
 **Test Plan**
 1. In your terminal make some additional file changes.
-2. Run `hg commit --amend` and `arc diff --update <Revision ID>` to update the
+2. Run `hg commit --amend` and `arc diff` to update the
 same revision.
 
 **Result**
@@ -167,6 +167,41 @@ same revision.
     - Both pages should be equal.
     - Once loaded both pages should have <DIFF2> in the URL.
 
+## Test: Display a Revision - Reviewer accepted older diff
+
+**Test Plan**
+1. If you have not already, make sure that your reviewer account has accepted
+the revision.
+2. In your terminal update the same file you edited to create the revision.
+3. `hg commit` those changes.
+4. Run `arc diff`.
+5. This should post an updated revision to Phabricator.
+6. View the revision on Lando - **make sure to remove the old diff id in the URL
+so that Lando loads the latest one**. Or you can just click the "View on Lando"
+link on Phabricator in the right sidebar.
+
+**Result**
+1. ![Accepted Older](/screenshots/accepted-older.png)
+    - The reviewer should be marked as having accepted an older version.
+
+## Test: Display a Revision - Project Reviewer
+
+**Test Plan**
+1. Visit the revision on Phabricator and in the right sidebar click Edit.
+2. In the reviewers box add the `landoqa` project by typing its name. Save the
+revision.
+3. Your reviewer account should be in the `landoqa` group. If not go to
+https://phabricator-dev.allizom.org/project/members/89/ and join the project
+on your reviewer account.
+4. On your reviewer account visit the revision and at the bottom of the page
+choose the Accept action. There will be a little checkbox to accept it as the
+landoqa group as shown:
+![Accept as Project](/screenshots/accepted-as-project.png)
+
+
+**Result**
+1. On Lando the project is correctly displayed as a reviewer.
+
 
 ## Test: Landing Blockers - Open dependant parent revision.
 
@@ -183,22 +218,61 @@ example, select a revision that "Needs Review".
     - Confirm that there is a red "blocking" warning that informs the user that
     there is an open revision and that the land button is not present.
 
-## Test: Landing Blockers - Lacking L3 permissions.
+## Test: Landing Blockers - Author Planned Changes
+
+**Test Plan**
+1. Visit the revision you created on phabricator.
+2. At the bottom of the page in the "Add Actions" dropdown, select "Plan Changes"
+and hit Submit.
+
+**Result**
+1. Visit the revision on Lando.
+2. ![Planned Changes](/screenshots/planned-changes.png)
+    - Confirm that there is a red "blocking" warning that informs the user that
+    the author of the revision is planning changes.
+
+## Test: Landing Blockers - Lacking permissions.
 
 **Test Plan**
 1. View the revision you created on Lando.
-2. Login with the LDAP account that does NOT have L3 permissions.
+2. Login with the LDAP account that does NOT have L1 permissions.
 
 **Result**
 1. ![No SCM Level](/screenshots/no-scm-level.png)
-    - Confirm that there is a read "blocking" warning that informs the user that
-    they do not have L3 permissions.
+    - Confirm that there is a red "blocking" warning that informs the user that
+    they do not have L1 permissions.
 
+## Test: Landing Blockers - Invalid Repository
+
+**Test Plan**
+1. On Phabricator Edit the Revision.
+2. Remove 'test-repo' as the repository. The repository field should be empty.
+3. Save the revision.
+
+**Result**
+1. View the revision again on Lando.
+2. There should be a red blocking message at the bottom saying that no repository
+is associated with the revision and so landing is disabled.
+
+## Test: Landing Blockers - Invalid Repository
+
+**Test Plan**
+1. On Phabricator Edit the Revision.
+2. Remove 'test-repo' as the repository and add 'lando-api'.
+3. Save the revision.
+
+**Result**
+1. View the revision again on Lando.
+2. Since lando-api is not a supported repository that Lando can land to, there
+should be a red blocking message at the bottom saying that landing to that
+repository is unsupported.
+3. After this step make sure to add 'test-repo' as the repository again to
+continue with this test plan.
 
 ## Test: Landing - Successfully Land a Revision
 
 **Test Plan**
-1. Log into Lando with the LDAP account that has L3 permissions.
+1. Log into Lando with the LDAP account that has L1 permissions.
 2. On Phabricator, have the revision's reviewer accept the revision.
 3. Visit the revision on lando and Click the Land button.
     - Make sure you do not specify a DIFF_ID so that the page will load
@@ -230,7 +304,7 @@ example, select a revision that "Needs Review".
             https://bugzilla.mozilla.org/show_bug.cgi?id=1442003
         - The requester author email matches the email of the LDAP account you
         used to login via Mozilla SSO.
-5. Visit https://hg.mozilla.org/automation/phabricator-qa-stage/.
+5. Visit https://autolandhg.devsvcdev.mozaws.net/.
     - Confirm that the commit was landed successfully.
     - Confirm that the commit id SHA matches the "Result" in the successful
     landing timeline entry on Lando.
@@ -251,7 +325,22 @@ has been landed.
 ## Test: Landing Errors - Diff will not apply cleanly.
 
 **Test Plan**
-1. TODO: Fix https://bugzilla.mozilla.org/show_bug.cgi?id=1444841 first.
+1. In the hg repo add a new file with 3 lines of text: `vi my-bad-file`.
+2. `hg add` and `hg commit` the new file.
+3. Modify the file and change something on line 2. `hg commit` the changes.
+4. Run `arc diff .^`. This will create a new revision with only the changes
+that modified the file. The intent is to create a bad revision which is impossible
+to land (since the changes in the first commit that added the file are missing).
+5. Accept the revision with your reviewer account.
+6. Visit the revision on Lando.
+7. Land the revision.
+8. Refresh the page every 2 seconds or so until the page updates.
+
+**Result**
+1. ![Landing Failed](/screenshots/landing-failed.png)
+    - There should be an error message in the timeline indicating that the
+    landing failed.
+
 
 
 
