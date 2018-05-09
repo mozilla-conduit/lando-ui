@@ -3,20 +3,22 @@
 <main class="container content">
   <div id="home">
     <h1>Welcome to Lando</h1>
-    <p class="bordered">Lando is an automated code lander for Mozilla.</p>
+    <p class="bordered">Lando is an automated code lander for Mozilla.
+    It is integrated with
+    our <a href="https://phabricator.services.mozilla.com/">Phabricator
+    instance</a> and can be used to land revisions to various
+    repositories.</p>
+
+    <p>Each revision in Phabricator has a "View in Lando" link in its
+    action menu on the right.  This will take you to the Lando page
+    associated with that revision.  If a revision cannot be landed,
+    either due to its current state, or due to it not being configured
+    in or supported by Lando, the link will be greyed out, but
+    you can still follow it to view its details in Lando.</p>
+
+    <p>For more information on Lando, consult the <a
+    href="http://moz-conduit.readthedocs.io/en/latest/lando-user.html">user
+    guide</a>.
   </div>
-
-  <p>
-    <em>You are {{ '' if is_user_authenticated() else 'not' }} logged in</em>
-    {% if is_user_authenticated() %}
-      <a href="/logout">Sign Out</a>
-    {% else %}
-      <a href="/protected">Sign In</a>
-    {% endif %}
-  </p>
-
-  <p>
-    Here is an example revision: <a href="/revisions/D3">Phab Revision D3</a>
-  </p>
 </main>
 {% endblock %}
