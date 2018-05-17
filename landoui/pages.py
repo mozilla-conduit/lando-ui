@@ -5,7 +5,11 @@ import logging
 import os
 
 from flask import (
-    Blueprint, current_app, jsonify, redirect, render_template, session
+    Blueprint,
+    current_app,
+    redirect,
+    render_template,
+    session,
 )
 
 from landoui.app import oidc
@@ -15,17 +19,6 @@ logger = logging.getLogger(__name__)
 
 pages = Blueprint('page', __name__)
 pages.before_request(set_last_local_referrer)
-
-
-@pages.route('/info')
-@oidc.oidc_auth
-def info():
-    """Return the JSONified user session for debugging."""
-    return jsonify(
-        id_token=session['id_token'],
-        access_token=session['access_token'],
-        userinfo=session['userinfo']
-    )
 
 
 @pages.route('/')
@@ -38,15 +31,6 @@ def home():
 def signin():
     redirect_url = session.get('last_local_referrer') or '/'
     return redirect(redirect_url)
-
-
-@pages.route('/protected')
-@oidc.oidc_auth
-def protected():
-    logger.warning(
-        'ProtectedPageView', extra={'user_name': session['userinfo']['name']}
-    )
-    return render_template('protected.html')
 
 
 @pages.route('/signout')
