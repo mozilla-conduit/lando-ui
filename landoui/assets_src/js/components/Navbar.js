@@ -18,9 +18,10 @@ $.fn.landoNavbar = function() {
     let $modalSubmitBtn = $navbar.find('.Navbar-modalSubmit').first();
     let $modalCancelBtn = $navbar.find('.Navbar-modalCancel');
 
-    $modalToggleBtn.on('click', () => {
-      $modal.toggleClass('is-active');
-    });
+    // DISABLED until the navbar actually does something.
+    // $modalToggleBtn.on('click', () => {
+    //   $modal.toggleClass('is-active');
+    // });
 
     $modalSubmitBtn.on('click', () => {
       // TODO implement user settings
