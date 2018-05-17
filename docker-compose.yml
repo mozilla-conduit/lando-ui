@@ -30,6 +30,7 @@ services:
       - LANDO_API_URL=http://lando-api.test:8888
       - ENV=localdev
       - SENTRY_DSN=
+      - LOG_LEVEL=DEBUG
   py3-linter:
     build:
       context: ./

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 import logging
+import logging.config
 import os
 
 import click
@@ -12,7 +13,7 @@ from flask_talisman import Talisman
 from webassets.loaders import YAMLLoader
 
 from landoui import auth, errorhandlers
-from landoui.logging import initialize_logging, log_config_change
+from landoui.logging import log_config_change, MozLogFormatter
 from landoui.sentry import initialize_sentry
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ def create_app(
     log_config_change('VERSION_PATH', version_path)
 
     version_info = json.load(open(version_path))
-    logger.info(version_info, 'app.version')
+    logger.info('application version', extra=version_info)
 
     this_app_version = version_info['version']
     initialize_sentry(app, this_app_version)
@@ -105,6 +106,53 @@ def create_app(
         assets.register(loader.load_bundles())
 
     return app
+
+
+def initialize_logging():
+    """Initialize application-wide logging."""
+    level = os.environ.get('LOG_LEVEL', 'INFO')
+    logging.config.dictConfig(
+        {
+            'version': 1,
+            'formatters': {
+                'mozlog': {
+                    '()': MozLogFormatter,
+                    'mozlog_logger': 'lando-ui',
+                },
+            },
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'mozlog',
+                },
+                'null': {
+                    'class': 'logging.NullHandler',
+                }
+            },
+            'loggers': {
+                'landoui': {
+                    'level': level,
+                    'handlers': ['console'],
+                },
+                'request.summary': {
+                    'level': level,
+                    'handlers': ['console'],
+                },
+                'flask': {
+                    'handlers': ['null'],
+                },
+                'werkzeug': {
+                    'level': 'ERROR',
+                    'handlers': ['console'],
+                },
+            },
+            'root': {
+                'handlers': ['null'],
+            },
+            'disable_existing_loggers': True,
+        }
+    )
+    logger.info('logging configured', extra={'LOG_LEVEL': level})
 
 
 @click.command()

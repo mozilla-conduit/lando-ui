@@ -77,14 +77,13 @@ class LandoAPIClient:
                 response.raise_for_status()
                 return response.json()
         except (requests.RequestException, json.JSONDecodeError) as e:
-            logger.error(
-                {
+            logger.exception(
+                'Exception querying revision',
+                extra={
                     'url': get_revision_url,
                     'revision_id': revision_id,
                     'diff_id': diff_id,
-                    'exception_type': str(type(e)),
-                    'exception_message': str(e)
-                }, 'get_revision.exception'
+                }
             )
 
             error_details = {
@@ -136,13 +135,12 @@ class LandoAPIClient:
                 response.raise_for_status()
                 return response.json()
         except (requests.RequestException, json.JSONDecodeError) as e:
-            logger.error(
-                {
+            logger.exception(
+                'Exception querying landings',
+                extra={
                     'url': get_landings_url,
                     'revision_id': revision_id,
-                    'exception_type': str(type(e)),
-                    'exception_message': str(e)
-                }, 'get_landings.exception'
+                }
             )
 
             error_details = {
@@ -199,13 +197,14 @@ class LandoAPIClient:
             land_response.raise_for_status()
             if land_response.status_code not in (200, 202):
                 logger.error(
-                    {
+                    'Invalid 2XX status when requesting landing',
+                    extra={
                         'url': post_landings_url,
                         'revision_id': revision_id,
                         'diff_id': diff_id,
                         'status_code': land_response.status_code,
                         'response_body': land_response.text
-                    }, 'post_landings.invalid_2xx_code'
+                    }
                 )
                 sentry.captureMessage('landoapi returned an unexpected 2xx')
 
@@ -225,16 +224,15 @@ class LandoAPIClient:
                     )
                 )
             except (json.JSONDecodeError, KeyError) as e2:
-                logger.error(
-                    {
+                logger.exception(
+                    'Could not decode failed response to landing request',
+                    extra={
                         'url': post_landings_url,
                         'revision_id': revision_id,
                         'diff_id': diff_id,
                         'status_code': e.response.status_code,
                         'response_body': e.response.text,
-                        'exception_type': str(type(e2)),
-                        'exception_message': str(e2)
-                    }, 'post_landings.failed_reading_http_error'
+                    }
                 )
                 sentry.captureException()
 
@@ -244,25 +242,27 @@ class LandoAPIClient:
                 )
 
             logger.debug(
-                {
+                'Landing request failed',
+                extra={
                     'url': post_landings_url,
                     'revision_id': revision_id,
                     'diff_id': diff_id,
                     'status_code': e.response.status_code,
                     'problem_message': problem_message,
                     'problem_type': problem.get('type')
-                }, 'post_landings.failed_landing'
+                }
             )
             raise LandingSubmissionError(
                 error=problem_message, link=problem.get('type')
             )
         except requests.RequestException:
             logger.debug(
-                {
+                'Failed to connect when requesting landing',
+                extra={
                     'url': post_landings_url,
                     'revision_id': revision_id,
                     'diff_id': diff_id,
-                }, 'post_landings.failed_connection_to_landoapi'
+                }
             )
             raise LandingSubmissionError(
                 'Failed to connect to Lando API. '
@@ -338,16 +338,15 @@ class LandoAPIClient:
                     status_code=e.response.status_code
                 )
             except (json.JSONDecodeError, KeyError) as e2:
-                logger.error(
-                    {
+                logger.exception(
+                    'Could not decode failed response to dryrun request',
+                    extra={
                         'url': dryrun_url,
                         'revision_id': revision_id,
                         'diff_id': diff_id,
                         'status_code': e.response.status_code,
                         'response_body': e.response.text,
-                        'exception_type': str(type(e2)),
-                        'exception_message': str(e2)
-                    }, 'post_landings_dryrun.failed_reading_http_error'
+                    }
                 )
                 sentry.captureException()
                 raise UIError(
@@ -360,7 +359,8 @@ class LandoAPIClient:
                 )
 
             logger.debug(
-                {
+                'Dryrun request failed',
+                extra={
                     'url': dryrun_url,
                     'revision_id': revision_id,
                     'diff_id': diff_id,
@@ -368,16 +368,17 @@ class LandoAPIClient:
                     'problem_title': problem['title'],
                     'problem_message': problem['detail'],
                     'problem_type': problem.get('type')
-                }, 'post_landings_dryrun.failed_dryrun'
+                }
             )
             raise uierror
         except requests.RequestException:
             logger.debug(
-                {
+                'Failed to connect when requesting dryrun',
+                extra={
                     'url': dryrun_url,
                     'revision_id': revision_id,
                     'diff_id': diff_id,
-                }, 'post_landings_dryrun.failed_connection_to_landoapi'
+                }
             )
             raise UIError(
                 title='Failed to connect to Lando API.',

@@ -43,10 +43,8 @@ def signin():
 @pages.route('/protected')
 @oidc.oidc_auth
 def protected():
-    logger.warn(
-        {
-            'user_name': session['userinfo']['name']
-        }, 'ProtectedPageView'
+    logger.warning(
+        'ProtectedPageView', extra={'user_name': session['userinfo']['name']}
     )
     return render_template('protected.html')
 

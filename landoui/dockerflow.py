@@ -3,11 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 import logging
+import time
 
 import requests
-from flask import Blueprint, current_app, jsonify
+from flask import Blueprint, current_app, g, jsonify, request
 
 logger = logging.getLogger(__name__)
+request_logger = logging.getLogger('request.summary')
 
 dockerflow = Blueprint('dockerflow', __name__)
 
@@ -18,6 +20,31 @@ def disable_caching(response):
     response.cache_control.no_cache = True
     response.cache_control.no_store = True
     response.cache_control.must_revalidate = True
+    return response
+
+
+@dockerflow.before_app_request
+def request_logging_before():
+    g._request_start_timestamp = time.time()
+
+
+@dockerflow.after_app_request
+def request_logging_after(response):
+    summary = {
+        'errno': 0 if response.status_code < 400 else 1,
+        'agent': request.headers.get('User-Agent', ''),
+        'lang': request.headers.get('Accept-Language', ''),
+        'method': request.method,
+        'path': request.path,
+        'code': response.status_code,
+    }
+
+    start = g.get('_request_start_timestamp', None)
+    if start is not None:
+        summary['t'] = int(1000 * (time.time() - start))
+
+    request_logger.info('request summary', extra=summary)
+
     return response
 
 
@@ -34,15 +61,25 @@ def heartbeat():
             current_app.config['LANDO_API_URL'] + '/__lbheartbeat__'
         )
         response.raise_for_status()
-    except (requests.HTTPError, requests.ConnectionError):
+        healthy = True
+    except (requests.HTTPError, requests.ConnectionError) as exc:
         logger.warning(
-            {
-                'msg': 'problem connecting to lando-api',
-            }, 'heartbeat'
+            'unhealthy: problem with backing service',
+            extra={
+                'service_name': 'lando_api',
+                'errors': ['requests.RequestException: {!s}'.format(exc)],
+            }
         )
-        return 'heartbeat: problem', 500
-    logger.info({'msg': 'ok, all services are up'}, 'heartbeat')
-    return 'heartbeat: ok', 200
+        healthy = False
+
+    return jsonify(
+        {
+            'healthy': healthy,
+            'services': {
+                'lando_api': healthy,
+            },
+        }
+    ), 200 if healthy else 502
 
 
 @dockerflow.route('/__lbheartbeat__')

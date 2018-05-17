@@ -18,10 +18,10 @@ def test_heartbeat_returns_200_if_lando_api_up(client, api_url):
         assert client.get('/__heartbeat__').status_code == 200
 
 
-def test_heartbeat_returns_500_if_lando_api_down(client, api_url):
+def test_heartbeat_returns_502_if_lando_api_down(client, api_url):
     with requests_mock.mock() as m:
         m.get(api_url + '/__lbheartbeat__', exc=requests.ConnectionError)
-        assert client.get('/__heartbeat__').status_code == 500
+        assert client.get('/__heartbeat__').status_code == 502
 
 
 def test_dockerflow_version_endpoint_response(client):

@@ -6,7 +6,6 @@ import os
 import binascii
 import json
 
-import logging
 import pytest
 
 from landoui.app import create_app
@@ -21,19 +20,13 @@ def docker_env_vars(monkeypatch):
 
 
 @pytest.fixture
-def disable_log_output():
-    """Disable Python standard logging output to the console."""
-    logging.disable(logging.CRITICAL)
-
-
-@pytest.fixture
 def api_url():
     """A string holding the Lando API base URL. Useful for request mocking."""
     return 'http://lando-api.test'
 
 
 @pytest.fixture
-def app(versionfile, disable_log_output, docker_env_vars, api_url):
+def app(versionfile, docker_env_vars, api_url):
     app = create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),

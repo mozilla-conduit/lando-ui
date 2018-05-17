@@ -75,12 +75,7 @@ def ui_error(e):
 
 def unexpected_error(e):
     """Handler for all uncaught Exceptions."""
-    logger.error(
-        {
-            'exception_type': str(type(e)),
-            'exception_message': str(e)
-        }, 'unexpected_error'
-    )
+    logger.exception('unexpected error')
     sentry.captureException()
 
     return render_template(
