@@ -29,7 +29,6 @@ GET_REVISION_DEFAULT = {
     'author': {
         'phid': 'PHID-USER-testuser',
         'real_name': 'Test User',
-        'url': 'http://phabricator.test/p/test_user/',
         'username': 'test_user'
     },
     'reviewers': [
