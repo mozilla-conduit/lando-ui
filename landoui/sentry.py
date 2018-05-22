@@ -42,3 +42,8 @@ def initialize_sentry(app, release):
     environment = os.environ.get('ENV', None)
     sentry.client.environment = environment
     log_config_change('SENTRY_LOG_ENVIRONMENT_AS', environment)
+
+    sentry.client.processors = (
+        'raven.processors.SanitizePasswordsProcessor',
+        'raven.processors.RemoveStackLocalsProcessor',
+    )
