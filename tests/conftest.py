@@ -36,6 +36,7 @@ def app(versionfile, docker_env_vars, api_url):
         use_https=0,
         enable_asset_pipeline=False,
         lando_api_url=api_url,
+        debug=True
     )
 
     # Turn on the TESTING setting so that exceptions within the app bubble up

@@ -13,6 +13,7 @@ from flask_talisman import Talisman
 from webassets.loaders import YAMLLoader
 
 from landoui import auth, errorhandlers
+from landoui.helpers import str2bool
 from landoui.logging import log_config_change, MozLogFormatter
 from landoui.sentry import initialize_sentry
 
@@ -25,7 +26,8 @@ oidc = None
 
 def create_app(
     version_path, secret_key, session_cookie_name, session_cookie_domain,
-    session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url
+    session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url,
+    debug
 ):
     """
     Create an app instance.
@@ -49,6 +51,7 @@ def create_app(
     initialize_logging()
 
     app = Flask(__name__)
+    app.debug = debug
 
     # Set configuration
     app.config['VERSION_PATH'] = version_path
@@ -66,10 +69,15 @@ def create_app(
     # Set remaining configuration
     app.config['SECRET_KEY'] = secret_key
     app.config['SESSION_COOKIE_NAME'] = session_cookie_name
+    log_config_change('SESSION_COOKIE_NAME', session_cookie_name)
     app.config['SESSION_COOKIE_DOMAIN'] = session_cookie_domain
+    log_config_change('SESSION_COOKIE_DOMAIN', session_cookie_domain)
     app.config['SESSION_COOKIE_SECURE'] = session_cookie_secure
+    log_config_change('SESSION_COOKIE_SECURE', session_cookie_secure)
     app.config['SERVER_NAME'] = session_cookie_domain
+    log_config_change('SERVER_NAME', session_cookie_domain)
     app.config['USE_HTTPS'] = use_https
+    log_config_change('USE_HTTPS', use_https)
     app.config['PREFERRED_URL_SCHEME'] = 'https' if use_https else 'http'
 
     Talisman(app, content_security_policy=csp, force_https=use_https)
@@ -187,7 +195,9 @@ def run_dev_server(
     """
     app = create_app(
         version_path, secret_key, session_cookie_name, session_cookie_domain,
-        session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url
+        str2bool(session_cookie_secure),
+        str2bool(use_https), enable_asset_pipeline, lando_api_url,
+        str2bool(debug)
     )
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True

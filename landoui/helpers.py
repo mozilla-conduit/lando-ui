@@ -33,3 +33,8 @@ def set_last_local_referrer():
     full_path = request.script_root + request.path
     if full_path not in IGNORED_ROUTES:
         session['last_local_referrer'] = request.url
+
+
+def str2bool(value):
+    """Translate a string to a boolean value."""
+    return str(value).lower() in ('yes', 'true', 'y', '1')
