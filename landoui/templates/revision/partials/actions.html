@@ -2,17 +2,17 @@
 {% set disabled = 'disabled' if warnings|length else '' %}
 <div class="RevisionPage-actions">
   {% if latest_status == 'landed' %}
-    <button {{disabled}}>
+    <button type="submit" {{disabled}}>
       <div class="RevisionPage-actions-headline">Re-land {{revision['id']}} </div>
       <div class="RevisionPage-actions-subtitle">queue for landing</div>
     </button>
   {% elif latest_status == 'submitted' %}
-    <button disabled>
+    <button type="submit" disabled>
       <div class="RevisionPage-actions-headline">Landing Queued</div>
       <div class="RevisionPage-actions-subtitle">please wait</div>
     </button>
   {% else %}
-    <button {{disabled}}>
+    <button type="submit" {{disabled}}>
       <div class="RevisionPage-actions-headline">Land {{revision['id']}}</div>
       <div class="RevisionPage-actions-subtitle">queue for landing</div>
     </button>
