@@ -25,9 +25,15 @@ oidc = None
 
 
 def create_app(
-    version_path, secret_key, session_cookie_name, session_cookie_domain,
-    session_cookie_secure, use_https, enable_asset_pipeline, lando_api_url,
-    debug
+    version_path,
+    secret_key,
+    session_cookie_name,
+    session_cookie_domain,
+    session_cookie_secure,
+    use_https,
+    enable_asset_pipeline,
+    lando_api_url,
+    debug=False
 ):
     """
     Create an app instance.

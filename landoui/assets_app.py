@@ -22,4 +22,5 @@ app = create_app(
     use_https=0,
     enable_asset_pipeline=True,
     lando_api_url='lando-api.test',
+    debug=True
 )
