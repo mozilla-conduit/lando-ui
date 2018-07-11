@@ -1,20 +1,19 @@
 {% set latest_status = landing_statuses|latest_status %}
-{% set disabled = 'disabled' if warnings|length else '' %}
 <div class="RevisionPage-actions">
-  {% if latest_status == 'landed' %}
-    <button type="submit" {{disabled}}>
-      <div class="RevisionPage-actions-headline">Re-land {{revision['id']}} </div>
-      <div class="RevisionPage-actions-subtitle">queue for landing</div>
-    </button>
-  {% elif latest_status == 'submitted' %}
-    <button type="submit" disabled>
-      <div class="RevisionPage-actions-headline">Landing Queued</div>
-      <div class="RevisionPage-actions-subtitle">please wait</div>
+  {% if is_user_authenticated() %}
+    <button class="RevisionPage-land-button"
+            data-latest-status="{{latest_status}}">
+      <div class="RevisionPage-actions-headline">
+        {{ 'Re-Land' if latest_status == 'landed' else 'Land' }} {{revision['id']}}
+      </div>
+      <div class="RevisionPage-actions-subtitle">
+        Preview Landing
+      </div>
     </button>
   {% else %}
-    <button type="submit" {{disabled}}>
+    <button disabled>
       <div class="RevisionPage-actions-headline">Land {{revision['id']}}</div>
-      <div class="RevisionPage-actions-subtitle">queue for landing</div>
+      <div class="RevisionPage-actions-subtitle">You must log in first</div>
     </button>
   {% endif %}
 </div>

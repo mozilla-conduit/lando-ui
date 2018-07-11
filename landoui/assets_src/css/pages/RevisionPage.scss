@@ -58,6 +58,10 @@ h1.RevisionPage-heading {
   font-family: monospace;
 }
 
+.RevisionPage-landing-info {
+  display: none;
+}
+
 ul.RevisionPage-warnings {
   list-style-type: none;
   margin-bottom: $revision-spacing;
@@ -88,6 +92,21 @@ ul.RevisionPage-blockers {
     background: #E8A2A2;
     border-color: #A53030;
     color:#A53030;
+    margin-bottom: 4px;
+    padding: 3px 9px 3px 30px;
+    position: relative;
+  }
+}
+
+ul.RevisionPage-success {
+  list-style-type: none;
+  margin-bottom: $revision-spacing;
+  margin-left: 0;
+
+  & li {
+    background: #b1e8bf;
+    border-color: #50a529;
+    color: #40a529;
     margin-bottom: 4px;
     padding: 3px 9px 3px 30px;
     position: relative;
@@ -190,6 +209,10 @@ ul.RevisionPage-blockers {
   @extend .u-revision-badge;
   background: #eae6f7;
   color: #6e5cb6;
+}
+
+.u-bold {
+  font-weight: bold;
 }
 
 /* Put this somewhere */

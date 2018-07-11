@@ -22,7 +22,7 @@
   <div class="RevisionPage-revision"
     data-diff-id="{{revision['diff']['id']}}"
     data-revision-id="{{revision['id']}}">
-    <form action="" method="post">
+    <form class="RevisionPage-form" action="" method="post">
       {{form.csrf_token}}
       {{form.diff_id}}
       {{form.confirmation_token}}
@@ -76,22 +76,27 @@
       </div>
 
       {% if landing_statuses|latest_status != 'submitted' %}
+        <!-- warnings and blockers -->
         {% if is_user_authenticated() %}
-          {% if blockers %}
-            {% include "revision/partials/blockers.html" %}
-          {% else %}
-            {% include "revision/partials/warnings.html" %}
-            {% include "revision/partials/actions.html" %}
-          {% endif %}
-        {% else %}
-          <ul class="RevisionPage-warnings">
-              <li class="RevisionPage-warning">
-                You must be logged in to initiate a landing.
-              </li>
-          </ul>
+          <div class="RevisionPage-landing-info">
+            {% if blockers %}
+              {% include "revision/partials/blockers.html" %}
+            {% elif warnings %}
+              {% include "revision/partials/warnings.html" %}
+            {% else %}
+              <ul class="RevisionPage-success">
+                <li>
+                  All prechecks have passed and this revision is clear to land.
+                  Click the 'Confirm' button to continue.
+                </li>
+              </ul>
+            {% endif %}
+          </div>
         {% endif %}
-      {% endif %}
 
+        <!-- land button -->
+        {% include "revision/partials/actions.html" %}
+      {% endif %}
     </form>
   </div>
 </main>
