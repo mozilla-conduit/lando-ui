@@ -75,19 +75,21 @@
         </div>
       </div>
 
-      {% if is_user_authenticated() %}
-        {% if blockers %}
-          {% include "revision/partials/blockers.html" %}
+      {% if landing_statuses|latest_status != 'submitted' %}
+        {% if is_user_authenticated() %}
+          {% if blockers %}
+            {% include "revision/partials/blockers.html" %}
+          {% else %}
+            {% include "revision/partials/warnings.html" %}
+            {% include "revision/partials/actions.html" %}
+          {% endif %}
         {% else %}
-          {% include "revision/partials/warnings.html" %}
-          {% include "revision/partials/actions.html" %}
+          <ul class="RevisionPage-warnings">
+              <li class="RevisionPage-warning">
+                You must be logged in to initiate a landing.
+              </li>
+          </ul>
         {% endif %}
-      {% else %}
-        <ul class="RevisionPage-warnings">
-            <li class="RevisionPage-warning">
-              You must be logged in to initiate a landing.
-            </li>
-        </ul>
       {% endif %}
 
     </form>
