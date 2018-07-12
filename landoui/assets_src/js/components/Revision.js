@@ -64,13 +64,47 @@ $.fn.revision = function() {
       });
     };
 
+    let enhanceCommitMessage = () => {
+      const lineHeight = 1.25;
+      let $toggleButton = $revision.find('.RevisionPage-commit-expand');
+      let $commitMessage = $revision.find('.RevisionPage-commit-message');
+      let $seeMore = $revision.find('.RevisionPage-commit-see-more');
+      let lines = $commitMessage.text().split(/\r\n|\r|\n/).length;
+
+      // Show the toggle button and more indicator only if the commit message is long.
+      if(lines > 8){
+        $toggleButton.text('Show all ' + lines + ' lines');
+        $toggleButton.css('display', 'inline-block');
+        $seeMore.text('... (' + (lines - 8) + ' more lines)');
+        $seeMore.css('display', 'block');
+      }
+      else {
+        return;
+      }
+
+      // Show/hide of full commit message based on button click
+      $toggleButton.on('click', (e) => {
+        e.preventDefault();
+
+        if($commitMessage.data('expanded')) {
+          $commitMessage.css('max-height', `${lineHeight * 8.5}em`);
+          $commitMessage.data('expanded', false);
+          $toggleButton.text('Show all ' + lines + ' lines');
+          $seeMore.css('display', 'block');
+        }
+        else {
+          $commitMessage.css('max-height', '100000em');
+          $commitMessage.data('expanded', true);
+          $toggleButton.text('Hide lines');
+          $seeMore.css('display', 'none');
+        }
+      });
+    };
+
+    enhanceCommitMessage();
+
     // Format timestamps
     $revision.find('time[data-timestamp]').formatTime();
-
-    // Show/hide of full commit message based on button click
-    $revision.find('.show-full-message').on('click', function() {
-      $revision.find('.RevisionPage-commit-full').slideToggle();
-    });
 
     // Transition to attempt a landing on initial click
     $landButton.bind('click', landingTransition);
