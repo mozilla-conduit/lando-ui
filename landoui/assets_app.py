@@ -21,6 +21,6 @@ app = create_app(
     session_cookie_secure=False,
     use_https=0,
     enable_asset_pipeline=True,
-    lando_api_url='lando-api.test',
+    lando_api_url='http://lando-api.test',
     debug=True
 )

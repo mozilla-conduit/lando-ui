@@ -53,6 +53,25 @@ def test_render_valid_revision_logged_in(app, api_url):
     assert response.status_code == 200
 
 
+def test_commit_message_escape_html(client, api_url):
+    # The commit message is one critical place where we add valid html
+    # and then output the entire thing unescaped. This test makes sure
+    # that the user data coming in is escaped before we add our extra html.
+    with requests_mock.mock() as m:
+        m.get(
+            api_url + '/landings?revision_id=D1',
+            json=canned_landoapi.GET_LANDINGS_DEFAULT
+        )
+        m.get(
+            api_url + '/revisions/D1',
+            json=canned_landoapi.GET_REVISION_DEFAULT
+        )
+        response = client.get('/revisions/D1/')
+    assert response.status_code == 200
+    assert b'<script>bad()</script>' not in response.get_data()
+    assert b'&lt;script&gt;bad()&lt;/script&gt' in response.get_data()
+
+
 def test_missing_revision_returns_404(client, api_url):
     with requests_mock.mock() as m:
         m.get(api_url + '/revisions/D1057', status_code=404)

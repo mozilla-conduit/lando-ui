@@ -3,7 +3,7 @@
 <ul class="RevisionPage-blockers">
     {% for blocker in blockers %}
         <li class="RevisionPage-blocker">
-            {{ blocker['message'] }}
+            {{ blocker['message']|escape_html|linkify_diff_ids(revision['id'])|safe }}
         </li>
     {% endfor %}
 </ul>
