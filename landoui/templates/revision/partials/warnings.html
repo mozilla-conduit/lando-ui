@@ -5,7 +5,7 @@
         <li class="RevisionPage-warning">
             <label>
                 <input type="checkbox" name="warnings['{{ warning['id'] }}']" id="{{ warning['id'] }}" value="1" />
-                {{ warning['message'] }}
+                {{ warning['message']|escape_html|linkify_diff_ids(revision['id'])|safe }}
             </label>
         </li>
     {% endfor %}

@@ -66,7 +66,10 @@
           <a class="RevisionPage-commit-expand" href="#">Show More</a>
         </div>
         <div class="RevisionPage-section-contents">
-          <div class="RevisionPage-commit-message">{{revision['commit_message']}}</div>
+          <pre class="RevisionPage-commit-message">{{
+            revision['commit_message']|escape_html|linkify_bug_numbers|linkify_revision_urls|safe
+          }}
+          </pre>
           <div class="RevisionPage-commit-see-more"></div>
         </div>
       </div>
