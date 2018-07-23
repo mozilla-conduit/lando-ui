@@ -119,3 +119,18 @@ def linkify_diff_ids(text, revision_id):
         revision_id=revision_id
     )
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
+
+
+@template_helpers.app_template_filter()
+def linkify_commit_id(text, landing_status):
+    # The landing status result is not always guaranteed to be a commit id. It
+    # can be a message saying that the landing was queued and will land later.
+    if landing_status['status'] != 'landed':
+        return text
+
+    commit_id = landing_status['result']
+    search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
+    replace = '<a href="{tree_url}/rev/\g<1>">{tree_url}/rev/\g<1></a>'.format(
+        tree_url=landing_status['tree_url']
+    )
+    return re.sub(search, replace, str(text))  # This is case sensitive

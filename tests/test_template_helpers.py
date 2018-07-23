@@ -6,7 +6,8 @@ import urllib.parse
 import pytest
 
 from landoui.template_helpers import (
-    avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_diff_ids
+    avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_diff_ids,
+    linkify_commit_id
 )
 
 
@@ -138,3 +139,43 @@ def test_linkify_revision_urls(app, input_text, output_text):
 )
 def test_linkify_diff_ids(app, input_text, revision_id, output_text):
     assert output_text == linkify_diff_ids(input_text, revision_id)
+
+
+@pytest.mark.parametrize(
+    'input_text,landing_status,output_text', [
+        (
+            'commitid123', {
+                'status': 'landed',
+                'result': 'commitid123',
+                'tree_url': 'http://hg.test/treename'
+            }, (
+                '<a href="http://hg.test/treename/rev/commitid123">'
+                'http://hg.test/treename/rev/commitid123</a>'
+            )
+        ),
+        (
+            'commitid123', {
+                'status': 'landed',
+                'result': 'commitid123456',
+                'tree_url': 'http://hg.test'
+            }, 'commitid123'
+        ),
+        (
+            'commitid123456', {
+                'status': 'landed',
+                'result': 'commitid123',
+                'tree_url': 'http://hg.test'
+            }, 'commitid123456'
+        ),
+        (
+            'commitid123', {
+                'status': 'failed',
+                'result': '',
+                'error': 'landing failed :(',
+                'tree_url': 'http://hg.test'
+            }, 'commitid123'
+        ),
+    ]
+)
+def test_linkify_commit_ids(app, input_text, landing_status, output_text):
+    assert output_text == linkify_commit_id(input_text, landing_status)
