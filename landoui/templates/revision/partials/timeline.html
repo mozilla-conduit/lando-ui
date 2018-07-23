@@ -10,7 +10,7 @@
           With <a href="{{revision['url']}}?id={{status['diff_id']}}">Diff {{status['diff_id']}}</a>
           on <time data-timestamp="{{status['created_at']}}"></time>, by {{status['requester_email']}}.<br>
           {% if status['result'] %}
-            <strong>Result:</strong> {{status['result']}}
+            <strong>Result:</strong> {{status['result']|escape_html|linkify_commit_id(status)|safe}}
           {% elif status['error_msg'] %}
             <strong>Error:</strong> {{status['error_msg']}}
           {% endif %}
