@@ -13,7 +13,8 @@ from flask import (
 )
 
 from landoui.app import oidc
-from landoui.helpers import set_last_local_referrer
+from landoui.errorhandlers import UIError
+from landoui.helpers import set_last_local_referrer, is_user_authenticated
 
 logger = logging.getLogger(__name__)
 
@@ -57,3 +58,49 @@ def logout():
     )
 
     return redirect(logout_url, code=302)
+
+
+@oidc.error_view
+def oidc_error(error=None, error_description=None):
+    """Handles authentication errors returned by Auth0.
+
+    When something goes wrong with authentication, Auth0 redirects to our
+    provided redirect uri (simply /redirect_uri when using flask_pyoidc) with
+    the above two query parameters: error and error_description.
+    We hook into this using the @oidc.error_view decorator so we can handle
+    recoverable errors.
+
+    The most common error is with refreshing the user's session automatically,
+    officially called "Silent Authentication" (see
+    https://auth0.com/docs/api-auth/tutorials/silent-authentication).
+
+    With silent authentication enabled, flask_pyoidc passes 'prompt=none'
+    when it requests authentication. If the user's greater Single Sign On
+    session is still active, then the user is logged in seamlessly and their
+    lando-ui session is refreshed. When the user's greater Single Sign On
+    session is expired, Auth0 explicitly raises a 'login_required' error and
+    provides that at our redirect_uri. Auth0 requires that the login is
+    requested _without_ the 'prompt=none' option. By clearing the current
+    session, flask_pyoidc knows to request login with a prompt.
+
+    In general, when something goes wrong, we logout the user so that they can
+    try again from a fresh state. If the user wasn't logged in to begin with,
+    then we display an error message and log it.
+    """
+    if is_user_authenticated() or error == 'login_required':
+        # last_local_referrer is guaranteed to not be a signin/signout route.
+        redirect_url = session.get('last_local_referrer') or '/'
+        session.clear()
+        return redirect(redirect_url)
+    else:
+        logger.error(
+            'authentication error',
+            extra={
+                'error': error,
+                'error_description': error_description
+            }
+        )  # yapf: disable
+        raise UIError(
+            title='Authentication Error: {}'.format(error),
+            message=error_description
+        )
