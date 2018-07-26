@@ -87,7 +87,10 @@ def oidc_error(error=None, error_description=None):
     try again from a fresh state. If the user wasn't logged in to begin with,
     then we display an error message and log it.
     """
-    if is_user_authenticated() or error == 'login_required':
+    if (
+            is_user_authenticated() or
+            error in ('login_required', 'interaction_required')
+       ):
         # last_local_referrer is guaranteed to not be a signin/signout route.
         redirect_url = session.get('last_local_referrer') or '/'
         session.clear()
