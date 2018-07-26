@@ -11,7 +11,6 @@ RUN pip install --no-cache -r /python_requirements/common.txt \
 RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev git
 
 RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
-RUN npm install --global eslint
 RUN gem install sass --no-ri --no-rdoc -v 3.4.25
 
 # Create a Dockerflow version file at the root so
