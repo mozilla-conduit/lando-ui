@@ -1,14 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import logging
-import urllib.parse
-
 from flask import (Blueprint)
 
 from landoui import helpers
 
-logger = logging.getLogger(__name__)
 template_helpers = Blueprint('template_helpers', __name__)
 
 
@@ -59,28 +55,3 @@ def latest_status(statuses):
 
     statuses = sorted(statuses, key=lambda k: k['updated_at'], reverse=True)
     return statuses[0]['status']
-
-
-@template_helpers.app_template_filter()
-def avatar_url(url):
-    # If a user doesn't have a gravatar image for their auth0 email address,
-    # gravatar uses auth0's provided default which redirects to
-    # *.wp.com/cdn.auth0.com/. Instead of whitelisting this in our CSP,
-    # here, we opt into a default generated image provided by gravatar.
-    try:
-        parsed_url = urllib.parse.urlsplit(url)
-        # Relative URLs should raise an error
-        assert parsed_url.netloc
-    except (AttributeError, AssertionError):
-        logger.debug('Invalid avatar url provided', extra={'url': url})
-        return ''
-
-    if parsed_url.netloc in ('s.gravatar.com', 'www.gravatar.com'):
-        query = urllib.parse.parse_qs(parsed_url.query)
-        query['d'] = 'identicon'
-        parsed_url = (
-            parsed_url[:3] +
-            (urllib.parse.urlencode(query, doseq=True), ) + parsed_url[4:]
-        )
-
-    return urllib.parse.urlunsplit(parsed_url)
