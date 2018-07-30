@@ -5,9 +5,7 @@ import urllib.parse
 
 import pytest
 
-from landoui.template_helpers import (
-    avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_diff_ids
-)
+from landoui.template_helpers import avatar_url
 
 
 @pytest.mark.parametrize(
@@ -47,94 +45,3 @@ def test_avatar_url(input_url, output_url):
 
     assert (expected.scheme, expected.netloc, expected.path) == \
            (actual.scheme, actual.netloc, actual.path)
-
-
-@pytest.mark.parametrize(
-    'input_text,output_text', [
-        (
-            'Bug 123',
-            '<a href="http://bmo.test/show_bug.cgi?id=123">Bug 123</a>'
-        ),
-        (
-            'bug 123',
-            '<a href="http://bmo.test/show_bug.cgi?id=123">bug 123</a>'
-        ),
-        (
-            'Testing Bug 1413384 word boundaries', (
-                'Testing <a href="http://bmo.test/show_bug.cgi?id=1413384">'
-                'Bug 1413384</a> word boundaries'
-            )
-        ),
-        (
-            'Bug 123 - commit title. r=test\n\nCommit message Bug 456', (
-                '<a href="http://bmo.test/show_bug.cgi?id=123">Bug 123</a> - '
-                'commit title. r=test\n\nCommit message '
-                '<a href="http://bmo.test/show_bug.cgi?id=456">Bug 456</a>'
-            )
-        ),
-        ('A message with no bug number', 'A message with no bug number'),
-    ]
-)
-def test_linkify_bug_numbers(app, input_text, output_text):
-    assert output_text == linkify_bug_numbers(input_text)
-
-
-@pytest.mark.parametrize(
-    'input_text,output_text', [
-        (
-            'http://phabricator.test/D123', (
-                '<a href="http://phabricator.test/D123">'
-                'http://phabricator.test/D123</a>'
-            )
-        ),
-        (
-            'word http://phabricator.test/D201525 boundaries', (
-                'word <a href="http://phabricator.test/D201525">'
-                'http://phabricator.test/D201525</a> boundaries'
-            )
-        ),
-        (
-            (
-                'multiple http://phabricator.test/D123\n'
-                'revisions http://phabricator.test/D456'
-            ), (
-                'multiple <a href="http://phabricator.test/D123">'
-                'http://phabricator.test/D123</a>\nrevisions '
-                '<a href="http://phabricator.test/D456">'
-                'http://phabricator.test/D456</a>'
-            )
-        ),
-        (
-            'No revision example: http://phabricator.test/herald/',
-            'No revision example: http://phabricator.test/herald/'
-        ),
-    ]
-)
-def test_linkify_revision_urls(app, input_text, output_text):
-    assert output_text == linkify_revision_urls(input_text)
-
-
-@pytest.mark.parametrize(
-    'input_text,revision_id,output_text', [
-        (
-            'Diff 123', 'D99',
-            '<a href="http://phabricator.test/D99?id=123">Diff 123</a>'
-        ),
-        (
-            'A Diff 123 boundary test', 'D99', (
-                'A <a href="http://phabricator.test/D99?id=123">Diff 123</a> '
-                'boundary test'
-            )
-        ),
-        (
-            'One Diff 123\nTwo Diff 456', 'D99', (
-                'One <a href="http://phabricator.test/D99?id=123">Diff 123</a>'
-                '\n'
-                'Two <a href="http://phabricator.test/D99?id=456">Diff 456</a>'
-            )
-        ),
-        ('Message with no diff', 'D99', 'Message with no diff'),
-    ]
-)
-def test_linkify_diff_ids(app, input_text, revision_id, output_text):
-    assert output_text == linkify_diff_ids(input_text, revision_id)

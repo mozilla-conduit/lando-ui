@@ -2,10 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import logging
-import re
 import urllib.parse
 
-from flask import (Blueprint, current_app, escape)
+from flask import (Blueprint)
 
 from landoui import helpers
 
@@ -16,11 +15,6 @@ template_helpers = Blueprint('template_helpers', __name__)
 @template_helpers.app_template_global()
 def is_user_authenticated():
     return helpers.is_user_authenticated()
-
-
-@template_helpers.app_template_filter()
-def escape_html(text):
-    return escape(text)
 
 
 @template_helpers.app_template_filter()
@@ -90,32 +84,3 @@ def avatar_url(url):
         )
 
     return urllib.parse.urlunsplit(parsed_url)
-
-
-@template_helpers.app_template_filter()
-def linkify_bug_numbers(text):
-    search = r'(?=\b)(Bug (\d+))(?=\b)'
-    replace = '<a href="{bmo_url}/show_bug.cgi?id=\g<2>">\g<1></a>'.format(
-        bmo_url=current_app.config['BUGZILLA_URL']
-    )
-    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
-
-
-@template_helpers.app_template_filter()
-def linkify_revision_urls(text):
-    search = (
-        r'(?=\b)(' + re.escape(current_app.config['PHABRICATOR_URL']) +
-        r'/D\d+)(?=\b)'
-    )
-    replace = '<a href="\g<1>">\g<1></a>'
-    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
-
-
-@template_helpers.app_template_filter()
-def linkify_diff_ids(text, revision_id):
-    search = r'(?=\b)(Diff (\d+))(?=\b)'
-    replace = '<a href="{phab_url}/{revision_id}?id=\g<2>">\g<1></a>'.format(
-        phab_url=current_app.config['PHABRICATOR_URL'],
-        revision_id=revision_id
-    )
-    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
