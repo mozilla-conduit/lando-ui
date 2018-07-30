@@ -11,8 +11,7 @@ GET_REVISION_DEFAULT = {
     'commit_message_title': 'Bug 1 - My test diff 1 r=review_bot',
     'commit_message': (
         'Bug 1 - My test diff 1 r=review_bot\n\n'
-        'Summary 1\n\n<script>bad()</script>\n\n'
-        'Differential Revision: http://phabricator.test/D1'
+        'Summary 1\n\nDifferential Revision: http://phabricator.test/D1'
     ),
     'url': 'http://phabricator.test/D1',
     'date_created': "2017-05-24T15:04:30+00:00",

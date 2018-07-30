@@ -5,7 +5,6 @@ import json
 import logging
 import logging.config
 import os
-from urllib.parse import urlparse
 
 import click
 from flask import Flask
@@ -72,12 +71,6 @@ def create_app(
 
     app.config['LANDO_API_URL'] = lando_api_url
     log_config_change('LANDO_API_URL', lando_api_url)
-    app.config['BUGZILLA_URL'] = _lookup_service_url(lando_api_url, 'bugzilla')
-    log_config_change('BUGZILLA_URL', app.config['BUGZILLA_URL'])
-    app.config['PHABRICATOR_URL'] = (
-        _lookup_service_url(lando_api_url, 'phabricator')
-    )
-    log_config_change('PHABRICATOR_URL', app.config['PHABRICATOR_URL'])
 
     # Set remaining configuration
     app.config['SECRET_KEY'] = secret_key
@@ -216,23 +209,3 @@ def run_dev_server(
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
     app.run(debug=debug, port=port, host=host)
-
-
-def _lookup_service_url(lando_api_url, service_name):
-    # Returns the corresponding service instance url based on the lando-api
-    # url given. Errors out if given an invalid lando_api_url or service name.
-    lando_api_hostname = urlparse(lando_api_url).netloc.split(':')[0].lower()
-    return {
-        'lando-api.test': {
-            'bugzilla': 'http://bmo.test',
-            'phabricator': 'http://phabricator.test'
-        },
-        'api.lando.devsvcdev.mozaws.net': {
-            'bugzilla': 'https://bugzilla-dev.allizom.org',
-            'phabricator': 'https://phabricator-dev.allizom.org'
-        },
-        'api.lando.services.mozilla.com': {
-            'bugzilla': 'https://bugzilla.mozilla.org',
-            'phabricator': 'https://phabricator.services.mozilla.com'
-        }
-    }[lando_api_hostname][service_name]
