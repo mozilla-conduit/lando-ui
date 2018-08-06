@@ -20,36 +20,36 @@
   <ul>
     {% if not reviewers %}
       <li>
-        <span class="u-revision-badge--neutral">There are no reviewers for this Revision</span>
+        <span class="Badge Badge--neutral">There are no reviewers for this Revision</span>
       </li>
     {% endif %}
     {% if new %}
       <li>
-        <span class="u-revision-badge">Pending Review</span>
+        <span class="Badge">Pending Review</span>
         — From {{list_reviewers(new)}}
       </li>
     {% endif %}
     {% if rejected %}
       <li>
-        <span class="u-revision-badge--negative">Rejected</span>
+        <span class="Badge Badge--negative">Rejected</span>
         — By {{list_reviewers(rejected)}}
       </li>
     {% endif %}
     {% if accepted %}
       <li>
-        <span class="u-revision-badge--positive">Accepted</span>
+        <span class="Badge Badge--positive">Accepted</span>
         — By {{list_reviewers(accepted)}}
       </li>
     {% endif %}
     {% if rejected_other %}
       <li>
-        <span class="u-revision-badge--warning">Other Diff Rejected</span>
+        <span class="Badge Badge--warning">Other Diff Rejected</span>
         — By {{list_reviewers(rejected_other)}}
       </li>
     {% endif %}
     {% if accepted_other %}
       <li>
-        <span class="u-revision-badge--neutral">Other Diff Accepted</span>
+        <span class="Badge Badge--neutral">Other Diff Accepted</span>
         — By {{list_reviewers(accepted_other)}}
       </li>
     {% endif %}

@@ -1,0 +1,35 @@
+<div class="StackPage-timeline">
+    {% if transplants %}
+      {%- for status in transplants|sort(attribute='updated_at', reverse=True) %}
+        <div class="StackPage-timeline-item">
+          <div class="StackPage-timeline-itemStatus">
+            <span class="{{status|tostatusbadgeclass}}">{{status|tostatusbadgename}}</span>
+          </div>
+
+          <div class="StackPage-timeline-itemDetail">
+            On <time data-timestamp="{{status['created_at']}}"></time>, by {{status['requester_email']}}.<br>
+            <strong>Revisions:</strong>
+            {% for i in status['landing_path'] %}{{
+              "" if loop.first else " ← "
+            }}{{i['revision_id']}} diff {{i['diff_id']
+            }}{% endfor %}
+            <br>
+            {% if status['status'] == 'landed' %}
+              <strong>Result:</strong> {{status['details']|escape_html|linkify_transplant_details(status)|safe}}
+            {% elif status['details'] %}
+              <strong>Details:</strong> {{status['details']}}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="StackPage-timeline-item">
+        <div class="StackPage-timeline-itemStatus">
+          <span class="Badge">Not yet Landed</span>
+        </div>
+        <div class="StackPage-timeline-itemDetail">
+          There has been no attempt to land revisions in this stack.
+        </div>
+      </div>
+    {% endif %}
+  </div>

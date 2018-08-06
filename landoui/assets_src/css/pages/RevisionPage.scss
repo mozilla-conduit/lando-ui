@@ -1,5 +1,3 @@
-@import "../colors";
-
 $revision-spacing: 20px;
 
 /* Page Structure */
@@ -192,44 +190,6 @@ ul.RevisionPage-success {
   & ul > li {
     margin-bottom: 0.5rem;
   }
-}
-
-/* Utilities */
-.u-revision-badge {
-  white-space: nowrap;
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 3px;
-  background: #efefef;
-  font-size: 0.8rem;
-}
-
-.u-revision-badge--positive {
-  @extend .u-revision-badge;
-  background: #ddefdd;
-  color: #326d34;
-}
-
-.u-revision-badge--negative {
-  @extend .u-revision-badge;
-  background: #f7e6e6;
-  color: #a53737;
-}
-
-.u-revision-badge--warning {
-  @extend .u-revision-badge;
-  background: #fdf3da;
-  color: #77612d;
-}
-
-.u-revision-badge--neutral {
-  @extend .u-revision-badge;
-  background: #eae6f7;
-  color: #6e5cb6;
-}
-
-.u-bold {
-  font-weight: bold;
 }
 
 /* Put this somewhere */

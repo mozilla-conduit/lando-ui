@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import functools
 import logging
 
 from flask import Blueprint, current_app, render_template, redirect, session
@@ -8,7 +9,9 @@ from flask import Blueprint, current_app, render_template, redirect, session
 from landoui.app import oidc
 from landoui.forms import RevisionForm
 from landoui.helpers import is_user_authenticated, set_last_local_referrer
+from landoui.landoapi import LandoAPI, LandoAPIError
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
+from landoui.errorhandlers import RevisionNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -16,20 +19,108 @@ revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
 
 
+def oidc_auth_optional(f):
+    """Decorator that runs auth only if the user is logged in."""
+    no_auth_f = f
+    auth_f = oidc.oidc_auth(f)
+
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not is_user_authenticated():
+            handler = no_auth_f
+        else:
+            handler = auth_f
+
+        return handler(*args, **kwargs)
+
+    return wrapped
+
+
+@revisions.route('/D<int:revision_id>/', methods=('GET', ))
+@oidc_auth_optional
+def revision(revision_id):
+    api = LandoAPI(
+        current_app.config['LANDO_API_URL'],
+        auth0_access_token=session.get('access_token')
+    )
+
+    # Request the entire stack.
+    try:
+        stack = api.request('GET', 'stacks/D{}'.format(revision_id))
+    except LandoAPIError as e:
+        if e.status_code == 404:
+            raise RevisionNotFound(revision_id)
+        else:
+            raise
+
+    # Build a mapping from phid to revision and identify
+    # the data for the revision used to load this page.
+    revision = None
+    revisions = {}
+    for r in stack['revisions']:
+        revisions[r['phid']] = r
+        if r['id'] == 'D{}'.format(revision_id):
+            revision = r['phid']
+
+    # Request all previous transplants for the stack.
+    transplants = api.request(
+        'GET',
+        'transplants',
+        params={'stack_revision_id': 'D{}'.format(revision_id)}
+    )
+
+    # TODO: support displaying the full DAG, and landing *past* the
+    # current revision.
+    #
+    # The revision may appear in many `landable_paths`` if it has
+    # multiple children, or any of its landable descendents have
+    # multiple children. That being said, there should only be a
+    # single unique path up to this revision, so find the first
+    # it appears in. The revisions up to the target one in this
+    # path form the landable series.
+    series = None
+    for p in stack['landable_paths']:
+        try:
+            series = p[:p.index(revision) + 1]
+            break
+        except ValueError:
+            pass
+
+    dryrun = None
+    if series and is_user_authenticated():
+        dryrun = api.request(
+            'POST',
+            'transplants/dryrun',
+            require_auth0=True,
+            json={
+                'landing_path': [
+                    {
+                        'revision_id': revisions[phid]['id'],
+                        'diff_id': revisions[phid]['diff']['id'],
+                    } for phid in series
+                ]
+            }
+        )
+        series = list(reversed(series))
+
+    return render_template(
+        'stack/stack.html',
+        revision_id='D{}'.format(revision_id),
+        series=series,
+        dryrun=dryrun,
+        stack=stack,
+        transplants=transplants,
+        revisions=revisions,
+        revision_phid=revision,
+    )
+
+
 @revisions.route(
     '/revisions/<revision_id>/<diff_id>/', methods=('GET', 'POST')
 )
 @revisions.route('/revisions/<revision_id>/')
+@oidc_auth_optional
 def revisions_handler(revision_id, diff_id=None):
-    if not is_user_authenticated():
-        handler = _revisions_handler
-    else:
-        handler = _revisions_handler_with_auth
-
-    return handler(revision_id, diff_id=diff_id)
-
-
-def _revisions_handler(revision_id, diff_id=None):
     landoapi = LandoAPIClient(
         landoapi_url=current_app.config['LANDO_API_URL'],
         phabricator_api_token=None,
@@ -84,6 +175,3 @@ def _revisions_handler(revision_id, diff_id=None):
         blockers=dryrun_result.get('blockers', []),
         errors=errors
     )
-
-
-_revisions_handler_with_auth = oidc.oidc_auth(_revisions_handler)

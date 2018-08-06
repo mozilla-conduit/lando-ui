@@ -1,0 +1,233 @@
+@import "../colors";
+
+
+.StackPage-reviewer-list {
+  display: flex;
+
+  & > div {
+    margin-right: 1rem;
+  }
+
+  &-name {
+    font-weight: 600;
+  }
+
+  &-badge {
+    margin-right: 0.5rem;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+
+  & ul > li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.StackPage-stack {
+  overflow-x: auto;
+  white-space: nowrap;
+
+  & table {
+    margin-bottom: 0;
+  }
+}
+
+.StackPage-revision {
+
+  &-title {
+    width: 1%;
+    &-text {
+      max-width: 60ch;
+      text-overflow:ellipsis;
+      overflow: hidden;
+    }
+  }
+  &-status,
+  &-bug,
+  &-graph {
+    width: 1%;
+  }
+
+  &-details {
+    & div {
+      display: inline-block;
+    }
+  }
+}
+
+.StackPage-actions {
+  text-align: right;
+  margin-top: 20px;
+
+  button {
+    border: 0;
+    text-align: center;
+    color: #fff;
+    background: #3F9B47;
+    padding: 8px 20px;
+    border-radius: 5px;
+    min-width: 16rem;
+    min-height: 4.5rem;
+  }
+
+  button[disabled] {
+    background: #efefef;
+    color: inherit;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  button[inprogress] {
+    background: #e5ac00;
+    color: white;
+  }
+
+  &-headline {
+    font-size: 1.6rem;
+  }
+
+  &-subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+.StackPage-landing-info {
+  & h2 {
+    margin-top: 20px;
+    font-weight: bold;
+  }
+}
+
+ul.StackPage-blockers {
+  list-style-type: none;
+  margin-left: 0;
+
+  & li {
+    background: #E8A2A2;
+    border-color: #A53030;
+    color:#A53030;
+    margin-bottom: 4px;
+    padding: 3px 9px 3px 30px;
+    position: relative;
+  }
+}
+
+
+.StackPage-blockerReason {
+  display: inline-flex;
+  position: relative;
+  vertical-align: top;
+  &.is-active,
+  &:hover
+    .StackPage-blockerReason-tooltip {
+      display: block;
+  }
+}
+
+.StackPage-blockerReason-tooltip {
+  display: none;
+  left: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 20;
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
+  padding: 3px 9px;
+  background: #f7e6e6;
+  color: #a53737;
+  margin-left: 2px;
+  font-size: 0.8rem;
+}
+
+
+.StackPage-landingPreview {
+  .modal-card {
+    width: 1344px;
+    max-width: calc(100vw - 20px)
+  }
+
+  &-sectionLabel {
+    font-weight: bold;
+    margin-top: 1em;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  &-section {
+    margin-left: 1ch;
+  }
+
+  hr {
+    border: none;
+    border-top: 2px double #333;
+    color: #333;
+    overflow: visible;
+    text-align: center;
+    height: 5px;
+  }
+
+  hr:after {
+    background: #fff;
+    content: '↓';
+    padding: 0 4px;
+    position: relative;
+    top: -13px;
+  }
+
+  &-commitMessage {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1em;
+    white-space: pre-wrap;
+    height: auto;
+    max-height: 1.25em * 8.5;
+    line-height: 1.25em;
+    overflow-y: hidden;
+    padding: 0;
+    margin-top: 1ch;
+    margin-left: 1ch;
+    color: inherit;
+    background-color: inherit;
+    border: 1px dashed black;
+    padding: 0.5ch;
+  }
+
+  &-warningsList {
+    list-style-type: none;
+  }
+
+  &-warning {
+    background: #fdf3da;
+    border-color: #e9dbcd;
+    color:#726f56;
+    margin-bottom: 4px;
+    padding: 3px 9px 3px 30px;
+    position: relative;
+
+    input {
+      position: absolute;
+      top: 10px;
+      left: 8px;
+    }
+  }
+
+  &-blocker {
+    background: #E8A2A2;
+    border-color: #A53030;
+    color:#A53030;
+    margin-bottom: 4px;
+    padding: 3px 9px 3px 30px;
+    position: relative;
+  }
+}
+
+.StackPage-timeline {
+  &-item {
+    display: grid;
+    grid-template-columns: 150px auto;
+    margin-bottom: 20px;
+  }
+}

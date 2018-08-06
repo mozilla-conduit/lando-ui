@@ -39,12 +39,50 @@ def select_reviewers(reviewers, *args, other_diffs=None):
 @template_helpers.app_template_filter()
 def tostatusbadgeclass(status):
     mapping = {
-        'aborted': 'u-revision-badge--negative',
-        'submitted': 'u-revision-badge--warning',
-        'landed': 'u-revision-badge--positive',
-        'failed': 'u-revision-badge--negative'
+        'aborted': 'Badge Badge--negative',
+        'submitted': 'Badge Badge--warning',
+        'landed': 'Badge Badge--positive',
+        'failed': 'Badge Badge--negative'
     }
-    return mapping.get(status['status'], 'u-revision-badge--negative')
+    return mapping.get(status['status'], 'Badge Badge--negative')
+
+
+@template_helpers.app_template_filter()
+def reviewer_to_status_badge_class(reviewer):
+    return {
+        # status: (current_diff, for_other_diff),
+        'accepted': ('Badge Badge--positive', 'Badge Badge--neutral'),
+        'rejected': ('Badge Badge--negative', 'Badge Badge--warning'),
+        'added': ('Badge', 'Badge'),
+        'blocking': ('Badge', 'Badge'),
+    }.get(
+        reviewer['status'], ('Badge Badge--warning', 'Badge Badge--warning')
+    )[1 if reviewer['for_other_diff'] else 0]
+
+
+@template_helpers.app_template_filter()
+def reviewer_to_action_text(reviewer):
+    options = {
+        # status: (current_diff, for_other_diff),
+        'accepted': ('accepted', 'accepted a prior diff'),
+        'rejected': ('requested changes', 'requested changes to a prior diff'),
+        'added': ('to review', 'to review'),
+        'blocking': ('must review', 'must review'),
+    }.get(reviewer['status'], ('UNKNOWN STATE', 'UNKNOWN STATE'))
+    return options[1 if reviewer['for_other_diff'] else 0]
+
+
+@template_helpers.app_template_filter()
+def revision_status_to_badge_class(status):
+    return {
+        "abandoned": 'Badge',
+        "accepted": 'Badge Badge--positive',
+        "changes-planned": 'Badge Badge--neutral',
+        "published": 'Badge',
+        "needs-review": 'Badge Badge--warning',
+        "needs-revision": 'Badge Badge--negative',
+        "draft": 'Badge Badge--neutral',
+    }.get(status, 'Badge Badge--warning')
 
 
 @template_helpers.app_template_filter()
@@ -132,5 +170,20 @@ def linkify_commit_id(text, landing_status):
     search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
     replace = '<a href="{tree_url}/rev/\g<1>">{tree_url}/rev/\g<1></a>'.format(
         tree_url=landing_status['tree_url']
+    )
+    return re.sub(search, replace, str(text))  # This is case sensitive
+
+
+@template_helpers.app_template_filter()
+def linkify_transplant_details(text, transplant):
+    # The transplant result is not always guaranteed to be a commit id. It
+    # can be a message saying that the landing was queued and will land later.
+    if transplant['status'] != 'landed':
+        return text
+
+    commit_id = transplant['details']
+    search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
+    replace = '<a href="{repo_url}/rev/\g<1>">{repo_url}/rev/\g<1></a>'.format(
+        repo_url=transplant['repository_url']
     )
     return re.sub(search, replace, str(text))  # This is case sensitive

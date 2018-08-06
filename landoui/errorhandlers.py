@@ -6,6 +6,11 @@ import logging
 from flask import render_template
 
 from landoui.sentry import sentry
+from landoui.landoapi import (
+    LandoAPICommunicationException,
+    LandoAPIError,
+    LandoAPIException,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +93,38 @@ def unexpected_error(e):
     ), 500
 
 
+def landoapi_communication(e):
+    sentry.captureException()
+    logger.exception('Uncaught communication exception with Lando API.')
+
+    return render_template(
+        'errorhandlers/default_error.html',
+        title='Could not Communicate with Lando API',
+        message=(
+            'There was an error when trying to communicate with '
+            'Lando API. Please try your request again later.'
+        )
+    ), 500
+
+
+def landoapi_exception(e):
+    sentry.captureException()
+    logger.exception('Uncaught communication exception with Lando API.')
+
+    return render_template(
+        'errorhandlers/default_error.html',
+        title='Lando API returned an unexpected error',
+        message=str(e)
+    ), 500
+
+
 def register_error_handlers(app):
     """Function to register error handlers on the flask app."""
+    app.register_error_handler(
+        LandoAPICommunicationException, landoapi_communication
+    )
+    app.register_error_handler(LandoAPIError, landoapi_exception)
+    app.register_error_handler(LandoAPIException, landoapi_exception)
     app.register_error_handler(RevisionNotFound, revision_not_found)
     app.register_error_handler(UIError, ui_error)
     app.register_error_handler(Exception, unexpected_error)

@@ -1,0 +1,112 @@
+{% extends "partials/layout.html" %}
+{% block page_title %}{{revision_id}} - Lando - Mozilla{% endblock %}
+
+{% block main %}
+<main class="StackPage container fullhd">
+  <h1>Landings for Stack Containing {{revisions[revision_phid]['id']}}</h1>
+  {% include "stack/partials/timeline.html" %}
+
+  {% if not series %}
+    {% set display_revisions = [revision_phid] %}
+  {% else %}
+    {% set display_revisions = series %}
+  {% endif %}
+
+  <h1>{{"Landable Series for r" if series else "R"}}evision {{revisions[revision_phid]['id']}}</h1>
+  <div class="StackPage-stack">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Bug</th>
+          <th>Status</th>
+          <th>Revision</th>
+          <th>Reviewers</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for phid in display_revisions %}
+        {% set revision = revisions[phid] %}
+        <tr class="StackPage-revision">
+          <td class="StackPage-revision-graph">*<!-- TODO: commit graph --></td>
+          <td class="StackPage-revision-bug">
+            {% if revision['bug_id'] is not none %}
+            <a href="#">{{revision['bug_id']}}</a>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+          <td class="StackPage-revision-status">
+            {% include "stack/partials/revision-status.html" %}
+          </td>
+          <td class="StackPage-revision-title">
+            <div class="StackPage-revision-title-text">
+              <a href="{{revision['url']}}">{{revision['id']}}</a>: {{revision['title']}}
+            </div>
+          </td>
+          <td class="StackPage-revision-reviewers">
+            {% with reviewers=revision['reviewers'] %}
+            {% include "stack/partials/revision-reviewers.html" %}
+            {% endwith %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="StackPage-landing-info">
+
+  {% set blockers = [] %}
+  {% if is_user_authenticated() and blockers %}
+    <h2>Landing is blocked:</h2>
+    <ul class="StackPage-blockers">
+    {% for blocker in blockers %}
+      <li class="StackPage-blocker">
+          {{ blocker }}
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </div>
+
+  <div class="StackPage-actions">
+  {% if not is_user_authenticated() %}
+    <button disabled>
+      <div class="StackPage-actions-headline">Preview Landing</div>
+      <div class="StackPage-actions-subtitle">You must log in first</div>
+    </button>
+  {% elif not series or dryrun is none %}
+    <button disabled>
+      <div class="StackPage-actions-headline">Landing Blocked</div>
+      <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
+    </button>
+  {% else %}
+    <button class="StackPage-preview-button">
+      <div class="StackPage-actions-headline">Preview Landing</div>
+    </button>
+  {% endif %}
+  </div>
+
+  {% if is_user_authenticated() %}
+  <div class="StackPage-landingPreview modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Preview landing</p>
+        <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        {% include "stack/partials/landing-preview.html" %}
+      </section>
+      <footer class="modal-card-foot">
+        <button class="StackPage-landingPreview-land button" disabled>Land</button>
+        <button class="StackPage-landingPreview-close button">Cancel</button>
+      </footer>
+    </div>
+  </div>
+  {% endif %}
+
+
+</main>
+{% endblock %}

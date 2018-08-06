@@ -1,0 +1,58 @@
+{% if dryrun is none %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h2>
+  <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
+    Reason for blockage is unknown
+  </div>
+{% elif dryrun['blocker'] %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h2>
+  <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
+    {{dryrun['blocker']}}
+  </div>
+{% elif series %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h2>
+  <div class="StackPage-landingPreview-section StackPage-landingPreview-commitList">
+  {% for phid in series %}
+  {% set revision = revisions[phid] %}
+    {% if not loop.first %}<hr>{% endif %}
+    <div class="StackPage-landingPreview-revision">
+      <div>
+        <a href="{{revision['url']}}?id={{revision['diff']['id']}}">
+          {{revision['id']}} Diff {{revision['diff']['id']}}
+        </a>
+        - commit author
+        <strong>
+          {{revision['diff']['author']['name'] or 'Unknown'}}
+          {% if revision['diff']['author']['email'] %}
+            &lt;{{revision['diff']['author']['email']}}&gt;
+          {% endif %}
+        </strong>
+      </div>
+      <pre class="StackPage-landingPreview-commitMessage">{{
+        revision['commit_message']|escape_html|linkify_bug_numbers|linkify_revision_urls|safe
+      }}</pre>
+      <div class="RevisionPage-commit-see-more"></div>
+    </div>
+  {% endfor %}
+  </div>
+  <h3 class="StackPage-landingPreview-sectionLabel">Warnings:</h2>
+  <div class="StackPage-landingPreview-section StackPage-landingPreview-warnings">
+    {% if dryrun['warnings'] %}
+    <ul class="StackPage-landingPreview-warningsList">
+      {% for warning in dryrun['warnings'] %}
+        <li class="StackPage-landingPreview-warning">
+          <label>
+            <input type="checkbox" name="warnings[]" value="1" />
+            {{ warning['display'] }}
+            [{% for instance in warning['instances'] %}{{
+              ", " if not loop.first else ""
+            }}{{instance['revision_id']
+            }}{% endfor %}]
+          </label>
+        </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    There are no landing warnings.
+    {% endif %}
+  </div>
+{% endif %}

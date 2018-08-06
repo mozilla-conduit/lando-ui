@@ -1,0 +1,30 @@
+@import "../colors";
+
+.Badge {
+  white-space: nowrap;
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: $grey-lighter;
+  font-size: 0.8rem;
+
+  &--positive {
+    background: #ddefdd;
+    color: #326d34;
+  }
+
+  &--negative {
+    background: #f7e6e6;
+    color: #a53737;
+  }
+
+  &--warning {
+    background: #fdf3da;
+    color: #77612d;
+  }
+
+  &--neutral {
+    background: #eae6f7;
+    color: #6e5cb6;
+  }
+}

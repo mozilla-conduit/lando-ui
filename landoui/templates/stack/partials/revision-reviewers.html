@@ -1,0 +1,16 @@
+<ul class="StackPage-reviewer-list">
+  {%- for reviewer in reviewers %}
+    <li class="{{ reviewer|reviewer_to_status_badge_class }} StackPage-reviewer-list-badge">
+      <span class="StackPage-reviewer-list-name" title="{{reviewer['full_name']}}">
+        @{{reviewer['identifier']}}
+      </span>
+      {{ reviewer|reviewer_to_action_text }}{{" (Blocks Landing)" if reviewer['blocking_landing']}}
+    </li>
+  {% else %}
+    <li class="Badge Badge--neutral StackPage-reviewer-list-badge">
+      <span class="StackPage-reviewer-list-name">
+          There are no reviewers for this Revision
+      </span>
+    </li>
+  {% endfor %}
+  </ul>

@@ -2,10 +2,14 @@
 
 $(document).ready(function() {
   let $revision = $('.RevisionPage-revision');
+  let $timeline = $('.StackPage-timeline');
+  let $landingPreview = $('.StackPage-landingPreview');
 
   // Initialize components
   $('.Navbar').landoNavbar();
   $revision.revision();
+  $timeline.timeline();
+  $landingPreview.landingPreview();
 
   // Update the URL to include diff id, if it doesn't already
   if($revision.length) {
