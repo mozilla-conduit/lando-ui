@@ -3,6 +3,17 @@
 
 {% block main %}
 <main class="StackPage container fullhd">
+  {% if errors %}
+  <div class="StackPage-errors">
+    <span>Landing Failed</span>
+    <ul>
+      {% for error in errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
   <h1>Landings for Stack Containing {{revisions[revision_phid]['id']}}</h1>
   {% include "stack/partials/timeline.html" %}
 
@@ -31,7 +42,7 @@
           <td class="StackPage-revision-graph">*<!-- TODO: commit graph --></td>
           <td class="StackPage-revision-bug">
             {% if revision['bug_id'] is not none %}
-            <a href="#">{{revision['bug_id']}}</a>
+            <a href="{{revision['bug_id']|bug_url}}">{{revision['bug_id']}}</a>
             {% else %}
             -
             {% endif %}
@@ -89,22 +100,27 @@
   </div>
 
   {% if is_user_authenticated() %}
-  <div class="StackPage-landingPreview modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Preview landing</p>
-        <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
-      </header>
-      <section class="modal-card-body">
-        {% include "stack/partials/landing-preview.html" %}
-      </section>
-      <footer class="modal-card-foot">
-        <button class="StackPage-landingPreview-land button" disabled>Land</button>
-        <button class="StackPage-landingPreview-close button">Cancel</button>
-      </footer>
+  <form class="StackPage-form" action="" method="post">
+    {{form.csrf_token}}
+    {{form.landing_path}}
+    {{form.confirmation_token}}
+    <div class="StackPage-landingPreview modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Preview landing</p>
+          <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+          {% include "stack/partials/landing-preview.html" %}
+        </section>
+        <footer class="modal-card-foot">
+          <button class="StackPage-landingPreview-land button" disabled>Land</button>
+          <button class="StackPage-landingPreview-close button">Cancel</button>
+        </footer>
+      </div>
     </div>
-  </div>
+  </form>
   {% endif %}
 
 

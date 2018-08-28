@@ -2,12 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import functools
+import json
 import logging
 
-from flask import Blueprint, current_app, render_template, redirect, session
+from flask import (
+    Blueprint,
+    current_app,
+    render_template,
+    redirect,
+    session,
+    url_for,
+)
 
 from landoui.app import oidc
-from landoui.forms import RevisionForm
+from landoui.forms import RevisionForm, TransplantRequestForm
 from landoui.helpers import is_user_authenticated, set_last_local_referrer
 from landoui.landoapi import LandoAPI, LandoAPIError
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
@@ -36,13 +44,44 @@ def oidc_auth_optional(f):
     return wrapped
 
 
-@revisions.route('/D<int:revision_id>/', methods=('GET', ))
+@revisions.route('/D<int:revision_id>/', methods=('GET', 'POST'))
 @oidc_auth_optional
 def revision(revision_id):
     api = LandoAPI(
         current_app.config['LANDO_API_URL'],
         auth0_access_token=session.get('access_token')
     )
+
+    form = TransplantRequestForm()
+    errors = []
+    if form.is_submitted():
+        if not is_user_authenticated():
+            errors.append('You must be logged in to request a landing')
+
+        elif not form.validate():
+            for _, field_errors in form.errors.items():
+                errors.extend(field_errors)
+
+        else:
+            try:
+                api.request(
+                    'POST',
+                    'transplants',
+                    require_auth0=True,
+                    json={
+                        'landing_path': json.loads(form.landing_path.data),
+                        'confirmation_token': form.confirmation_token.data,
+                    }
+                )
+                # We don't actually need any of the data from the
+                # the submission. As long as an exception wasn't
+                # raised we're successful.
+                return redirect(url_for('revision', revision_id=revision_id))
+            except LandoAPIError as e:
+                if not e.detail:
+                    raise
+
+                errors.append(e.detail)
 
     # Request the entire stack.
     try:
@@ -88,19 +127,22 @@ def revision(revision_id):
 
     dryrun = None
     if series and is_user_authenticated():
+        landing_path = [
+            {
+                'revision_id': revisions[phid]['id'],
+                'diff_id': revisions[phid]['diff']['id'],
+            } for phid in series
+        ]
+        form.landing_path.data = json.dumps(landing_path)
+
         dryrun = api.request(
             'POST',
             'transplants/dryrun',
             require_auth0=True,
-            json={
-                'landing_path': [
-                    {
-                        'revision_id': revisions[phid]['id'],
-                        'diff_id': revisions[phid]['diff']['id'],
-                    } for phid in series
-                ]
-            }
+            json={'landing_path': landing_path}
         )
+        form.confirmation_token.data = dryrun.get('confirmation_token')
+
         series = list(reversed(series))
 
     return render_template(
@@ -112,6 +154,8 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
+        errors=errors,
+        form=form,
     )
 
 

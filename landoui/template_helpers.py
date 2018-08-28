@@ -187,3 +187,23 @@ def linkify_transplant_details(text, transplant):
         repo_url=transplant['repository_url']
     )
     return re.sub(search, replace, str(text))  # This is case sensitive
+
+
+@template_helpers.app_template_filter()
+def bug_url(text):
+    return '{bmo_url}/show_bug.cgi?id={bug_number}'.format(
+        bmo_url=current_app.config['BUGZILLA_URL'], bug_number=text
+    )
+
+
+@template_helpers.app_template_filter()
+def revision_url(text, diff_id=None):
+    url = '{phab_url}/{revision_id}'.format(
+        phab_url=current_app.config['PHABRICATOR_URL'], revision_id=text
+    )
+    if diff_id is not None and diff_id != '':
+        url = '{revision_url}?id={diff_id}'.format(
+            revision_url=url, diff_id=diff_id
+        )
+
+    return url
