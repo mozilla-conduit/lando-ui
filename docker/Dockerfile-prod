@@ -11,34 +11,16 @@ CMD ["/usr/local/bin/uwsgi"]
 
 RUN addgroup -g 10001 app && adduser -D -u 10001 -G app -h /app app
 
-RUN mkdir /python_requirements
-COPY requirements/* /python_requirements/
+RUN mkdir /app/python_requirements
+COPY requirements/* /app/requirements/
+COPY docker/*.sh /usr/local/bin
 
 # Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
 # uninstall any compile-time OS package dependencies and keep only the run-time
 # OS package dependencies.
-RUN set -ex \
-    && apk add --update --no-cache --virtual .build-deps \
-           gcc \
-           git \
-           libc-dev \
-           musl-dev \
-           linux-headers \
-           pcre-dev \
-           openssl-dev \
-           libffi-dev \
-    && pip install --no-cache -r /python_requirements/common.txt \
-    && pip install --no-cache -r /python_requirements/vendor.txt \
-    && pip install --no-cache -r /python_requirements/production.txt \
-	&& runDeps="$( \
-		scanelf --needed --nobanner --recursive /usr/local \
-			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			| sort -u \
-			| xargs -r apk info --installed \
-			| sort -u \
-	)" \
-	&& apk add --virtual .python-rundeps $runDeps \
-    && apk del .build-deps
+RUN install-deps.sh \
+    /app/requirements/common.txt \
+    /app/requirements/production.txt
 
 COPY . /app
 RUN pip install --no-cache /app
