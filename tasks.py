@@ -1,12 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import json
 import os
 
 from invoke import Collection, task, run
 
-DOCKER_IMAGE_NAME = os.getenv('DOCKERHUB_REPO', 'mozilla/landoui')
 # The 'pty' setting is nice, as it provides colour output, but it doesn't work
 # on Windows.
 USE_PTY = os.name != 'nt'
@@ -64,36 +62,6 @@ def test_all(ctx):
     pass
 
 
-@task(name='version')
-def version_json(ctx):
-    """Print version information in JSON format."""
-    version = {
-        'commit': os.getenv('CIRCLE_SHA1', None),
-        'version': os.getenv('CIRCLE_SHA1', None),
-        'source': 'https://github.com/mozilla-conduit/lando-ui',
-        'build': os.getenv('CIRCLE_BUILD_URL', None)
-    }
-    print(json.dumps(version))
-
-
-@task(name='build')
-def build(ctx):
-    """Build the production docker image."""
-    ctx.run(
-        'docker build --pull -t {image_name} '
-        '-f ./docker/Dockerfile-prod .'.format(image_name=DOCKER_IMAGE_NAME)
-    )
-
-
-@task(name='imageid')
-def imageid(ctx):
-    """Print the built docker image ID."""
-    ctx.run(
-        "docker inspect -f '{format}' {image_name}".
-        format(image_name=DOCKER_IMAGE_NAME, format='{{.Id}}')
-    )
-
-
 namespace = Collection(
     Collection(
         'test',
@@ -108,5 +76,5 @@ namespace = Collection(
     ), Collection(
         'format',
         format_all,
-    ), version_json, build, imageid
+    )
 )

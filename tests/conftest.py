@@ -11,12 +11,41 @@ import pytest
 from landoui.app import create_app
 
 
+def in_circleci():
+    """Are we running under CircleCI?"""
+    # See https://circleci.com/docs/2.0/env-vars/#built-in-environment-variables # noqa
+    return bool(os.environ.get('CIRCLECI'))
+
+
 @pytest.fixture
 def docker_env_vars(monkeypatch):
     """Monkeypatch environment variables that we'd get running under docker."""
+
     monkeypatch.setenv('OIDC_DOMAIN', 'test_oidc_domain')
     monkeypatch.setenv('OIDC_CLIENT_ID', 'test_oidc_client_id')
     monkeypatch.setenv('OIDC_CLIENT_SECRET', 'test_oidc_secret')
+
+    if in_circleci():
+        import socket
+        monkeypatch.setenv('DEBUG', 'True')
+        monkeypatch.setenv('HOST', '0.0.0.0')
+        monkeypatch.setenv('PORT', '7777')
+        monkeypatch.setenv(
+            'LANDO_API_OIDC_IDENTIFIER', 'lando-api-oidc-identifier'
+        )
+        monkeypatch.setenv('VERSION_PATH', '/version.json')
+        monkeypatch.setenv('SECRET_KEY', 'secret_key_change_me')
+        monkeypatch.setenv(
+            'SESSION_COOKIE_NAME', '{}:7777'.format(socket.gethostname())
+        )
+        monkeypatch.setenv(
+            'SESSION_COOKIE_DOMAIN', '{}:7777'.format(socket.gethostname())
+        )
+        monkeypatch.setenv('SESSION_COOKIE_SECURE', '0')
+        monkeypatch.setenv('USE_HTTPS', '0')
+        monkeypatch.setenv('LANDO_API_URL', 'http://lando-api.test:8888')
+        monkeypatch.setenv('SENTRY_DSN', '')
+        monkeypatch.setenv('LOG_LEVEL', 'DEBUG')
 
 
 @pytest.fixture
