@@ -76,7 +76,9 @@ def revision(revision_id):
                 # We don't actually need any of the data from the
                 # the submission. As long as an exception wasn't
                 # raised we're successful.
-                return redirect(url_for('revision', revision_id=revision_id))
+                return redirect(
+                    url_for('revisions.revision', revision_id=revision_id)
+                )
             except LandoAPIError as e:
                 if not e.detail:
                     raise
