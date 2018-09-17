@@ -16,7 +16,9 @@ from flask import (
 
 from landoui.app import oidc
 from landoui.forms import RevisionForm, TransplantRequestForm
-from landoui.helpers import is_user_authenticated, set_last_local_referrer
+from landoui.helpers import (
+    get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
+)
 from landoui.landoapi import LandoAPI, LandoAPIError
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
 from landoui.errorhandlers import RevisionNotFound
@@ -49,7 +51,8 @@ def oidc_auth_optional(f):
 def revision(revision_id):
     api = LandoAPI(
         current_app.config['LANDO_API_URL'],
-        auth0_access_token=session.get('access_token')
+        auth0_access_token=session.get('access_token'),
+        phabricator_api_token=get_phabricator_api_token()
     )
 
     form = TransplantRequestForm()
@@ -169,7 +172,7 @@ def revision(revision_id):
 def revisions_handler(revision_id, diff_id=None):
     landoapi = LandoAPIClient(
         landoapi_url=current_app.config['LANDO_API_URL'],
-        phabricator_api_token=None,
+        phabricator_api_token=get_phabricator_api_token(),
         auth0_access_token=session.get('access_token')
     )
 

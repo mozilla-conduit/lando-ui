@@ -83,3 +83,20 @@ def test_raise_error_with_details_on_error_response(api_url):
         assert exc_info.value.status_code == error['status']
         assert exc_info.value.response == error
         assert exc_info.value.instance is None
+
+
+def test_phabricator_api_token_in_request_header(api_url):
+    api = LandoAPI(api_url, phabricator_api_token='api_token')
+    with requests_mock.mock() as m:
+        m.get(
+            api_url + '/stacks/D1',
+            request_headers={'X-Phabricator-API-Key': 'api_token'},
+            status_code=404,
+            text='{}'
+        )
+
+        # NoMockAddress would be raised for the wrong header
+        with pytest.raises(LandoAPIError):
+            api.request('GET', 'stacks/D1')
+
+        assert m.called

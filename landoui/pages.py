@@ -7,6 +7,8 @@ import os
 from flask import (
     Blueprint,
     current_app,
+    jsonify,
+    make_response,
     redirect,
     render_template,
     session,
@@ -14,7 +16,9 @@ from flask import (
 
 from landoui.app import oidc
 from landoui.errorhandlers import UIError
+from landoui.forms import UserSettingsForm
 from landoui.helpers import set_last_local_referrer, is_user_authenticated
+from landoui.usersettings import manage_phab_api_token_cookie
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +61,30 @@ def logout():
         )
     )
 
-    return redirect(logout_url, code=302)
+    response = make_response(redirect(logout_url, code=302))
+    response.delete_cookie('phabricator-api-token')
+    return response
+
+
+@pages.route('/settings', methods=['POST'])
+@oidc.oidc_auth
+def settings():
+    if not is_user_authenticated():
+        # Accessing it unauthenticated from UI is protected by CSP
+        return jsonify(
+            dict(
+                success=False,
+                errors=dict(form_errors=['User is not authenticated'])
+            )
+        )
+
+    form = UserSettingsForm()
+    if not form.validate_on_submit():
+        return jsonify(dict(success=False, errors=form.errors))
+
+    payload = dict(success=True)
+    response = manage_phab_api_token_cookie(form, payload)
+    return response
 
 
 @oidc.error_view
@@ -94,7 +121,9 @@ def oidc_error(error=None, error_description=None):
         # last_local_referrer is guaranteed to not be a signin/signout route.
         redirect_url = session.get('last_local_referrer') or '/'
         session.clear()
-        return redirect(redirect_url)
+        response = make_response(redirect(redirect_url))
+        response.delete_cookie('phabricator-api-token')
+        return response
     else:
         logger.error(
             'authentication error',

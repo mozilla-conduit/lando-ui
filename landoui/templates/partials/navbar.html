@@ -60,22 +60,40 @@
     </div>
   </div>
 
-  <div class="Navbar-modal modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Settings</p>
-        <button class="Navbar-modalCancel delete"></button>
-      </header>
-      <section class="modal-card-body">
-        This modal will later be used to implement the Phabricator
-        privileged mode workflow and also as a settings window for things
-        like customizing the user's timezone.
-      </section>
-      <footer class="modal-card-foot">
-        <a class="Navbar-modalSubmit button is-success">Save changes</a>
-        <a class="Navbar-modalCancel button">Cancel</a>
-      </footer>
+  {% if is_user_authenticated() %}
+    <div class="Navbar-modal modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Settings</p>
+          <button class="Navbar-modalCancel delete"></button>
+        </header>
+        <section class="modal-card-body">
+          <form
+            class="userSettingsForm"
+            {% if request.cookies['phabricator-api-token'] %}
+              data-phabricator_api_token=1
+            {% endif %}>
+            {% set settings_form = new_settings_form() %}
+            {{ settings_form.phab_api_token.label() }} |
+            {{ settings_form.reset_phab_api_token.label() }}:
+            {{ settings_form.reset_phab_api_token(class_='checkbox') }}
+            {{ settings_form.phab_api_token(size=32, maxlength=32, minlength=32, class_='input') }}
+            {{ settings_form.csrf_token() }}
+            <ul id="phab_api_token_errors" class="userSettingsForm-Errors"></ul>
+            <ul id="form_errors" class="userSettingsForm-Errors"></ul>
+          </form>
+          <p>
+            Your API token will be removed on log out.<br/>
+            The API token allows anybody with access to it to perform actions on your behalf.
+            It is important not to store your API token anywhere but here or on the Phabricator site.
+          </p>
+        </section>
+        <footer class="modal-card-foot">
+          <a class="Navbar-modalSubmit button is-success">Save changes</a>
+          <a class="Navbar-modalCancel button">Cancel</a>
+        </footer>
+      </div>
     </div>
-  </div>
+  {% endif %}
 </nav>

@@ -195,6 +195,56 @@ def test_post_landings_dryrun_success(api_url):
     assert canned_landoapi.POST_LANDINGS_DRYRUN_SUCCESS == result
 
 
+def test_phabricator_api_token_in_request_header(api_url):
+    landoapi = LandoAPIClient(
+        api_url,
+        auth0_access_token='access_token',
+        phabricator_api_token='api_token'
+    )
+    with requests_mock.mock() as m:
+        m.get(
+            api_url + '/revisions/D1',
+            request_headers={'X-Phabricator-API-Key': 'api_token'},
+            status_code=404
+        )
+        with pytest.raises(RevisionNotFound):
+            landoapi.get_revision('D1')
+
+        m.get(
+            api_url + '/landings',
+            request_headers={'X-Phabricator-API-Key': 'api_token'},
+            status_code=404
+        )
+        with pytest.raises(RevisionNotFound):
+            landoapi.get_landings('D1')
+
+        m.post(
+            api_url + '/landings',
+            request_headers={
+                'Authorization': 'Bearer access_token',
+                'X-Phabricator-API-Key': 'api_token'
+            },
+            status_code=404
+        )
+        with pytest.raises(LandingSubmissionError) as exc_info:
+            landoapi.post_landings('D1', '1', None)
+
+        assert 'Lando API did not respond successfull' in exc_info.value.error
+
+        m.post(
+            api_url + '/landings/dryrun',
+            request_headers={
+                'Authorization': 'Bearer access_token',
+                'X-Phabricator-API-Key': 'api_token'
+            },
+            status_code=404
+        )
+        with pytest.raises(UIError) as exc_info:
+            landoapi.post_landings_dryrun('D1', '1')
+
+        assert 404 == exc_info.value.status_code
+
+
 def test_post_landings_dryrun_no_access_token(api_url):
     landoapi = LandoAPIClient(api_url, auth0_access_token=None)
     with requests_mock.mock() as m:

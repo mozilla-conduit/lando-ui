@@ -65,10 +65,12 @@ class LandoAPIClient:
         )
 
         try:
-            # TODO: Use the phabricator_api_token if provided to allow
-            # the user to view private revisions.
+            headers = {
+                'X-Phabricator-API-Key': self.phabricator_api_token
+            } if self.phabricator_api_token else None
+
             response = requests.get(
-                get_revision_url, params={'diff_id': diff_id}
+                get_revision_url, params={'diff_id': diff_id}, headers=headers
             )
 
             if response.status_code == 404:
@@ -123,10 +125,14 @@ class LandoAPIClient:
         get_landings_url = '{host}/landings'.format(host=self.landoapi_url)
 
         try:
-            # TODO: Use the phabricator_api_token if provided to allow
-            # the user to view landings of private revisions
+            headers = {
+                'X-Phabricator-API-Key': self.phabricator_api_token
+            } if self.phabricator_api_token else None
+
             response = requests.get(
-                get_landings_url, params={'revision_id': revision_id}
+                get_landings_url,
+                params={'revision_id': revision_id},
+                headers=headers
             )
 
             if response.status_code == 404:
@@ -188,6 +194,8 @@ class LandoAPIClient:
             'Authorization': 'Bearer {}'.format(self.auth0_access_token),
             'Content-Type': 'application/json',
         }
+        if self.phabricator_api_token:
+            headers['X-Phabricator-API-Key'] = self.phabricator_api_token
 
         # Make request and handle response
         try:
@@ -319,6 +327,8 @@ class LandoAPIClient:
             'Authorization': 'Bearer {}'.format(self.auth0_access_token),
             'Content-Type': 'application/json',
         }
+        if self.phabricator_api_token:
+            headers['X-Phabricator-API-Key'] = self.phabricator_api_token
 
         # Make request and handle response
         try:

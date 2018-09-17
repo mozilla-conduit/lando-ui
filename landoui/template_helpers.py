@@ -6,6 +6,7 @@ import re
 import urllib.parse
 
 from flask import (Blueprint, current_app, escape)
+from landoui.forms import UserSettingsForm
 
 from landoui import helpers
 
@@ -207,3 +208,8 @@ def revision_url(text, diff_id=None):
         )
 
     return url
+
+
+@template_helpers.app_template_global()
+def new_settings_form():
+    return UserSettingsForm()

@@ -38,3 +38,11 @@ def set_last_local_referrer():
 def str2bool(value):
     """Translate a string to a boolean value."""
     return str(value).lower() in ('yes', 'true', 'y', '1')
+
+
+def get_phabricator_api_token():
+    """Gets the Phabricator API Token from the cookie."""
+    if is_user_authenticated() and 'phabricator-api-token' in request.cookies:
+        return request.cookies['phabricator-api-token']
+
+    return None

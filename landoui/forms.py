@@ -5,8 +5,8 @@ import json
 from json.decoder import JSONDecodeError
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, ValidationError
-from wtforms.validators import InputRequired, Regexp
+from wtforms import BooleanField, HiddenField, StringField, ValidationError
+from wtforms.validators import InputRequired, optional, Regexp
 
 
 class RevisionForm(FlaskForm):
@@ -70,3 +70,15 @@ class TransplantRequestForm(FlaskForm):
         ],
     )
     confirmation_token = HiddenField('confirmation_token')
+
+
+class UserSettingsForm(FlaskForm):
+    """Form used to provide the Phabricator API Token."""
+    phab_api_token = StringField(
+        'Phabricator API Token',
+        validators=[
+            optional(),
+            Regexp('^api-[a-z0-9]{28}$', message='Invalid API Token format')
+        ]
+    )
+    reset_phab_api_token = BooleanField('Delete', default="")

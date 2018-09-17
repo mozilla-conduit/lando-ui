@@ -59,6 +59,9 @@ class LandoAPI:
                 'Bearer {}'.format(self.auth0_access_token)
             )
 
+        if self.phabricator_api_token:
+            headers['X-Phabricator-API-Key'] = self.phabricator_api_token
+
         headers.update(kwargs.get('headers', {}))
         kwargs['headers'] = headers
 
