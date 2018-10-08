@@ -69,23 +69,18 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
-          name: create version.json
-          command: |
-            echo "
-              {
-                \"commit\": \"$CIRCLE_SHA1\",
-                \"version\": \"$CIRCLE_SHA1\",
-                \"source\": \"https://github.com/mozilla-conduit/lando-ui\",
-                \"build\": \"$CIRCLE_BUILD_URL\"
-              }
-            " > version.json
-            mkdir /artifacts && cp version.json /artifacts/version.js
-      - run:
           name: build the prod image
           command: |
             docker build --pull \
+              --build-arg CIRCLE_SHA="$CIRCLE_SHA1" \
+              --build-arg CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL" \
               -f docker/Dockerfile-prod \
               -t "${DOCKERHUB_REPO:-mozilla/landoui}" .
+      - run:
+          name: copy version.json
+          command: |
+            docker run -i "${DOCKERHUB_REPO:-mozilla/landoui}" cat /version.json > version.json
+            mkdir /artifacts && cp version.json /artifacts/version.js
       - run:
           name: get image id
           command: |
