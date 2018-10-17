@@ -4,6 +4,8 @@ lando-ui is a Flask-based web application that serves as a graphical
 user interface to [lando-api][].  It is separate from the latter to
 isolate the logic of automatic landings from its interface(s).
 
+[![What's Deployed](https://img.shields.io/badge/whatsdeployed-prod,dev-green.svg)](https://whatsdeployed.io/s-a0C)
+
 ## Contributing
 
 Please read the general [Conduit contribution guidelines][] before
