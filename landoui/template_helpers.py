@@ -56,6 +56,7 @@ def reviewer_to_status_badge_class(reviewer):
         'rejected': ('Badge Badge--negative', 'Badge Badge--warning'),
         'added': ('Badge', 'Badge'),
         'blocking': ('Badge', 'Badge'),
+        'resigned': ('Badge', 'Badge'),
     }.get(
         reviewer['status'], ('Badge Badge--warning', 'Badge Badge--warning')
     )[1 if reviewer['for_other_diff'] else 0]
@@ -69,6 +70,7 @@ def reviewer_to_action_text(reviewer):
         'rejected': ('requested changes', 'requested changes to a prior diff'),
         'added': ('to review', 'to review'),
         'blocking': ('must review', 'must review'),
+        'resigned': ('resigned', 'resigned'),
     }.get(reviewer['status'], ('UNKNOWN STATE', 'UNKNOWN STATE'))
     return options[1 if reviewer['for_other_diff'] else 0]
 
