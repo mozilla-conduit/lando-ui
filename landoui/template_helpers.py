@@ -136,7 +136,7 @@ def avatar_url(url):
 @template_helpers.app_template_filter()
 def linkify_bug_numbers(text):
     search = r'(?=\b)(Bug (\d+))(?=\b)'
-    replace = '<a href="{bmo_url}/show_bug.cgi?id=\g<2>">\g<1></a>'.format(
+    replace = r'<a href="{bmo_url}/show_bug.cgi?id=\g<2>">\g<1></a>'.format(
         bmo_url=current_app.config['BUGZILLA_URL']
     )
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
@@ -148,14 +148,14 @@ def linkify_revision_urls(text):
         r'(?=\b)(' + re.escape(current_app.config['PHABRICATOR_URL']) +
         r'/D\d+)(?=\b)'
     )
-    replace = '<a href="\g<1>">\g<1></a>'
+    replace = r'<a href="\g<1>">\g<1></a>'
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
 @template_helpers.app_template_filter()
 def linkify_diff_ids(text, revision_id):
     search = r'(?=\b)(Diff (\d+))(?=\b)'
-    replace = '<a href="{phab_url}/{revision_id}?id=\g<2>">\g<1></a>'.format(
+    replace = r'<a href="{phab_url}/{revision_id}?id=\g<2>">\g<1></a>'.format(
         phab_url=current_app.config['PHABRICATOR_URL'],
         revision_id=revision_id
     )
@@ -171,8 +171,10 @@ def linkify_commit_id(text, landing_status):
 
     commit_id = landing_status['result']
     search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
-    replace = '<a href="{tree_url}/rev/\g<1>">{tree_url}/rev/\g<1></a>'.format(
-        tree_url=landing_status['tree_url']
+    replace = (
+        r'<a href="{tree_url}/rev/\g<1>">{tree_url}/rev/\g<1></a>'.format(
+            tree_url=landing_status['tree_url']
+        )
     )
     return re.sub(search, replace, str(text))  # This is case sensitive
 
@@ -186,8 +188,10 @@ def linkify_transplant_details(text, transplant):
 
     commit_id = transplant['details']
     search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
-    replace = '<a href="{repo_url}/rev/\g<1>">{repo_url}/rev/\g<1></a>'.format(
-        repo_url=transplant['repository_url']
+    replace = (
+        r'<a href="{repo_url}/rev/\g<1>">{repo_url}/rev/\g<1></a>'.format(
+            repo_url=transplant['repository_url']
+        )
     )
     return re.sub(search, replace, str(text))  # This is case sensitive
 

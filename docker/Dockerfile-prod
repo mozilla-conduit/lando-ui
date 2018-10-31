@@ -4,15 +4,21 @@
 
 FROM python:3.5-alpine AS assets
 
-COPY requirements/* /app/requirements/
+COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin
 
 # Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
 # uninstall any compile-time OS package dependencies and keep only the run-time
 # OS package dependencies.
-RUN install-deps.sh \
-    /app/requirements/common.txt \
-    /app/requirements/production.txt
+RUN install-deps.sh /app/requirements.txt
+
+# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
+# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
+# has this requirement, it will still work with the older version of `oic`.
+# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
+# working with Auth0.
+COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
+RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 COPY . /app
 RUN pip install --no-cache /app
@@ -39,15 +45,21 @@ RUN flask assets build
 
 FROM python:3.5-alpine
 
-COPY requirements/* /app/requirements/
+COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin
 
 # Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
 # uninstall any compile-time OS package dependencies and keep only the run-time
 # OS package dependencies.
-RUN install-deps.sh \
-    /app/requirements/common.txt \
-    /app/requirements/production.txt
+RUN install-deps.sh /app/requirements.txt
+
+# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
+# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
+# has this requirement, it will still work with the older version of `oic`.
+# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
+# working with Auth0.
+COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
+RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 COPY . /app
 RUN pip install --no-cache /app

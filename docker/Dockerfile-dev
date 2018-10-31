@@ -1,13 +1,21 @@
 FROM python:3.5-alpine
 
-RUN apk add --update gcc musl-dev libffi-dev python-dev openssl-dev git
-
 RUN mkdir /python_requirements
-COPY requirements/* /python_requirements/
-RUN pip install --no-cache -r /python_requirements/common.txt \
-    && pip install --no-cache -r /python_requirements/dev.txt
+COPY requirements.txt /python_requirements.txt
+COPY docker/*.sh /usr/local/bin
 
-RUN apk del gcc musl-dev libffi-dev python-dev openssl-dev git
+# Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
+# uninstall any compile-time OS package dependencies and keep only the run-time
+# OS package dependencies.
+RUN install-deps.sh /python_requirements.txt
+
+# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
+# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
+# has this requirement, it will still work with the older version of `oic`.
+# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
+# working with Auth0.
+COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
+RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
 RUN gem install sass --no-ri --no-rdoc -v 3.4.25

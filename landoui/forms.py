@@ -14,7 +14,7 @@ class RevisionForm(FlaskForm):
         'diff_id',
         validators=[
             InputRequired(message='Diff Id is required'),
-            Regexp('\A[0-9]+\Z', message='Diff Id must be a number')
+            Regexp(r'\A[0-9]+\Z', message='Diff Id must be a number')
         ]
     )
     confirmation_token = HiddenField('confirmation_token')

@@ -1,6 +1,6 @@
 FROM python:3.5-alpine
 
-RUN pip install yapf==0.16.0 && pip install flake8==3.3.0
+RUN pip install yapf==0.16.0 && pip install flake8==3.6.0
 
 ADD . /code/
 WORKDIR /code/

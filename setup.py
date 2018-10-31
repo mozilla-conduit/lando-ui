@@ -30,10 +30,8 @@ setup(
     ],
     keywords='mozilla lando development',
     packages=find_packages(exclude=['tests']),
-    install_requires=['Flask==0.12.1', 'requests==2.13.0', 'click==6.7'],
-    extras_require={
-        'test': ['pytest', 'yapf', 'flake8', 'invoke'],
-    },
+    install_requires=[],
+    extras_require={},
     entry_points={
         'console_scripts': [
             'lando-ui-dev=landoui.app:run_dev_server',

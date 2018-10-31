@@ -231,7 +231,7 @@ class LandoAPIClient:
                         title=problem['title'], detail=problem['detail']
                     )
                 )
-            except (json.JSONDecodeError, KeyError) as e2:
+            except (json.JSONDecodeError, KeyError):
                 logger.exception(
                     'Could not decode failed response to landing request',
                     extra={
@@ -347,7 +347,7 @@ class LandoAPIClient:
                     message=problem['detail'],
                     status_code=e.response.status_code
                 )
-            except (json.JSONDecodeError, KeyError) as e2:
+            except (json.JSONDecodeError, KeyError):
                 logger.exception(
                     'Could not decode failed response to dryrun request',
                     extra={
