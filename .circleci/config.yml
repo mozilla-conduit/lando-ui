@@ -42,8 +42,7 @@ jobs:
       - checkout
       - run: |
           /app/docker/install-deps.sh \
-            /app/requirements/common.txt \
-            /app/requirements/dev.txt
+            /app/requirements.txt
       - run: pip --no-cache install .
       - run:
           name: run tests
