@@ -7,7 +7,7 @@ import pytest
 
 from landoui.template_helpers import (
     avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_diff_ids,
-    linkify_commit_id
+    linkify_commit_id, linkify_faq
 )
 
 
@@ -179,3 +179,23 @@ def test_linkify_diff_ids(app, input_text, revision_id, output_text):
 )
 def test_linkify_commit_ids(app, input_text, landing_status, output_text):
     assert output_text == linkify_commit_id(input_text, landing_status)
+
+
+@pytest.mark.parametrize(
+    'input_text,output_text', [
+        (
+            'faq',
+            '<a href="https://wiki.mozilla.org/Phabricator/FAQ#Lando">faq</a>'
+        ),
+        (
+            'FAQ',
+            '<a href="https://wiki.mozilla.org/Phabricator/FAQ#Lando">FAQ</a>'
+        ),
+        (
+            'faqual message that should not be linked',
+            'faqual message that should not be linked'
+        ),
+    ]
+)
+def test_linkify_faq(app, input_text, output_text):
+    assert output_text == linkify_faq(input_text)
