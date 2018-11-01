@@ -71,7 +71,7 @@ jobs:
           name: build the prod image
           command: |
             docker build --pull \
-              --build-arg CIRCLE_SHA="$CIRCLE_SHA1" \
+              --build-arg CIRCLE_SHA1="$CIRCLE_SHA1" \
               --build-arg CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL" \
               -f docker/Dockerfile-prod \
               -t "${DOCKERHUB_REPO:-mozilla/landoui}" .
