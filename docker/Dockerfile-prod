@@ -66,6 +66,7 @@ RUN pip install --no-cache /app
 
 COPY --from=assets /app/landoui/static/ /app/landoui/static/
 COPY --from=assets /version.json /version.json
+COPY --from=assets /version.json /app/version.json
 
 EXPOSE 9000
 CMD ["/usr/local/bin/uwsgi"]
