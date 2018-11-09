@@ -44,3 +44,13 @@ def test_unexpected_error_shows_default_500_page(app, client):
     response = client.get('/_tests/bad_route')
     assert response.status_code == 500
     assert b'Oops! Something went wrong.' in response.get_data()
+
+
+def test_trailing_slash_gets_redirected(app, client):
+    @app.route('/_tests/success/')
+    def success():
+        return 'Success!'
+
+    response = client.get('/_tests/success', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Success!' in response.get_data()
