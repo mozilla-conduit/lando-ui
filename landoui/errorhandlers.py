@@ -4,7 +4,6 @@
 import logging
 
 from flask import render_template
-from werkzeug.routing import RequestRedirect
 
 from landoui.sentry import sentry
 from landoui.landoapi import (
@@ -82,11 +81,6 @@ def ui_error(e):
 def unexpected_error(e):
     """Handler for all uncaught Exceptions."""
 
-    # werkzeug 0.14 uses exceptions for 301 redirects and so we return that
-    # here for the flask app to handle.
-    if isinstance(e, RequestRedirect):
-        return e
-
     logger.exception('unexpected error')
     sentry.captureException()
 
@@ -134,5 +128,5 @@ def register_error_handlers(app):
     app.register_error_handler(LandoAPIException, landoapi_exception)
     app.register_error_handler(RevisionNotFound, revision_not_found)
     app.register_error_handler(UIError, ui_error)
-    app.register_error_handler(Exception, unexpected_error)
+    app.register_error_handler(500, unexpected_error)
     app.register_error_handler(404, page_not_found)

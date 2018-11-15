@@ -37,6 +37,11 @@ def test_ui_error_shows_uierror_page(app, client):
 
 
 def test_unexpected_error_shows_default_500_page(app, client):
+    # Disable the TESTING and DEBUG flags to allow exceptions to propagate
+    # up to the flask error handlers.
+    app.config['TESTING'] = False
+    app.config['DEBUG'] = False
+
     @app.route('/_tests/bad_route')
     def bad_route():
         raise Exception('Unhandled exception')
