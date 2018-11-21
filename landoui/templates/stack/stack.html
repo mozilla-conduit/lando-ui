@@ -74,7 +74,7 @@
     <ul class="StackPage-blockers">
     {% for blocker in blockers %}
       <li class="StackPage-blocker">
-          {{ blocker }}
+          {{ blocker|escape_html|linkify_faq|safe }}
       </li>
     {% endfor %}
     </ul>

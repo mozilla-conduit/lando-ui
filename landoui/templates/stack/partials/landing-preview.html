@@ -6,7 +6,7 @@
 {% elif dryrun['blocker'] %}
   <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h2>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
-    {{dryrun['blocker']}}
+    {{ dryrun['blocker']|escape_html|linkify_faq|safe }}
   </div>
 {% elif series %}
   <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h2>
