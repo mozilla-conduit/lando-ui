@@ -30,6 +30,10 @@ $.fn.landingPreview = function() {
       }
     };
 
+    $landButton.on('click', () => {
+      $landButton.attr({'disabled': true});
+      $landButton.text('Landing in progress...');
+    });
     $previewButton.on('click', (e) => {
       e.preventDefault();
       calculateButtonState();
