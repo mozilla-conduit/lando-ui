@@ -22,6 +22,7 @@ from landoui.helpers import (
 from landoui.landoapi import LandoAPI, LandoAPIError
 from landoui.landoapiclient import LandoAPIClient, LandingSubmissionError
 from landoui.errorhandlers import RevisionNotFound
+from landoui.stacks import draw_stack_graph, Edge, sort_stack_topological
 
 logger = logging.getLogger(__name__)
 
@@ -113,20 +114,23 @@ def revision(revision_id):
         params={'stack_revision_id': 'D{}'.format(revision_id)}
     )
 
-    # TODO: support displaying the full DAG, and landing *past* the
-    # current revision.
-    #
     # The revision may appear in many `landable_paths`` if it has
     # multiple children, or any of its landable descendents have
     # multiple children. That being said, there should only be a
     # single unique path up to this revision, so find the first
     # it appears in. The revisions up to the target one in this
     # path form the landable series.
+    #
+    # We also form a set of all the revisions that are landable
+    # so we can present selection for what to land.
     series = None
+    landable = set()
     for p in stack['landable_paths']:
+        for phid in p:
+            landable.add(phid)
+
         try:
             series = p[:p.index(revision) + 1]
-            break
         except ValueError:
             pass
 
@@ -150,12 +154,22 @@ def revision(revision_id):
 
         series = list(reversed(series))
 
+    phids = set(revisions.keys())
+    edges = set(Edge(child=e[0], parent=e[1]) for e in stack['edges'])
+    order = sort_stack_topological(
+        phids, edges, key=lambda x: int(revisions[x]['id'][1:])
+    )
+    drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
+
     return render_template(
         'stack/stack.html',
         revision_id='D{}'.format(revision_id),
         series=series,
+        landable=landable,
         dryrun=dryrun,
         stack=stack,
+        rows=list(zip(reversed(order), reversed(drawing_rows))),
+        drawing_width=drawing_width,
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,

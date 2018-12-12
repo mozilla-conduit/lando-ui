@@ -35,7 +35,28 @@
 }
 
 .StackPage-revision {
+  &-in-series {
+    .StackPage-revision-land {
+      background: #ddefdd;
+    }
+  }
+  &-is-closed {
+    .StackPage-blockerReason {
+      display: none;
+    }
+  }
+  &-land {
+    text-align: center;
+    width: 1%;
+  }
+  &-graph {
+    width: 1%;
+    text-align: center;
 
+    div {
+      padding-left: 1ch;
+    }
+  }
   &-title {
     width: 1%;
     &-text {
@@ -45,8 +66,7 @@
     }
   }
   &-status,
-  &-bug,
-  &-graph {
+  &-bug {
     width: 1%;
   }
 
@@ -54,6 +74,15 @@
     & div {
       display: inline-block;
     }
+  }
+
+  .StackPage-revision &-graph { /* Needed to beat bulma's specificity */
+    padding: 0;
+  }
+  .GraphDrawing {
+    margin: 0;
+    display: block;
+    max-height: 100%;
   }
 }
 

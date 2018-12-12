@@ -1,0 +1,23 @@
+<svg class="GraphDrawing"
+  width="{{ drawing_width|graph_width }}"
+  height="{{graph_height()}}"
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {% for target in drawing['above'] %}
+    <path d="{{drawing['pos']|graph_above_path(target)}}" fill="none" stroke="{{target|graph_color}}" stroke-width="1"/>
+  {% endfor %}
+  {% for target in drawing['below'] %}
+      <path d="{{drawing['pos']|graph_below_path(target)}}" fill="none" stroke="{{target|graph_color}}" stroke-width="1"/>
+  {% endfor %}
+  {% for target in drawing['other'] %}
+    <line x1="{{target|graph_x_pos}}" x2="{{target|graph_x_pos}}" y1="0" y2="{{graph_height()}}" stroke="{{target|graph_color}}" stroke-width="1"/>
+  {% endfor %}
+  <circle
+    cx="{{drawing['pos']|graph_x_pos}}"
+    stroke="{{drawing['pos']|graph_color}}"
+    fill="{{drawing['pos']|graph_color}}"
+    cy="{{graph_height() / 2}}"
+    r="3"
+  />
+</svg>

@@ -228,3 +228,69 @@ def revision_url(text, diff_id=None):
 @template_helpers.app_template_global()
 def new_settings_form():
     return UserSettingsForm()
+
+
+GRAPH_DRAWING_COL_WIDTH = 14
+GRAPH_DRAWING_HEIGHT = 44
+GRAPH_DRAWING_COLORS = [
+    '#cc0000',
+    '#cc0099',
+    '#6600cc',
+    '#0033cc',
+    '#00cccc',
+    '#00cc33',
+    '#66cc00',
+    '#cc9900',
+]
+
+
+@template_helpers.app_template_filter()
+def graph_width(cols):
+    return GRAPH_DRAWING_COL_WIDTH * cols
+
+
+@template_helpers.app_template_global()
+def graph_height():
+    return GRAPH_DRAWING_HEIGHT
+
+
+@template_helpers.app_template_filter()
+def graph_x_pos(col):
+    return (GRAPH_DRAWING_COL_WIDTH * col) + (GRAPH_DRAWING_COL_WIDTH / 2)
+
+
+@template_helpers.app_template_filter()
+def graph_color(col):
+    return GRAPH_DRAWING_COLORS[col % len(GRAPH_DRAWING_COLORS)]
+
+
+@template_helpers.app_template_filter()
+def graph_above_path(col, above):
+    commands = [
+        "M {x} {y}".format(x=graph_x_pos(above), y=0),
+        "C {x1} {y1}, {x2} {y2}, {x} {y}".format(
+            x1=graph_x_pos(above),
+            y1=GRAPH_DRAWING_HEIGHT / 4,
+            x2=graph_x_pos(col),
+            y2=GRAPH_DRAWING_HEIGHT / 4,
+            x=graph_x_pos(col),
+            y=GRAPH_DRAWING_HEIGHT / 2,
+        ),
+    ]
+    return ' '.join(commands)
+
+
+@template_helpers.app_template_filter()
+def graph_below_path(col, below):
+    commands = [
+        "M {x} {y}".format(x=graph_x_pos(col), y=GRAPH_DRAWING_HEIGHT / 2),
+        "C {x1} {y1}, {x2} {y2}, {x} {y}".format(
+            x1=graph_x_pos(col),
+            y1=3 * GRAPH_DRAWING_HEIGHT / 4,
+            x2=graph_x_pos(below),
+            y2=3 * GRAPH_DRAWING_HEIGHT / 4,
+            x=graph_x_pos(below),
+            y=GRAPH_DRAWING_HEIGHT,
+        )
+    ]
+    return ' '.join(commands)
