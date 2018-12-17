@@ -7,7 +7,7 @@ import pytest
 
 from landoui.template_helpers import (
     avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_diff_ids,
-    linkify_commit_id, linkify_faq
+    linkify_commit_id, linkify_faq, repo_path
 )
 
 
@@ -199,3 +199,18 @@ def test_linkify_commit_ids(app, input_text, landing_status, output_text):
 )
 def test_linkify_faq(app, input_text, output_text):
     assert output_text == linkify_faq(input_text)
+
+
+@pytest.mark.parametrize(
+    'repo_url,path', [
+        (
+            'https://hg.mozilla.org/automation/phabricator-qa-stage',
+            'automation/phabricator-qa-stage'
+        ),
+        ('https://hg.mozilla.org/comm-central/', 'comm-central'),
+        ('http://hg.test', 'http://hg.test'),
+        (None, ''),
+    ]
+)
+def test_repo_path(app, repo_url, path):
+    assert path == repo_path(repo_url)

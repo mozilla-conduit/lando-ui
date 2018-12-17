@@ -107,6 +107,11 @@ def revision(revision_id):
         if r['id'] == 'D{}'.format(revision_id):
             revision = r['phid']
 
+    # Build a mapping from phid to repository.
+    repositories = {}
+    for r in stack['repositories']:
+        repositories[r['phid']] = r
+
     # Request all previous transplants for the stack.
     transplants = api.request(
         'GET',
@@ -135,6 +140,7 @@ def revision(revision_id):
             pass
 
     dryrun = None
+    target_repo = None
     if series and is_user_authenticated():
         landing_path = [
             {
@@ -153,6 +159,7 @@ def revision(revision_id):
         form.confirmation_token.data = dryrun.get('confirmation_token')
 
         series = list(reversed(series))
+        target_repo = repositories.get(revisions[series[0]]['repo_phid'])
 
     phids = set(revisions.keys())
     edges = set(Edge(child=e[0], parent=e[1]) for e in stack['edges'])
@@ -173,6 +180,7 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
+        target_repo=target_repo,
         errors=errors,
         form=form,
     )

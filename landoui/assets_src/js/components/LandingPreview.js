@@ -26,7 +26,7 @@ $.fn.landingPreview = function() {
         $landButton.text('Acknowledge warnings to land');
       } else {
         $landButton.attr({'disabled': false});
-        $landButton.text('Land');
+        $landButton.text('Land to ' + $landButton.data('target-repo'));
       }
     };
 

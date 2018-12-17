@@ -21,6 +21,11 @@ def is_user_authenticated():
     return helpers.is_user_authenticated()
 
 
+@template_helpers.app_template_global()
+def new_settings_form():
+    return UserSettingsForm()
+
+
 @template_helpers.app_template_filter()
 def escape_html(text):
     return escape(text)
@@ -225,9 +230,16 @@ def revision_url(text, diff_id=None):
     return url
 
 
-@template_helpers.app_template_global()
-def new_settings_form():
-    return UserSettingsForm()
+@template_helpers.app_template_filter()
+def repo_path(repo_url):
+    """Returns the path of a repository url without the leading slash.
+
+    If the result would be empty, the full URL is returned.
+    """
+    if not repo_url:
+        return ""
+    repo = urllib.parse.urlsplit(repo_url).path.strip().strip('/')
+    return repo if repo else repo_url
 
 
 GRAPH_DRAWING_COL_WIDTH = 14

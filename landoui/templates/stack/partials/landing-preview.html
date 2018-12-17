@@ -1,15 +1,22 @@
 {% if dryrun is none %}
-  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h2>
+  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
     Reason for blockage is unknown
   </div>
 {% elif dryrun['blocker'] %}
-  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h2>
+  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
     {{ dryrun['blocker']|escape_html|linkify_faq|safe }}
   </div>
 {% elif series %}
-  <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h2>
+  <h3 class="StackPage-landingPreview-sectionLabel">
+    Landing To: &nbsp;
+    <a class="StackPage-landingPreview-landingTo" href="{{ target_repo['url'] }}">
+      {{ target_repo['url']|repo_path }}
+    </a>
+  </h3>
+
+  <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-commitList">
   {% for phid in series %}
   {% set revision = revisions[phid] %}
@@ -34,7 +41,7 @@
     </div>
   {% endfor %}
   </div>
-  <h3 class="StackPage-landingPreview-sectionLabel">Warnings:</h2>
+  <h3 class="StackPage-landingPreview-sectionLabel">Warnings:</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-warnings">
     {% if dryrun['warnings'] %}
     <ul class="StackPage-landingPreview-warningsList">
