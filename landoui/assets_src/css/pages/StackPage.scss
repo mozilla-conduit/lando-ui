@@ -152,11 +152,16 @@ ul.StackPage-blockers {
   &:hover
     .StackPage-blockerReason-tooltip {
       display: block;
+      visibility: visible;
+      opacity: 1;
+      transition: .25s all ease;
+      transition-delay: 0s;
   }
 }
 
 .StackPage-blockerReason-tooltip {
-  display: none;
+  visibility: hidden;
+  opacity: 0;
   left: 100%;
   height: 100%;
   position: absolute;
@@ -168,6 +173,8 @@ ul.StackPage-blockers {
   color: #a53737;
   margin-left: 2px;
   font-size: 0.8rem;
+  transition: .25s all ease;
+  transition-delay: .75s;
 }
 
 
