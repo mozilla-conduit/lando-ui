@@ -9,17 +9,6 @@ from wtforms import BooleanField, HiddenField, StringField, ValidationError
 from wtforms.validators import InputRequired, optional, Regexp
 
 
-class RevisionForm(FlaskForm):
-    diff_id = HiddenField(
-        'diff_id',
-        validators=[
-            InputRequired(message='Diff Id is required'),
-            Regexp(r'\A[0-9]+\Z', message='Diff Id must be a number')
-        ]
-    )
-    confirmation_token = HiddenField('confirmation_token')
-
-
 class JSONDecodable:
     def __init__(self, decode_type=None, message=None):
         self.decode_type = decode_type

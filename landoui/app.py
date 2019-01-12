@@ -223,6 +223,10 @@ def _lookup_service_url(lando_api_url, service_name):
     # url given. Errors out if given an invalid lando_api_url or service name.
     lando_api_hostname = urlparse(lando_api_url).netloc.split(':')[0].lower()
     return {
+        'lando-api': {
+            'bugzilla': 'http://bmo.test',
+            'phabricator': 'http://phabricator.test'
+        },
         'lando-api.test': {
             'bugzilla': 'http://bmo.test',
             'phabricator': 'http://phabricator.test'

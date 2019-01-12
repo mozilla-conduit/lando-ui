@@ -32,19 +32,6 @@ def escape_html(text):
 
 
 @template_helpers.app_template_filter()
-def select_reviewers(reviewers, *args, other_diffs=None):
-    if args:
-        reviewers = [r for r in reviewers if r['status'] in args]
-
-    if other_diffs is not None:
-        reviewers = [
-            r for r in reviewers if r['for_other_diff'] == other_diffs
-        ]
-
-    return reviewers
-
-
-@template_helpers.app_template_filter()
 def tostatusbadgeclass(status):
     mapping = {
         'aborted': 'Badge Badge--negative',
@@ -107,15 +94,6 @@ def tostatusbadgename(status):
 
 
 @template_helpers.app_template_filter()
-def latest_status(statuses):
-    if not statuses:
-        return None
-
-    statuses = sorted(statuses, key=lambda k: k['updated_at'], reverse=True)
-    return statuses[0]['status']
-
-
-@template_helpers.app_template_filter()
 def avatar_url(url):
     # If a user doesn't have a gravatar image for their auth0 email address,
     # gravatar uses auth0's provided default which redirects to
@@ -157,33 +135,6 @@ def linkify_revision_urls(text):
     )
     replace = r'<a href="\g<1>">\g<1></a>'
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
-
-
-@template_helpers.app_template_filter()
-def linkify_diff_ids(text, revision_id):
-    search = r'(?=\b)(Diff (\d+))(?=\b)'
-    replace = r'<a href="{phab_url}/{revision_id}?id=\g<2>">\g<1></a>'.format(
-        phab_url=current_app.config['PHABRICATOR_URL'],
-        revision_id=revision_id
-    )
-    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
-
-
-@template_helpers.app_template_filter()
-def linkify_commit_id(text, landing_status):
-    # The landing status result is not always guaranteed to be a commit id. It
-    # can be a message saying that the landing was queued and will land later.
-    if landing_status['status'] != 'landed':
-        return text
-
-    commit_id = landing_status['result']
-    search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
-    replace = (
-        r'<a href="{tree_url}/rev/\g<1>">{tree_url}/rev/\g<1></a>'.format(
-            tree_url=landing_status['tree_url']
-        )
-    )
-    return re.sub(search, replace, str(text))  # This is case sensitive
 
 
 @template_helpers.app_template_filter()

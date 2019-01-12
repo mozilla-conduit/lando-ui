@@ -63,7 +63,7 @@ the [Phabricator Test Plan][].
     - Change <REVISION_ID> in this URL to the D-prefixed revision number (e.g. D123).
 
 **Result**
-1. ![Not Logged In](/screenshots/not-logged-in.png)
+1. ![Not Logged In](/old/screenshots/not-logged-in.png)
     - In the top right corner, confirm that there is a blue button that says
     "Login with Auth0".
     - Near the bottom of the page there is no Land button and a warning message
@@ -78,7 +78,7 @@ the [Phabricator Test Plan][].
 **Result**
 1. You should be taken through the standard Mozilla Single Sign On Login process.
 2. Once logged in you should be redirected back to the revision page.
-3. ![Logged In](/screenshots/logged-in.png)
+3. ![Logged In](/old/screenshots/logged-in.png)
     - In the top right corner, your name and picture are present instead of the
     "Login with Auth0" button.
         - You may have to log out if you have run this test plan before.
@@ -101,14 +101,14 @@ the [Phabricator Test Plan][].
     - Change <REVISION_ID> in this URL to the D-prefixed revision number (e.g. D123).
 
 **Result**
-1. ![Revision on Lando](/screenshots/display-revision-normal.png)
+1. ![Revision on Lando](/old/screenshots/display-revision-normal.png)
     - The page should resemble the above.
 2. Confirm that the following pieces of the revision shown are correct:
     - **Revision number and title** (e.g. "D78: Test Revision" in this screenshot).
     - **Timeline**: Not yet landed.
     - **Details**:
         - Diff: Same as the diff number shown on Phabricator as seen here:
-            - ![Same diff num](/screenshots/display-revision-same-diff-number.png)
+            - ![Same diff num](/old/screenshots/display-revision-same-diff-number.png)
         - Author: Should match the hg commit author name and email as seen by `hg log`.
         - Date: Should match the date you created the commit as seen by `hg log`.
         - Review Status: Should be 'Review Pending' until the reviewer has accepted
@@ -132,13 +132,13 @@ same revision.
 
 **Result**
 1. Confirm that there are now two diffs in the revision's history on Phabricator:
-    - ![Multiple diffs](/screenshots/multiple-diffs.png)
+    - ![Multiple diffs](/old/screenshots/multiple-diffs.png)
 2. Take note of the Diff **IDs** (e.g. 115 and 118 in this screenshot).
 3. View the revision at https://lando.devsvcdev.mozaws.net/revisions/<REVISION_ID>/<DIFF1>.
     - Change <REVISION_ID> in this URL to the D-prefixed revision number (e.g. D123).
     - Replace <DIFF1> with the first diff number. In the above screenshot, 115.
 4. Confirm that the page is loaded in the context of the old diff.
-    - ![Multiple diffs old](/screenshots/multiple-diffs-viewing-old.png)
+    - ![Multiple diffs old](/old/screenshots/multiple-diffs-viewing-old.png)
     - The diff number is the old (lowest) one.
     - There is a warning near the bottom that informs the user they are going
       to land an old diff.
@@ -181,7 +181,7 @@ so that Lando loads the latest one**. Or you can just click the "View on Lando"
 link on Phabricator in the right sidebar.
 
 **Result**
-1. ![Accepted Older](/screenshots/accepted-older.png)
+1. ![Accepted Older](/old/screenshots/accepted-older.png)
     - The reviewer should be marked as having accepted an older version.
 
 ## Test: Display a Revision - Project Reviewer
@@ -196,7 +196,7 @@ on your reviewer account.
 4. On your reviewer account visit the revision and at the bottom of the page
 choose the Accept action. There will be a little checkbox to accept it as the
 landoqa group as shown:
-![Accept as Project](/screenshots/accepted-as-project.png)
+![Accept as Project](/old/screenshots/accepted-as-project.png)
 
 
 **Result**
@@ -214,7 +214,7 @@ example, select a revision that "Needs Review".
 
 **Result**
 1. Visit the revision on Lando.
-2. ![Open parents](/screenshots/open-revision.png)
+2. ![Open parents](/old/screenshots/open-revision.png)
     - Confirm that there is a red "blocking" warning that informs the user that
     there is an open revision and that the land button is not present.
 
@@ -227,7 +227,7 @@ and hit Submit.
 
 **Result**
 1. Visit the revision on Lando.
-2. ![Planned Changes](/screenshots/planned-changes.png)
+2. ![Planned Changes](/old/screenshots/planned-changes.png)
     - Confirm that there is a red "blocking" warning that informs the user that
     the author of the revision is planning changes.
 
@@ -238,7 +238,7 @@ and hit Submit.
 2. Login with the LDAP account that does NOT have L1 permissions.
 
 **Result**
-1. ![No SCM Level](/screenshots/no-scm-level.png)
+1. ![No SCM Level](/old/screenshots/no-scm-level.png)
     - Confirm that there is a red "blocking" warning that informs the user that
     they do not have L1 permissions.
 
@@ -283,7 +283,7 @@ continue with this test plan.
     - Make sure you view the revision in the context of the most recent diff.
     - See the "Revision URL loads the most recent diff by default" test for
     help on how.
-2. ![Landing Queued](/screenshots/landing-queued.png)
+2. ![Landing Queued](/old/screenshots/landing-queued.png)
     - Confirm that there is a timeline entry saying that landing is queued.
         - The diff ID is the most recent diff.
         - The diff ID links to the Phabricator revision and shows the correct diff.
@@ -295,7 +295,7 @@ continue with this test plan.
     - If the timing of our backend transplant service is really fast you may
       see the page transition directly to the successful screenshot below.
 3. Refresh the page every 2 or so seconds until the landing succeeds.
-4. ![Landing Successful](/screenshots/landing-successful.png)
+4. ![Landing Successful](/old/screenshots/landing-successful.png)
     - Confirm that there is a timeline entry indicating landing is successful.
         - The diff ID is the most recent diff.
         - The diff ID links to the Phabricator revision and shows the correct diff.
@@ -337,7 +337,7 @@ to land (since the changes in the first commit that added the file are missing).
 8. Refresh the page every 2 seconds or so until the page updates.
 
 **Result**
-1. ![Landing Failed](/screenshots/landing-failed.png)
+1. ![Landing Failed](/old/screenshots/landing-failed.png)
     - There should be an error message in the timeline indicating that the
     landing failed.
 
