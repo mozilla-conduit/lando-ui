@@ -16,28 +16,37 @@
     </a>
   </h3>
 
-  <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h3>
+  <div class="StackPage-landingPreview-sectionHeader">
+    <h3 class="StackPage-landingPreview-sectionLabel">Commits:</h3>
+    <div>
+      <button class="StackPage-landingPreview-expandAll button">Show All</button>
+      <button class="StackPage-landingPreview-collapseAll button">Hide All</button>
+    </div>
+  </div>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-commitList">
   {% for phid in series %}
   {% set revision = revisions[phid] %}
     {% if not loop.first %}<hr>{% endif %}
     <div class="StackPage-landingPreview-revision">
-      <div>
-        <a href="{{revision['url']}}?id={{revision['diff']['id']}}">
-          {{revision['id']}} Diff {{revision['diff']['id']}}
-        </a>
-        - commit author
-        <strong>
-          {{revision['diff']['author']['name'] or 'Unknown'}}
-          {% if revision['diff']['author']['email'] %}
-            &lt;{{revision['diff']['author']['email']}}&gt;
-          {% endif %}
-        </strong>
+      <div class="StackPage-landingPreview-commitDetails">
+        <div>
+          <a href="{{revision['url']}}?id={{revision['diff']['id']}}">
+            {{revision['id']}} Diff {{revision['diff']['id']}}
+          </a>
+          - commit author
+          <strong>
+            {{revision['diff']['author']['name'] or 'Unknown'}}
+            {% if revision['diff']['author']['email'] %}
+              &lt;{{revision['diff']['author']['email']}}&gt;
+            {% endif %}
+          </strong>
+        </div>
+        <button class="StackPage-landingPreview-expand button"></button>
       </div>
       <pre class="StackPage-landingPreview-commitMessage">{{
         revision['commit_message']|escape_html|linkify_bug_numbers|linkify_revision_urls|safe
       }}</pre>
-      <div class="RevisionPage-commit-see-more"></div>
+      <div class="StackPage-landingPreview-seeMore"></div>
     </div>
   {% endfor %}
   </div>

@@ -193,6 +193,19 @@ ul.StackPage-blockers {
     }
   }
 
+  &-sectionHeader {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin-bottom: 1ch;
+  }
+
+  &-commitDetails {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
   &-section {
     margin-left: 1ch;
   }
@@ -214,6 +227,18 @@ ul.StackPage-blockers {
     top: -13px;
   }
 
+  &-expandAll {
+    display: inline-block;
+  }
+
+  &-collapseAll {
+    display: inline-block;
+  }
+
+  &-expand {
+    display: inline-block;
+  }
+
   &-commitMessage {
     font-family: 'Fira Mono', monospace;
     font-size: 1em;
@@ -227,6 +252,12 @@ ul.StackPage-blockers {
     background-color: inherit;
     border: 1px dashed black;
     padding: 0.5ch;
+    max-height: 1.25em * 5.5;
+    overflow-y: hidden;
+  }
+
+  &-seeMore {
+    display: block;
   }
 
   &-warningsList {
