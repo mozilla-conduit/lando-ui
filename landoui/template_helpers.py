@@ -11,6 +11,7 @@ from landoui.forms import UserSettingsForm
 from landoui import helpers
 
 FAQ_URL = 'https://wiki.mozilla.org/Phabricator/FAQ#Lando'
+SEC_BUG_WIKI = 'https://wiki.mozilla.org/Security/Bug_Approval_Process'
 
 logger = logging.getLogger(__name__)
 template_helpers = Blueprint('template_helpers', __name__)
@@ -158,6 +159,13 @@ def linkify_transplant_details(text, transplant):
 def linkify_faq(text):
     search = r'\b(FAQ)\b'
     replace = r'<a href="{faq_url}">\g<1></a>'.format(faq_url=FAQ_URL)
+    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
+
+
+@template_helpers.app_template_filter()
+def linkify_sec_bug_wiki(text):
+    search = r'\b(Security Bug Approval Process)\b'
+    replace = r'<a href="{wiki_url}">\g<1></a>'.format(wiki_url=SEC_BUG_WIKI)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 

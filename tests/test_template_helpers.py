@@ -7,7 +7,7 @@ import pytest
 
 from landoui.template_helpers import (
     avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_faq,
-    repo_path
+    linkify_sec_bug_wiki, repo_path
 )
 
 
@@ -133,6 +133,27 @@ def test_linkify_revision_urls(app, input_text, output_text):
 )
 def test_linkify_faq(app, input_text, output_text):
     assert output_text == linkify_faq(input_text)
+
+
+@pytest.mark.parametrize(
+    'input_text,output_text',
+    [
+        (
+            'security bug approval process',
+            '<a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">security bug approval process</a>'  # noqa
+        ),
+        (
+            'Security Bug Approval Process',
+            '<a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">Security Bug Approval Process</a>'  # noqa
+        ),
+        (
+            'security bug processes being used in a normal sentence',
+            'security bug processes being used in a normal sentence'
+        ),
+    ]
+)
+def test_linkify_sec_bug_wiki(app, input_text, output_text):
+    assert output_text == linkify_sec_bug_wiki(input_text)
 
 
 @pytest.mark.parametrize(

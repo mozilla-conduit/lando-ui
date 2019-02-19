@@ -58,7 +58,7 @@
         <li class="StackPage-landingPreview-warning">
           <label>
             <input type="checkbox" name="warnings[]" value="1" />
-            {{ warning['display'] }}
+            {{ warning['display']|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_wiki|safe}}
             [{% for instance in warning['instances'] %}{{
               ", " if not loop.first else ""
             }}{{instance['revision_id']
