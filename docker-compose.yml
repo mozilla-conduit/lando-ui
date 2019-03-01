@@ -28,6 +28,8 @@ services:
       - SESSION_COOKIE_SECURE=0
       - USE_HTTPS=0
       - LANDO_API_URL=http://lando-api.test:8888
+      - BUGZILLA_URL=http://bmo.test
+      - PHABRICATOR_URL=http://phabricator.test
       - ENV=localdev
       - SENTRY_DSN=
       - LOG_LEVEL=DEBUG

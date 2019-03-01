@@ -219,6 +219,16 @@ def run_dev_server(
 
 
 def _lookup_service_url(lando_api_url, service_name):
+    # TODO: Restructure things to pull this information from lando-api
+    # itself / lookup like other environment variables. Sticking this here
+    # is a temporary hack to unblock GCP migration.
+    value = {
+        'bugzilla': os.getenv('BUGZILLA_URL'),
+        'phabricator': os.getenv('PHABRICATOR_URL'),
+    }[service_name]
+    if value:
+        return value
+
     # Returns the corresponding service instance url based on the lando-api
     # url given. Errors out if given an invalid lando_api_url or service name.
     lando_api_hostname = urlparse(lando_api_url).netloc.split(':')[0].lower()
