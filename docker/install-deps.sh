@@ -5,12 +5,13 @@
 
 set -euxo pipefail
 
-apk add --update --no-cache --virtual .build-deps \
+apk add --update --no-cache \
     gcc \
     git \
     libc-dev \
     musl-dev \
     linux-headers \
+    pcre \
     pcre-dev \
     openssl-dev \
     libffi-dev
@@ -18,14 +19,3 @@ apk add --update --no-cache --virtual .build-deps \
 for file in "$@"; do
     pip install --no-cache -r "$file"
 done
-
-runDeps() {
-    scanelf --needed --nobanner --recursive /usr/local \
-        | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-        | sort -u \
-        | xargs -r apk info --installed \
-        | sort -u
-}
-
-apk add --virtual .python-rundeps $( runDeps )
-apk del .build-deps
