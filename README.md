@@ -62,7 +62,7 @@ At this point, you should be able to visit
 
 ### Use with lando-api
 
-lando-ui requires an instance of lando-api to talk to in order to
+lando-ui requires an instance of lando-api to talk to in order to do
 anything interesting.  The default configuration sets the location of
 lando-api to `http://lando-api.test:8888`, which is the default for a
 local installation of lando-api.
