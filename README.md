@@ -104,7 +104,8 @@ to the `Client Settings` page and configure the following:
 Create an Auth0 API (click `API` in the Auth0 left side bar)
   * `Name: lando-api`
   * `Identifier/URI: http://lando-api.test`
-  * Go to the new API's `Scopes` tab and add a scope:
+  * `Signing Algorithm: RS256`
+  * Go to the new API's `Permissions` tab and add a permission:
     * `Name: lando`
     * `Description: Bearer has authorized Lando to land code on their behalf`
 
@@ -125,9 +126,16 @@ services:
 
 Restart the lando-ui service with docker-compose.
 
-Visit `http://lando-ui.test:7777/` in your browser. You should now be able to
-use the lando-ui "Log in" and "Log out" buttons with your personal email
-account.
+To log in to your new service you must create a User account.
+  1. Visit `http://lando-ui.test:7777/` in your browser.  You should  see the Lando
+  front page as a signed-out or anonymous user would see it.
+  1. Click the "Log in" button on the top navigation bar and you will be presented with
+  the lando-ui sign-in page.
+  1. On the lando-ui sign-in page click the "Sign Up" tab.
+  1. Follow the sign-up instructions. (Using the "Sign Up With Google" button makes
+  this task trivial.)
+
+ You should now be able to use the lando-ui "Log in" and "Log out" buttons.
 
 ###  How do I make the Land button work?
 
