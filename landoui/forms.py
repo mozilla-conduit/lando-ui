@@ -71,3 +71,8 @@ class UserSettingsForm(FlaskForm):
         ]
     )
     reset_phab_api_token = BooleanField('Delete', default="")
+
+
+class AltCommitMessageForm(FlaskForm):
+    phid = HiddenField("phid")
+    alt_commit_message = StringField("alt_commit_message")

@@ -98,6 +98,10 @@
   {% endif %}
   </div>
 
+  {% if is_user_authenticated() %}
+    {% include "stack/partials/security-approval-actions.html" %}
+  {% endif %}
+
   <div class="StackPage-actions">
   {% if not is_user_authenticated() %}
     <button disabled>

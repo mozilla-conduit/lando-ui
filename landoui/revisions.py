@@ -10,12 +10,12 @@ from flask import (
     current_app,
     render_template,
     redirect,
+    request,
     session,
-    url_for,
-)
+    url_for, abort)
 
 from landoui.app import oidc
-from landoui.forms import TransplantRequestForm
+from landoui.forms import AltCommitMessageForm, TransplantRequestForm
 from landoui.helpers import (
     get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
 )
@@ -167,6 +167,21 @@ def revision(revision_id):
     )
     drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
 
+    if current_app.config.get("ENABLE_SEC_APPROVAL"):
+        if "treat_as_secure" in request.args:
+            # Override the default secure revision determination logic, treat the
+            # revision we are viewing as if it were a secure revision for template
+            # rendering purposes.  Useful for template testing and development where it
+            # can be a pain to generate real secure revisions.
+            use_sec_approval_workflow = True
+        elif dryrun:
+            secure_revision_phids = dryrun.get("secureRevisions", [])
+            use_sec_approval_workflow = revision in secure_revision_phids
+        else:
+            use_sec_approval_workflow = False
+    else:
+        use_sec_approval_workflow = False
+
     return render_template(
         'stack/stack.html',
         revision_id='D{}'.format(revision_id),
@@ -179,6 +194,7 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
+        use_sec_approval_workflow=use_sec_approval_workflow,
         target_repo=target_repo,
         errors=errors,
         form=form,
@@ -193,4 +209,31 @@ def revisions_handler(revision_id, diff_id=None):
     # Redirect old revision page URL to stack page.
     return redirect(
         url_for('revisions.revision', revision_id=revision_id), code=301
+    )
+
+
+@revisions.route('/D<int:revision_id>/commit-message', methods=("POST",))
+def alt_commit_message(revision_id):
+    if not current_app.config.get("ENABLE_SEC_APPROVAL"):
+        abort(404)
+
+    form = AltCommitMessageForm()
+    errors = []
+    if form.is_submitted():
+        if not is_user_authenticated():
+            errors.append('You must be logged in to set an alternative commit message.')
+
+        elif not form.validate():
+            for _, field_errors in form.errors.items():
+                errors.extend(field_errors)
+
+    if errors:
+        return "\n".join(errors), 400
+
+    # FIXME: ensure the submitted revision is a secure revision!
+
+    return "New commit message for revision {} (PHID {}) set to {}".format(
+        revision_id,
+        form.phid.data,
+        form.alt_commit_message.data
     )
