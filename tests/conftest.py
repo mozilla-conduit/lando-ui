@@ -25,7 +25,7 @@ def docker_env_vars(monkeypatch):
     monkeypatch.setenv('OIDC_CLIENT_ID', 'test_oidc_client_id')
     monkeypatch.setenv('OIDC_CLIENT_SECRET', 'test_oidc_secret')
 
-    # FIXME: this branch needs a comment to explain why we don't use the local env
+    # FIXME: this branch needs a comment to explain why we don't use local env
     if in_circleci():
         import socket
         monkeypatch.setenv('DEBUG', 'True')

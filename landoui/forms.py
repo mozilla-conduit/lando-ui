@@ -74,5 +74,6 @@ class UserSettingsForm(FlaskForm):
 
 
 class AltCommitMessageForm(FlaskForm):
+    """Form used to input an alternative commit message for a Revision."""
     phid = HiddenField("phid")
     alt_commit_message = StringField("alt_commit_message")

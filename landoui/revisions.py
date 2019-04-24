@@ -10,9 +10,10 @@ from flask import (
     current_app,
     render_template,
     redirect,
-    request,
     session,
-    url_for, abort)
+    url_for,
+    abort,
+)
 
 from landoui.app import oidc
 from landoui.forms import AltCommitMessageForm, TransplantRequestForm
@@ -44,6 +45,27 @@ def oidc_auth_optional(f):
         return handler(*args, **kwargs)
 
     return wrapped
+
+
+def should_use_sec_approval_workflow(revision):
+    """Should we use the Security Bug Approval Workflow for this revision?
+
+    See https://wiki.mozilla.org/Security/Bug_Approval_Process
+
+    Args:
+        revision: A lando-api Revision entity to check.
+    """
+    should_use_workflow = False
+
+    if current_app.config.get("ENABLE_SEC_APPROVAL"):
+        should_use_workflow = revision.get("is_secure", False)
+
+        logger.debug(
+            "revision secure?",
+            extra={"value": should_use_workflow},
+        )
+
+    return should_use_workflow
 
 
 @revisions.route('/D<int:revision_id>/', methods=('GET', 'POST'))
@@ -167,20 +189,9 @@ def revision(revision_id):
     )
     drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
 
-    if current_app.config.get("ENABLE_SEC_APPROVAL"):
-        if "treat_as_secure" in request.args:
-            # Override the default secure revision determination logic, treat the
-            # revision we are viewing as if it were a secure revision for template
-            # rendering purposes.  Useful for template testing and development where it
-            # can be a pain to generate real secure revisions.
-            use_sec_approval_workflow = True
-        elif dryrun:
-            secure_revision_phids = dryrun.get("secureRevisions", [])
-            use_sec_approval_workflow = revision in secure_revision_phids
-        else:
-            use_sec_approval_workflow = False
-    else:
-        use_sec_approval_workflow = False
+    use_sec_approval_workflow = should_use_sec_approval_workflow(
+        revisions[revision]
+    )
 
     return render_template(
         'stack/stack.html',
@@ -212,16 +223,19 @@ def revisions_handler(revision_id, diff_id=None):
     )
 
 
-@revisions.route('/D<int:revision_id>/commit-message', methods=("POST",))
+@revisions.route('/D<int:revision_id>/commit-message', methods=('POST', ))
 def alt_commit_message(revision_id):
     if not current_app.config.get("ENABLE_SEC_APPROVAL"):
         abort(404)
 
     form = AltCommitMessageForm()
     errors = []
+
     if form.is_submitted():
         if not is_user_authenticated():
-            errors.append('You must be logged in to set an alternative commit message.')
+            errors.append(
+                'You must be logged in to set an alternative commit message.'
+            )
 
         elif not form.validate():
             for _, field_errors in form.errors.items():
@@ -233,7 +247,5 @@ def alt_commit_message(revision_id):
     # FIXME: ensure the submitted revision is a secure revision!
 
     return "New commit message for revision {} (PHID {}) set to {}".format(
-        revision_id,
-        form.phid.data,
-        form.alt_commit_message.data
+        revision_id, form.phid.data, form.alt_commit_message.data
     )

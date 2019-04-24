@@ -1,11 +1,13 @@
 {% if not blockers and use_sec_approval_workflow %}
   <h1>Security Approval</h1>
-  <p>Set an obfuscated commit message for this revision.</p>
+  <p>Revision {{ revision_id }} is a secure revision and should follow the
+      <a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">Security Bug Approval Process</a>.</p>
   <form id="altCommitMessageForm" action="/{{ revision_id }}/commit-message" method="post">
     {{form.csrf_token}}
     <div>
-    <p><label for="alt_commit_message">Alternate commit message for
-        revision {{ revision_id }}</label></p>
+    <p>
+        <label for="alt_commit_message">Please set an obfuscated commit message for revision {{ revision_id }}:</label>
+    </p>
     <textarea id="alt_commit_message" name="alt_commit_message" rows="3" cols="70"></textarea>
     <input type="hidden" name="phid" value="{{ revision_phid }}"/>
     </div>
