@@ -1,11 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import time
 from copy import deepcopy
+from unittest.mock import patch
 
 import pytest
-
-from unittest.mock import patch
 
 pytestmark = pytest.mark.usefixtures("app_config")
 
@@ -75,7 +75,7 @@ def apidouble():
 
 
 @pytest.fixture
-def authenticated_session(client):
+def authenticated_session(client, monkeypatch):
     """Simulate a session for a user who has authenticated with Auth0."""
     # We need to use the session_transaction() method to modify the session
     # in a way that affects both application code and template code sessions.
@@ -90,6 +90,11 @@ def authenticated_session(client):
         session["id_token"] = "foo_id_token"
         session["access_token"] = "foo_access_token"
         session["userinfo"] = {"picture": ""}
+
+        # These two values need to be present in the session for the OIDC
+        # auth library to evaluate the session as fresh and authenticated.
+        session["id_token_jwt"] = "foo_jwt"
+        session["last_authenticated"] = time.time()
 
 
 @pytest.fixture
