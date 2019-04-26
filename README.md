@@ -135,6 +135,28 @@ You need to change some settings in the lando-api service to make the
 Land button in lando-ui function.  See the `LOCALDEV_MOCK`
 environment variables in the [lando-api docker-compose.yml][] for details.
 
+### Developing and testing against Conduit Suite
+
+Sometimes it's necessary to use a more realistic infrastructure setup to test template
+rendering, frontend/backend interactions, and to test with special case data such as
+secure revisions.  We can achieve this by running our Lando UI project code inside the
+[Conduit Suite] project's development environment. Conduit Suite provides all of the
+collaborating services (Lando API, Phabricator, BMO) necessary for Lando UI to
+function as the real service would.
+
+1. First set up Auth0 according to the Setting up Auth0 instruction section above.
+
+1. Next follow the [Conduit Suite] generic setup instructions.  Verify that you can
+run the Suite project from in it's own project directory with `docker-compose up`.
+Verify that you can use the `firefox-proxy` script in the Suite project's root
+directory to access the Suite's bundled copy of Lando UI.
+
+1. Once you have the Suite running with it's bundled copy of Lando UI you can modify
+it's `docker-compose` configuration to build and run lando-ui from the sources in the
+project directory you have been hacking in.  Instructions are in the [Conduit Suite]
+project README.
+
+
 [lando-api]: https://github.com/mozilla-conduit/lando-api
 [Conduit contribution guidelines]: http://moz-conduit.readthedocs.io/en/latest/contributing.html
 [docker]: https://docs.docker.com/engine/installation/
@@ -146,3 +168,4 @@ environment variables in the [lando-api docker-compose.yml][] for details.
 [Git Bash]: https://git-for-windows.github.io/
 [Auth0]: https://auth0.com/
 [lando-api docker-compose.yml]: https://github.com/mozilla-conduit/lando-api/blob/master/docker-compose.yml
+[Conduit Suite]: https://github.com/mozilla-conduit/suite
