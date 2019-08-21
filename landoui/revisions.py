@@ -46,6 +46,27 @@ def oidc_auth_optional(f):
     return wrapped
 
 
+def should_use_sec_approval_workflow(revision):
+    """Should we use the Security Bug Approval Workflow for this revision?
+
+    See https://wiki.mozilla.org/Security/Bug_Approval_Process
+
+    Args:
+        revision: A lando-api Revision entity to check.
+    """
+    should_use_workflow = False
+
+    if current_app.config.get("ENABLE_SEC_APPROVAL"):
+        should_use_workflow = revision.get("is_secure", False)
+
+        logger.debug(
+            "revision secure?",
+            extra={"value": should_use_workflow},
+        )
+
+    return should_use_workflow
+
+
 @revisions.route('/D<int:revision_id>/', methods=('GET', 'POST'))
 @oidc_auth_optional
 def revision(revision_id):
@@ -167,6 +188,10 @@ def revision(revision_id):
     )
     drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
 
+    use_sec_approval_workflow = should_use_sec_approval_workflow(
+        revisions[revision]
+    )
+
     return render_template(
         'stack/stack.html',
         revision_id='D{}'.format(revision_id),
@@ -179,6 +204,7 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
+        use_sec_approval_workflow=use_sec_approval_workflow,
         target_repo=target_repo,
         errors=errors,
         form=form,

@@ -33,6 +33,9 @@
       <tbody>
       {% for phid, drawing in rows %}
         {% set revision = revisions[phid] %}
+        {% if use_sec_approval_workflow %}
+          <!-- This revision is subject to the sec-approval workflow -->
+        {% endif %}
         <tr
           class="StackPage-revision{%
             if series and phid in series %} StackPage-revision-in-series{% endif
