@@ -25,11 +25,15 @@ def docker_env_vars(monkeypatch):
     monkeypatch.setenv('OIDC_CLIENT_ID', 'test_oidc_client_id')
     monkeypatch.setenv('OIDC_CLIENT_SECRET', 'test_oidc_secret')
 
+    # FIXME: this logic branch needs a comment to explain why we don't use the
+    #  local env.
     if in_circleci():
         import socket
         monkeypatch.setenv('DEBUG', 'True')
         monkeypatch.setenv('HOST', '0.0.0.0')
         monkeypatch.setenv('PORT', '7777')
+        # FIXME: I need this variable set for pytest+pycharm. Why not set it
+        #  for all envs?
         monkeypatch.setenv(
             'LANDO_API_OIDC_IDENTIFIER', 'lando-api-oidc-identifier'
         )
