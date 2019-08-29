@@ -33,7 +33,7 @@
       <tbody>
       {% for phid, drawing in rows %}
         {% set revision = revisions[phid] %}
-        {% if use_sec_approval_workflow %}
+        {% if revision['should_use_sec_approval_workflow'] %}
           <!-- This revision is subject to the sec-approval workflow -->
         {% endif %}
         <tr

@@ -46,25 +46,21 @@ def oidc_auth_optional(f):
     return wrapped
 
 
-def should_use_sec_approval_workflow(revision):
-    """Should we use the Security Bug Approval Workflow for this revision?
+def annotate_sec_approval_workflow_info(revisions):
+    """Annotate a dict of revisions with sec-approval workflow information.
 
     See https://wiki.mozilla.org/Security/Bug_Approval_Process
 
     Args:
-        revision: A lando-api Revision entity to check.
+        revisions: A dict of (phid, revision_data) items. The dict will have new keys
+            added to it by this function.
     """
-    should_use_workflow = False
-
-    if current_app.config.get("ENABLE_SEC_APPROVAL"):
-        should_use_workflow = revision.get("is_secure", False)
-
-        logger.debug(
-            "revision secure?",
-            extra={"value": should_use_workflow},
-        )
-
-    return should_use_workflow
+    for revision in revisions.values():
+        if current_app.config.get("ENABLE_SEC_APPROVAL"):
+            should_use_workflow = revision.get("is_secure", False)
+        else:
+            should_use_workflow = False
+        revision['should_use_sec_approval_workflow'] = should_use_workflow
 
 
 @revisions.route('/D<int:revision_id>/', methods=('GET', 'POST'))
@@ -188,9 +184,7 @@ def revision(revision_id):
     )
     drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
 
-    use_sec_approval_workflow = should_use_sec_approval_workflow(
-        revisions[revision]
-    )
+    annotate_sec_approval_workflow_info(revisions)
 
     return render_template(
         'stack/stack.html',
@@ -204,7 +198,6 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
-        use_sec_approval_workflow=use_sec_approval_workflow,
         target_repo=target_repo,
         errors=errors,
         form=form,
