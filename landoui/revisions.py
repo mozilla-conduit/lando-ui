@@ -52,8 +52,8 @@ def annotate_sec_approval_workflow_info(revisions):
     See https://wiki.mozilla.org/Security/Bug_Approval_Process
 
     Args:
-        revisions: A dict of (phid, revision_data) items. The dict will have new keys
-            added to it by this function.
+        revisions: A dict of (phid, revision_data) items. The dict will have
+            new keys added to it by this function.
     """
     for revision in revisions.values():
         if current_app.config.get("ENABLE_SEC_APPROVAL"):
