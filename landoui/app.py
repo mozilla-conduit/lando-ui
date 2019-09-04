@@ -78,6 +78,8 @@ def create_app(
         _lookup_service_url(lando_api_url, 'phabricator')
     )
     log_config_change('PHABRICATOR_URL', app.config['PHABRICATOR_URL'])
+    app.config['ENABLE_SEC_APPROVAL'] = bool(os.getenv('ENABLE_SEC_APPROVAL'))
+    log_config_change('ENABLE_SEC_APPROVAL', app.config['ENABLE_SEC_APPROVAL'])
 
     # Set remaining configuration
     app.config['SECRET_KEY'] = secret_key

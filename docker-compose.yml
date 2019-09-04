@@ -33,6 +33,7 @@ services:
       - ENV=localdev
       - SENTRY_DSN=
       - LOG_LEVEL=DEBUG
+      - ENABLE_SEC_APPROVAL=1
   py3-linter:
     build:
       context: ./

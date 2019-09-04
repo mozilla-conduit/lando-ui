@@ -46,6 +46,23 @@ def oidc_auth_optional(f):
     return wrapped
 
 
+def annotate_sec_approval_workflow_info(revisions):
+    """Annotate a dict of revisions with sec-approval workflow information.
+
+    See https://wiki.mozilla.org/Security/Bug_Approval_Process
+
+    Args:
+        revisions: A dict of (phid, revision_data) items. The dict will have
+            new keys added to it by this function.
+    """
+    for revision in revisions.values():
+        if current_app.config.get("ENABLE_SEC_APPROVAL"):
+            should_use_workflow = revision.get("is_secure", False)
+        else:
+            should_use_workflow = False
+        revision['should_use_sec_approval_workflow'] = should_use_workflow
+
+
 @revisions.route('/D<int:revision_id>/', methods=('GET', 'POST'))
 @oidc_auth_optional
 def revision(revision_id):
@@ -166,6 +183,8 @@ def revision(revision_id):
         phids, edges, key=lambda x: int(revisions[x]['id'][1:])
     )
     drawing_width, drawing_rows = draw_stack_graph(phids, edges, order)
+
+    annotate_sec_approval_workflow_info(revisions)
 
     return render_template(
         'stack/stack.html',
