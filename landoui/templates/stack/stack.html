@@ -33,9 +33,6 @@
       <tbody>
       {% for phid, drawing in rows %}
         {% set revision = revisions[phid] %}
-        {% if revision['should_use_sec_approval_workflow'] %}
-          <!-- This revision is subject to the sec-approval workflow -->
-        {% endif %}
         <tr
           class="StackPage-revision{%
             if series and phid in series %} StackPage-revision-in-series{% endif
@@ -120,21 +117,21 @@
   </div>
 
   {% if is_user_authenticated() %}
-  <form class="StackPage-form" action="" method="post">
-    {{form.csrf_token}}
-    {{form.landing_path}}
-    {{form.confirmation_token}}
-    <div class="StackPage-landingPreview modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Preview landing</p>
-          <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
-        </header>
-        <section class="modal-card-body">
-          {% include "stack/partials/landing-preview.html" %}
-        </section>
-        <footer class="modal-card-foot">
+  <div class="StackPage-landingPreview modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Preview landing</p>
+        <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        {% include "stack/partials/landing-preview.html" %}
+      </section>
+      <footer class="modal-card-foot">
+        <form class="StackPage-form" action="" method="post">
+          {{form.csrf_token}}
+          {{form.landing_path}}
+          {{form.confirmation_token}}
           <button
               class="StackPage-landingPreview-land button"
               data-target-repo="{{ target_repo['url']|repo_path }}"
@@ -142,12 +139,28 @@
             Land to {{ target_repo['url']|repo_path }}
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
-        </footer>
-      </div>
+        </form>
+      </footer>
     </div>
-  </form>
+  </div>
   {% endif %}
 
+  <div class="StackPage-secRequestSubmitted modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Request submitted</p>
+        <button class="StackPage-secRequestSubmitted-close delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <p>Your request for review by the sec-approval team has been submitted.</p>
+        <p><a href="{{ submitted_rev_url }}">View my request in Phabricator</a></p>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="StackPage-secRequestSubmitted-close button" aria-label="close">Close</button>
+      </footer>
+    </div>
+  </div>
 
 </main>
 {% endblock %}

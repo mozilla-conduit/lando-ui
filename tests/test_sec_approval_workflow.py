@@ -7,6 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
+SEC_APPROVAL_HTML_MARK = b'<div class="StackPage-landingPreview-secureRevisionWarning">'  # noqa
+
 LANDO_API_STACK = {
     "revisions": [
         {
@@ -139,7 +141,7 @@ def apidouble():
 
 
 @pytest.fixture
-def authenticated_session(client, monkeypatch):
+def authenticated_session(client):
     """Simulate a session for a user who has authenticated with Auth0."""
     # We need to use the session_transaction() method to modify the session
     # in a way that affects both application code and template code sessions.
@@ -180,10 +182,7 @@ def anonymous_session(client):
 def sec_approval_revision_in_page(rv) -> bool:
     """Does the given response contain a sec-approval revision in its content?
     """
-    return (
-        b"<!-- This revision is subject to the sec-approval workflow -->" in
-        rv.data
-    )
+    return SEC_APPROVAL_HTML_MARK in rv.data
 
 
 def test_view_stack_not_logged_in(client, anonymous_session, apidouble):

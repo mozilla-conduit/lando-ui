@@ -245,7 +245,6 @@ ul.StackPage-blockers {
     white-space: pre-wrap;
     height: auto;
     line-height: 1.25em;
-    padding: 0;
     margin-top: 1ch;
     margin-left: 1ch;
     color: inherit;
@@ -291,6 +290,30 @@ ul.StackPage-blockers {
   &-landingTo {
     font-weight: normal;
   }
+
+  &-secureRevisionWarning {
+    background: #FEDBDB;
+    margin: 1ch 0 0 1ch;
+    padding: 1em;
+    position: relative;
+  }
+
+  &-editMessagePanel {
+    display: none;
+    background: #FEDBDB;
+    margin: 0 0 4px 1ch;
+    padding: 1em;
+
+    &-foot {
+      padding-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+    }
+  }
 }
 
 .StackPage-timeline {
@@ -301,7 +324,7 @@ ul.StackPage-blockers {
   }
 }
 
-.StackPage-errors {
+%error-message {
   background: #E8A2A2;
   border: 1px solid #A53030;
   color:#A53030;
@@ -312,4 +335,15 @@ ul.StackPage-blockers {
     list-style: disc outside;
     margin-left: 2em;
   }
+}
+
+.StackPage-errors {
+  @extend %error-message;
+}
+
+.StackPage-landingPreview-editMessagePanel-formErrors {
+  @extend %error-message;
+  display: none;
+  margin-top: 0.5em;
+  width: 123ch;
 }

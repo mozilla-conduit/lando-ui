@@ -5,7 +5,8 @@ import json
 from json.decoder import JSONDecodeError
 
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, HiddenField, StringField, ValidationError
+from wtforms import BooleanField, HiddenField, StringField, TextAreaField, \
+    ValidationError
 from wtforms.validators import InputRequired, optional, Regexp
 
 
@@ -59,6 +60,24 @@ class TransplantRequestForm(FlaskForm):
         ],
     )
     confirmation_token = HiddenField('confirmation_token')
+
+
+class SecApprovalRequestForm(FlaskForm):
+    new_message = TextAreaField(
+        'new_message',
+        validators=[
+            InputRequired(message='A valid commit message must be provided'),
+        ]
+    )
+    revision_id = StringField(
+        'revision_id',
+        validators=[
+            InputRequired(
+                message='A valid Revision monogram must be provided'
+            ),
+            Regexp("^D[0-9]+$"),
+        ]
+    )
 
 
 class UserSettingsForm(FlaskForm):
