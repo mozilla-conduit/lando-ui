@@ -86,11 +86,11 @@ We use [Auth0][] to authenticate application users.  You will need to sign up
 for a personal Auth0 account to manually test code landing workflows and
 protected pages.
 
-After signing up you must create an Auth0 Client for lando-ui testing.
+After signing up you must create an Auth0 Application for lando-ui testing.
 See the Auth0 docs for details on how to do this.
 
-Once you have created the lando-ui Client in your Auth0 management dashboard, go
-to the `Client Settings` page and configure the following:
+Once you have created the lando-ui Application in your Auth0 management dashboard, go
+to the `Application` page and configure the following:
 
 * `Client Type: Regular Web Application`
 * `Token Endpoint Authentication Method: POST`
