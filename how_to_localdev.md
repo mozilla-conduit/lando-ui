@@ -141,14 +141,6 @@ networks:
 
 - Go to the lando-api repo and run `invoke upgrade`.
 
-- In the lando-api repo, modify `landoapi/repos.py` to add:
-```
-'localdev': {
-    'tree': 'test-repo',
-    'push_bookmark': ''
-},
-```
-
 - Run `docker-compose up` again for lando-api.
 
 - Visit your revision at http://lando-ui.test:7777/revisions/DXXX
