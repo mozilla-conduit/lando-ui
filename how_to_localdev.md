@@ -45,7 +45,7 @@ version: '2'
 services:
   lando-ui:
     environment:
-      - LANDO_API_URL=http://lando-api
+      - LANDO_API_URL=http://lando-api:8888
       - OIDC_DOMAIN=<your auth0 domain, e.g. account.auth0.com>
       - OIDC_CLIENT_ID=<your auth0 client id for lando-ui>
       - OIDC_CLIENT_SECRET=<your auth0 client secret for lando-ui>
