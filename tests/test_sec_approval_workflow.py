@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-LANDO_API_REVISION = {
+LANDO_API_STACK = {
     "revisions": [
         {
             "repo_phid":
@@ -92,7 +92,7 @@ LANDO_API_REVISION = {
 class LandoAPIDouble:
     """Returns canned responses for LandoAPI.request()"""
 
-    default_stack_response = deepcopy(LANDO_API_REVISION)
+    default_stack_response = deepcopy(LANDO_API_STACK)
 
     def __init__(self):
         self.stack_response = deepcopy(self.default_stack_response)
@@ -177,6 +177,15 @@ def anonymous_session(client):
         assert not session.keys()  # Check just to be sure.
 
 
+def sec_approval_revision_in_page(rv) -> bool:
+    """Does the given response contain a sec-approval revision in its content?
+    """
+    return (
+            b"<!-- This revision is subject to the sec-approval workflow -->"
+            in rv.data
+    )
+
+
 def test_view_stack_not_logged_in(client, anonymous_session, apidouble):
     # Basic happy-path test for an anonymous user.
     rv = client.get("/D1/")
@@ -194,10 +203,7 @@ def test_sec_approval_workflow_mark_hidden_if_revision_is_public(
 ):
     rv = client.get("/D1/")
     assert rv.status_code == 200
-    assert (
-        b"<!-- This revision is subject to the sec-approval workflow -->"
-        not in rv.data
-    )
+    assert not sec_approval_revision_in_page(rv)
 
 
 def test_sec_approval_workflow_mark_shown_if_revision_is_secure(
@@ -206,10 +212,7 @@ def test_sec_approval_workflow_mark_shown_if_revision_is_secure(
     apidouble.side_effect.stack_response["revisions"][0]["is_secure"] = True
     rv = client.get("/D1/")
     assert rv.status_code == 200
-    assert (
-        b"<!-- This revision is subject to the sec-approval workflow -->" in
-        rv.data
-    )
+    assert sec_approval_revision_in_page(rv)
 
 
 def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
@@ -219,7 +222,4 @@ def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
     apidouble.side_effect.stack_response["revisions"][0]["is_secure"] = True
     rv = client.get("/D1/")
     assert rv.status_code == 200
-    assert (
-        b"<!-- This revision is subject to the sec-approval workflow -->"
-        not in rv.data
-    )
+    assert not sec_approval_revision_in_page(rv)
