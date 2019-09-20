@@ -38,7 +38,7 @@ def lint_flake8(ctx):
 def lint_yapf(ctx):
     """Run yapf."""
     run(
-        'docker-compose run --rm py3-linter yapf --diff --recursive ./',
+        'docker-compose run --rm py3-linter yapf --diff --recursive --exclude=\'./.git/*\' ./',  # noqa
         pty=USE_PTY,
         echo=True
     )
