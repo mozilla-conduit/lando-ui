@@ -79,7 +79,7 @@
             {{ settings_form.reset_phab_api_token.label() }}:
             {{ settings_form.reset_phab_api_token(class_='checkbox') }}
             {{ settings_form.phab_api_token(size=32, maxlength=32, minlength=32, class_='input') }}
-            {{ settings_form.csrf_token() }}
+            {{ settings_form.csrf_token }}
             <ul id="phab_api_token_errors" class="userSettingsForm-Errors"></ul>
             <ul id="form_errors" class="userSettingsForm-Errors"></ul>
           </form>
