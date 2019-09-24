@@ -5,6 +5,7 @@ $(document).ready(function() {
   let $landingPreview = $('.StackPage-landingPreview');
   let $stack = $('.StackPage-stack');
   let $secRequestSubmitted = $('.StackPage-secRequestSubmitted');
+  let $queue = $('.QueuePage');
 
   // Initialize components
   $('.Navbar').landoNavbar();
@@ -12,4 +13,5 @@ $(document).ready(function() {
   $landingPreview.landingPreview();
   $stack.stack();
   $secRequestSubmitted.secRequestSubmitted();
+  $queue.queue();
 });

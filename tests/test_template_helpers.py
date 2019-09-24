@@ -7,7 +7,7 @@ import pytest
 
 from landoui.template_helpers import (
     avatar_url, linkify_bug_numbers, linkify_revision_urls, linkify_faq,
-    linkify_sec_bug_wiki, repo_path
+    linkify_sec_bug_wiki, repo_path, calculate_duration
 )
 
 
@@ -169,3 +169,25 @@ def test_linkify_sec_bug_wiki(app, input_text, output_text):
 )
 def test_repo_path(app, repo_url, path):
     assert path == repo_path(repo_url)
+
+
+@pytest.mark.parametrize(
+    'start,end,duration', [
+        (
+            '2019-10-08T06:42:12.000000+00:00',
+            '2019-10-08T06:58:32.000000+00:00', {
+                'minutes': 16,
+                'seconds': 20
+            }
+        ),
+        (
+            '2019-10-10T12:42:34.012340+00:00',
+            '2019-10-10T12:42:41.045670+00:00', {
+                'minutes': 0,
+                'seconds': 7
+            }
+        ),
+    ]
+)
+def test_calculate_duration(app, start, end, duration):
+    assert duration == calculate_duration(start, end)

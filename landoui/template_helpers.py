@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 import logging
 import re
 import urllib.parse
@@ -30,6 +31,29 @@ def new_settings_form():
 @template_helpers.app_template_filter()
 def escape_html(text):
     return escape(text)
+
+
+@template_helpers.app_template_global()
+def calculate_duration(start, end=None):
+    """Calculates the duration between the two iso8061 timestamps.
+
+    If end is None then the current time in UTC will be used.
+    Returns a dict with the minutes and seconds as integers.
+    """
+    if not end:
+        utc_tz = datetime.timezone.utc
+        end = datetime.datetime.utcnow().replace(tzinfo=utc_tz).isoformat()
+
+    # Work around for ':' in timezone until we upgrade to Python 3.7.
+    # https://bugs.python.org/issue24954
+    start = start[:-3] + start[-2:]
+    end = end[:-3] + end[-2:]
+
+    time_start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%f%z")
+    time_end = datetime.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%f%z")
+    elapsedTime = time_end - time_start
+    result = divmod(elapsedTime.total_seconds(), 60)
+    return {"minutes": int(result[0]), "seconds": int(result[1])}
 
 
 @template_helpers.app_template_filter()
