@@ -1,0 +1,98 @@
+{% extends "partials/layout.html" %}
+{# Fake queue data till the API is ready #}
+{% 
+  set queue_data = [
+    {
+      'priority': 1,
+      'requester_email': "user@example.com",
+      'bug_ids': [123456, 123457, 123458],
+      'repo_name': 'mozilla-central',
+      'revision_order': [1001, 1002, 1003],
+      'created_at': '2019-10-08T16:55:31.208168+00:00',
+    },
+    {
+      'priority': 1,
+      'requester_email': "imadueme@example.com",
+      'bug_ids': [323457, 323458, 323459, 323460],
+      'repo_name': 'mozilla-central',
+      'revision_order': [1225, 1226, 1227],
+      'created_at': '2019-10-08T16:55:40.10194+00:00'
+    },
+    {
+      'priority': 1,
+      'requester_email': "imadueme@example.com",
+      'bug_ids': [323456],
+      'repo_name': 'mozilla-central',
+      'revision_order': [1504],
+      'created_at': '2019-10-08T16:55:50.10194+00:00'
+    },
+    {
+      'priority': 1,
+      'requester_email': "otherperson@example.com",
+      'bug_ids': [323456],
+      'repo_name': 'mozilla-central',
+      'revision_order': [1506, 1508],
+      'created_at': '2019-10-08T16:55:58.10194+00:00'
+    },
+  ]
+%}
+{% block main %}
+<main class="QueuePage container">
+  <h1>Landing Queue</h1>
+  <div class="QueuePage-options">
+    <div class="QueuePage-optionsRepo">
+      <span>Respository: </span>
+      <select>
+          <option>
+            Mozilla-Central
+          </option>
+      </select>
+    </div>
+    
+    <div class="QueuePage-optionsIsMine">
+      <span>Show:</span> &nbsp;
+      <a href="#" data-show="all">All</a> &nbsp; | &nbsp;
+      <a href="#" data-show="just-mine">Just Mine</a>
+    </div>
+  </div>
+
+  <div class="QueuePage-listHeaders">
+    <div class="QueuePage-listHeadersPosition">Position</div>
+    <div class="QueuePage-listHeadersAge">Age</div>
+    <div class="QueuePage-listHeadersId">Revision ID</div>
+    <div class="QueuePage-listHeadersBug">Bug #</div>
+    <div class="QueuePage-listHeadersRequestedBy">Requested By</div>
+  </div>
+  <div class="QueuePage-list">
+    {% for landing in queue_data %}
+    <div
+      class="QueuePage-revision"
+      data-revision-tip-url="/D{{ landing['revision_order'][0] }}/"
+      data-is-mine="{{ 'true' if landing['requester_email'] == session['userinfo']['email'] else 'false' }}"
+      data-repository="{{ landing['repo_name'] }}">
+        <div class="QueuePage-revisionPosition">
+          {{ loop.index }}
+        </div>
+        <div class="QueuePage-revisionAge">
+          {% set age = calculate_duration(landing['created_at']) %}
+          {{ "{}m".format(age['minutes']) if age['minutes'] > 0 else ""}}
+          {{ "{}s".format(age['seconds']) }}
+        </div>
+        <div class="QueuePage-revisionId">
+          {% set revisions_count = landing['revision_order']|length %}
+          D{{ landing['revision_order'][0] }}
+          {{ "(+{} more)".format(revisions_count -1) if revisions_count - 1 > 0 else ""}}
+        </div>
+        <div class="QueuePage-revisionBug">
+          {% set bugs_count = landing['bug_ids']|length %}
+          {{ landing['bug_ids'][0] if bugs_count > 0 else ""}}
+          {{ "(+{} more)".format(bugs_count -1) if bugs_count - 1 > 0 else ""}}
+        </div>
+        <div class="QueuePage-revisionRequestedBy">
+          {{ landing['requester_email'] }}
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}

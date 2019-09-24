@@ -80,6 +80,13 @@ def create_app(
     log_config_change('PHABRICATOR_URL', app.config['PHABRICATOR_URL'])
     app.config['ENABLE_SEC_APPROVAL'] = bool(os.getenv('ENABLE_SEC_APPROVAL'))
     log_config_change('ENABLE_SEC_APPROVAL', app.config['ENABLE_SEC_APPROVAL'])
+    app.config['ENABLE_EMBEDDED_TRANSPLANT_UI'] = (
+        bool(os.getenv('ENABLE_EMBEDDED_TRANSPLANT_UI'))
+    )
+    log_config_change(
+        'ENABLE_EMBEDDED_TRANSPLANT_UI',
+        app.config['ENABLE_EMBEDDED_TRANSPLANT_UI']
+    )
 
     # Set remaining configuration
     app.config['SECRET_KEY'] = secret_key
