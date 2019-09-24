@@ -181,8 +181,8 @@ def sec_approval_revision_in_page(rv) -> bool:
     """Does the given response contain a sec-approval revision in its content?
     """
     return (
-            b"<!-- This revision is subject to the sec-approval workflow -->"
-            in rv.data
+        b"<!-- This revision is subject to the sec-approval workflow -->" in
+        rv.data
     )
 
 
