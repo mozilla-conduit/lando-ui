@@ -128,6 +128,7 @@ def create_app(
         )
         assets.register(loader.load_bundles())
 
+    logger.info("Application started successfully.")
     return app
 
 
