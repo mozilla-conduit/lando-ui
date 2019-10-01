@@ -3,6 +3,7 @@
 $.fn.landingPreview = function() {
   return this.each(function() {
     let $landingPreview = $(this);
+    let $form = $('.StackPage-form');
     let $close = $landingPreview.find('.StackPage-landingPreview-close');
     let $warnings = $landingPreview.find('.StackPage-landingPreview-warnings input[type=checkbox]');
     let $blocker = $landingPreview.find('.StackPage-landingPreview-blocker');
@@ -34,7 +35,7 @@ $.fn.landingPreview = function() {
     };
 
 
-    $landButton.on('click', () => {
+    $form.on('submit', () => {
       $landButton.attr({'disabled': true});
       $landButton.text('Landing in progress...');
     });
