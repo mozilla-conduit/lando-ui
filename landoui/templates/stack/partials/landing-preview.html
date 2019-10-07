@@ -43,10 +43,45 @@
         </div>
         <button class="StackPage-landingPreview-expand button"></button>
       </div>
-      <pre class="StackPage-landingPreview-commitMessage">{{
+      {% if revision['should_use_sec_approval_workflow'] %}
+      <div class="StackPage-landingPreview-secureRevisionWarning">
+        <p>
+          <strong>Warning:</strong> This is a secure revision and should follow the
+          <a href="">Security Bug Approval Process</a>.
+        </p>
+        <p>
+          You should consider editing the commit message so that it does not leak
+          security-sensitive information into the Mozilla source repositories.
+        </p>
+        <button class="StackPage-landingPreview-editMessage button">Edit Commit Message</button>
+      </div>
+      {% endif %}
+      <div class="StackPage-landingPreview-displayMessagePanel">
+        <pre class="StackPage-landingPreview-commitMessage">{{
         revision['commit_message']|escape_html|linkify_bug_numbers|linkify_revision_urls|safe
       }}</pre>
-      <div class="StackPage-landingPreview-seeMore"></div>
+        <div class="StackPage-landingPreview-seeMore"></div>
+      </div>
+      <div class="StackPage-landingPreview-editMessagePanel">
+        <form action="/request-sec-approval" method="post">
+          {{sec_approval_form.csrf_token}}
+          <input type="hidden" name="revision_id" value="{{ revision['id'] }}" />
+          <label for="new_message">New commit message:</label>
+<textarea
+        cols="120"
+        rows="5"
+        name="new_message"
+>{{ revision['title']|safe }}
+
+{{ revision['summary']|safe}}</textarea>
+          <ul class="StackPage-landingPreview-editMessagePanel-formErrors">
+          </ul>
+          <div class="StackPage-landingPreview-editMessagePanel-foot">
+            <button type="submit" class="button">Submit For Approval</button>
+            <button type="reset" class="StackPage-landingPreview-cancelMsgEditBtn button">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   {% endfor %}
   </div>

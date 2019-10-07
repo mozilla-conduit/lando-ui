@@ -6,16 +6,12 @@ import json
 import logging
 
 from flask import (
-    Blueprint,
-    current_app,
-    render_template,
-    redirect,
-    session,
-    url_for,
+    Blueprint, current_app, render_template, redirect, session, url_for,
+    jsonify, request
 )
 
 from landoui.app import oidc
-from landoui.forms import TransplantRequestForm
+from landoui.forms import TransplantRequestForm, SecApprovalRequestForm
 from landoui.helpers import (
     get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
 )
@@ -73,6 +69,8 @@ def revision(revision_id):
     )
 
     form = TransplantRequestForm()
+    sec_approval_form = SecApprovalRequestForm()
+
     errors = []
     if form.is_submitted():
         if not is_user_authenticated():
@@ -186,6 +184,16 @@ def revision(revision_id):
 
     annotate_sec_approval_workflow_info(revisions)
 
+    # Are we showing the "sec-approval request submitted" dialog?
+    # If we are then fill in its values.
+    submitted_revision = request.args.get('show_approval_success')
+    submitted_rev_url = None
+    if submitted_revision:
+        for rev in revisions.values():
+            if rev['id'] == submitted_revision:
+                submitted_rev_url = rev['url']
+                break
+
     return render_template(
         'stack/stack.html',
         revision_id='D{}'.format(revision_id),
@@ -198,6 +206,8 @@ def revision(revision_id):
         transplants=transplants,
         revisions=revisions,
         revision_phid=revision,
+        sec_approval_form=sec_approval_form,
+        submitted_rev_url=submitted_rev_url,
         target_repo=target_repo,
         errors=errors,
         form=form,
@@ -213,3 +223,21 @@ def revisions_handler(revision_id, diff_id=None):
     return redirect(
         url_for('revisions.revision', revision_id=revision_id), code=301
     )
+
+
+@revisions.route('/request-sec-approval', methods=('POST', ))
+def sec_approval_request_handler():
+    form = SecApprovalRequestForm()
+    # Errors are stored in a dict containing a list of errors for each field.
+    if not is_user_authenticated():
+        errors = {'Error': ['You must be logged in to request sec-approval']}
+        return jsonify(errors=errors), 401
+    elif not form.validate():
+        return jsonify(errors=form.errors), 400
+    else:
+        logger.info(
+            "sec-approval requested",
+            extra={"revision_id": form.revision_id.data}
+        )
+
+    return jsonify({})
