@@ -73,8 +73,8 @@ class LandoAPI:
             logger.debug(
                 'lando-api response',
                 extra={
-                    'status code': response.status_code,
-                    'content type': response.headers.get('Content-Type'),
+                    'status_code': response.status_code,
+                    'content_type': response.headers.get('Content-Type'),
                 }
             )
 
