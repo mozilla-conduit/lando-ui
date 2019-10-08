@@ -1,0 +1,63 @@
+{% extends "partials/layout.html" %}
+
+{% from "partials/forms.html" import textfield, radio %}
+
+{% block main %}
+<main class="container content">
+  <div>
+    <h1>New Uplift Request for <a href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a></h1>
+
+    {% if uplift_request %}
+
+      {% for repo, revisions in uplift_request.items() %}
+      <article class="message is-info">
+        <div class="message-header">
+          <p>New uplift request on {{ repo }}</p>
+        </div>
+        <div class="message-body">
+        These revisions have been created:
+        <ul>
+          {% for revision in revisions %}
+          <li><a href="{{ revision.url }}" target="_blank">D{{ revision.revision_id }}</a></li>
+          {% endfor %}
+        </ul>
+        </div>
+      </article>
+      {% endfor %}
+
+    {% elif repositories %}
+    <form method="POST" action="{{ url_for('revisions.uplift', revision_id=revision_id) }}">
+      {{form.csrf_token}}
+      {{ radio(form.repositories) }}
+      {{ textfield(form.user_impact, "textarea") }}
+      {{ textfield(form.steps_to_reproduce, "textarea") }}
+      {{ textfield(form.risky, "textarea") }}
+      {{ radio(form.automated_tests) }}
+      {{ radio(form.nightly) }}
+      {{ radio(form.manual_qe) }}
+      {{ textfield(form.bug_ids, placeholder="XXX, YYY, ZZZ") }}
+      {{ radio(form.risk) }}
+      {{ textfield(form.string_changes) }}
+
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <!-- Left empty for spacing -->
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary">
+                Send uplift request
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <p>No repositories need an uplift request to land that revision</p>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}

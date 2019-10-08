@@ -109,6 +109,8 @@
       <div class="StackPage-actions-headline">Landing Blocked</div>
       <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
     </button>
+  {% elif target_repo['approval_required'] and blockers %}
+    <p>You do not have permissions to land that patch on a repository with required approval (uplifts). See blockers description above.</p>
   {% else %}
     <button class="StackPage-preview-button">
       <div class="StackPage-actions-headline">Preview Landing</div>

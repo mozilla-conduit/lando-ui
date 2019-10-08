@@ -1,0 +1,52 @@
+{% macro css_state(field) %}
+  {% if field.errors %}
+    is-danger
+  {% elif field.errors == [] %}
+    is-success
+  {% endif %}
+{% endmacro %}
+
+{% macro textfield(field, field_class="input") %}
+<div class="field is-horizontal">
+  <div class="field-label is-normal">
+    <label class="label">{{ field.label }}</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <p class="control is-expanded ">
+       {{ field(class=field_class + css_state(field), **kwargs)|safe }}
+      </p>
+      {% if field.errors %}
+        {% for error in field.errors %}
+          <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro radio(field) %}
+<div class="field is-horizontal">
+  <div class="field-label">
+    <label class="label">{{ field.label }}</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div class="control">
+        {% for choice in field %}
+        <label class="radio">
+          {{ choice() }}
+          {{ choice.label }}
+        </label>
+        {% endfor %}
+      </div>
+      {% if field.errors %}
+        {% for error in field.errors %}
+          <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

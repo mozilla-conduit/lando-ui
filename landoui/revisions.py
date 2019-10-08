@@ -6,12 +6,21 @@ import json
 import logging
 
 from flask import (
-    abort, Blueprint, current_app, jsonify, redirect, render_template, request,
-    session, url_for
+    abort,
+    request,
+    Blueprint,
+    current_app,
+    render_template,
+    redirect,
+    session,
+    url_for,
+    jsonify,
 )
 
 from landoui.app import oidc
-from landoui.forms import SecApprovalRequestForm, TransplantRequestForm
+from landoui.forms import (
+    TransplantRequestForm, SecApprovalRequestForm, UpliftRequestForm
+)
 from landoui.helpers import (
     get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
 )
@@ -197,6 +206,7 @@ def revision(revision_id):
     return render_template(
         'stack/stack.html',
         revision_id='D{}'.format(revision_id),
+        revision_id_raw=revision_id,
         series=series,
         landable=landable,
         dryrun=dryrun,
@@ -287,3 +297,54 @@ def make_form_error(message):
     # WTForm errors are stored in a dict. Keys are the field names, values are
     # a list of errors for that field.
     return {'Error': [message]}
+
+
+@revisions.route('/uplift/D<int:revision_id>/', methods=('GET', 'POST'))
+@oidc.oidc_auth
+def uplift(revision_id):
+    """Render and submit an uplift request for a specific revision"""
+
+    # Load the revision's entire stack
+    api = LandoAPI(
+        current_app.config['LANDO_API_URL'],
+        auth0_access_token=session.get('access_token'),
+        phabricator_api_token=get_phabricator_api_token()
+    )
+    try:
+        stack = api.request('GET', 'stacks/D{}'.format(revision_id))
+    except LandoAPIError as e:
+        if e.status_code == 404:
+            raise RevisionNotFound(revision_id)
+        else:
+            raise
+
+    # Build and process the form
+    form = UpliftRequestForm(
+        request.form, repositories=stack["uplift_repositories"]
+    )
+    if request.method == 'POST' and form.validate():
+
+        # Send uplift request to backend
+        payload = {
+            'revision_id': revision_id,
+        }
+        payload.update(form.data)
+        uplift_request = api.request(
+            'POST',
+            'uplift',
+            require_auth0=True,
+            json=payload,
+        )
+
+        return render_template(
+            'uplift.html',
+            uplift_request=uplift_request,
+            revision_id=revision_id
+        )
+
+    return render_template(
+        'uplift.html',
+        revision_id=revision_id,
+        repositories=stack["uplift_repositories"],
+        form=form,
+    )

@@ -3,11 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 from json.decoder import JSONDecodeError
+import logging
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, HiddenField, StringField, TextAreaField, \
-    ValidationError
-from wtforms.validators import InputRequired, optional, Regexp
+    ValidationError, RadioField, SelectMultipleField
+from wtforms.validators import Required, InputRequired, optional, Regexp
+from wtforms.widgets import ListWidget, CheckboxInput
+
+logger = logging.getLogger(__name__)
 
 
 class JSONDecodable:
@@ -90,3 +94,104 @@ class UserSettingsForm(FlaskForm):
         ]
     )
     reset_phab_api_token = BooleanField('Delete', default="")
+
+
+class RepositoriesField(SelectMultipleField):
+    """
+    Form field to select one or more Phabricator repositories
+    using a list of checkboxes
+    """
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
+
+    # Select at least one repository
+    validators = [Required(message='Please select a repository')]
+
+    def process_data(self, repositories=[], *args, **kwargs):
+        # Populate initial data using the repositories slugs from the view
+        self.choices = [(repo, repo) for repo in repositories]
+
+
+class YesNoField(RadioField):
+    """
+    A simple boolean field displayed as a list of radio buttons
+    Will output a bool value (or None on unknown)
+    """
+
+    def post_validate(self, *args, **kwargs):
+        values = {'yes': True, 'no': False, 'unknown': None}
+        self.data = values.get(self.data)
+
+
+class BugsField(StringField):
+    """
+    Convert a string into a list of bugs
+    """
+
+    def post_validate(self, *args, **kwargs):
+        # TODO: check those are valid bugs
+        self.data = [value.strip() for value in self.data.split(',')]
+
+
+class UpliftRequestForm(FlaskForm):
+    """Form to create a new uplift request"""
+    repositories = RepositoriesField('Repository to request uplift')
+
+    user_impact = TextAreaField(
+        'User impact if declined', validators=[
+            InputRequired(),
+        ]
+    )
+
+    steps_to_reproduce = TextAreaField(
+        'If yes, steps to reproduce', validators=[]
+    )
+
+    risky = TextAreaField(
+        'Why is the change risky/not risky? (and alternatives if risky)',
+        validators=[
+            InputRequired(),
+        ]
+    )
+
+    automated_tests = YesNoField(
+        'Is this code covered by automated tests ?',
+        choices=[
+            ('yes', 'Yes'),
+            ('no', 'No'),
+            ('unknown', 'Unknown'),
+        ],
+    )
+
+    nightly = YesNoField(
+        'Has the fix been verified in Nightly ?',
+        choices=[
+            ('yes', 'Yes'),
+            ('no', 'No'),
+        ],
+    )
+
+    manual_qe = YesNoField(
+        'Needs manual test from QE ?',
+        choices=[
+            ('yes', 'Yes'),
+            ('no', 'No'),
+        ],
+    )
+
+    bug_ids = BugsField(
+        'List of other uplifts needed',
+    )
+
+    risk = RadioField(
+        'Risk to taking this patch',
+        choices=[
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+        ]
+    )
+
+    string_changes = StringField(
+        'String changes made/needed',
+    )
