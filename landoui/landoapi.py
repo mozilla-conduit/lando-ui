@@ -69,6 +69,15 @@ class LandoAPI:
             response = self.session.request(
                 method, self.url + url_path, **kwargs
             )
+
+            logger.debug(
+                'lando-api response',
+                extra={
+                    'status_code': response.status_code,
+                    'content_type': response.headers.get('Content-Type'),
+                }
+            )
+
             data = response.json()
         except requests.RequestException as exc:
             raise LandoAPICommunicationException(
