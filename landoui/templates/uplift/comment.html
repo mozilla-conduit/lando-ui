@@ -1,0 +1,43 @@
+{# This template renders in Remarkup, not HTML, to be displayed in Phabricator #}
+{% macro yes_no(value) -%}
+{% if value == True %}
+{icon check color=green} Yes
+{% elif value == False %}
+{icon times color=red} No
+{% else %}
+{icon question color=blue} Unknown
+{% endif %}
+{%- endmacro %}
+
+= Uplift request details =
+
+View [source revision D{{ source_revision_id }}](/D{{ source_revision_id }})
+
+===== User impact if declined  =====
+
+{{ uplift.user_impact|default('Unknown') }}
+
+===== Steps to reproduce =====
+
+{{ uplift.steps_to_reproduce|default('Unknown') }}
+
+===== Why is the change risky/not risky ? =====
+
+{{ uplift.risky|default('Unknown') }}
+
+===== Is this code covered by automated tests ? =====
+{{ yes_no(uplift.automated_tests) }}
+
+===== Has the fix been verified in Nightly ? =====
+{{ yes_no(uplift.nightly) }}
+
+===== Risk to taking this patch =====
+
+{{ uplift.risk|default('Unknown') }}
+
+===== Needs manual test from QE ? =====
+{{ yes_no(uplift.manual_qe) }}
+
+===== String changes made/needed =====
+
+{{ uplift.string_changes|default('Unknown') }}

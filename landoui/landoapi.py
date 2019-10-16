@@ -29,6 +29,9 @@ class LandoAPI:
     def create_session():
         return requests.Session()
 
+    def has_phabricator_token(self):
+        return self.phabricator_api_token is not None
+
     def request(self, method, url_path, *, require_auth0=False, **kwargs):
         """Return the response of a request to Lando API.
 

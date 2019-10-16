@@ -25,6 +25,7 @@ from landoui.helpers import (
     get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
 )
 from landoui.landoapi import LandoAPI, LandoAPIError
+from landoui.uplift import render_uplift_comment
 from landoui.errorhandlers import RevisionNotFound
 from landoui.stacks import draw_stack_graph, Edge, sort_stack_topological
 
@@ -308,7 +309,7 @@ def uplift(revision_id):
     api = LandoAPI(
         current_app.config['LANDO_API_URL'],
         auth0_access_token=session.get('access_token'),
-        phabricator_api_token=get_phabricator_api_token()
+        phabricator_api_token=get_phabricator_api_token(),
     )
     try:
         stack = api.request('GET', 'stacks/D{}'.format(revision_id))
@@ -319,32 +320,38 @@ def uplift(revision_id):
             raise
 
     # Build and process the form
-    form = UpliftRequestForm(
-        request.form, repositories=stack["uplift_repositories"]
-    )
-    if request.method == 'POST' and form.validate():
+    form = UpliftRequestForm(request.form)
+    form.repository.choices = [
+        (repo, repo) for repo in stack["uplift_repositories"]
+    ]
+    if (request.method == 'POST' and api.has_phabricator_token()
+            and form.validate()):
 
         # Send uplift request to backend
-        payload = {
-            'revision_id': revision_id,
-        }
-        payload.update(form.data)
         uplift_request = api.request(
             'POST',
             'uplift',
             require_auth0=True,
-            json=payload,
+            json={
+                'revision_id': revision_id,
+                'repository': form.data['repository'],
+                'form_content':
+                render_uplift_comment(int(revision_id), form.data),
+            }
         )
 
         return render_template(
-            'uplift.html',
+            'uplift/form.html',
             uplift_request=uplift_request,
             revision_id=revision_id
         )
 
     return render_template(
-        'uplift.html',
+        'uplift/form.html',
         revision_id=revision_id,
         repositories=stack["uplift_repositories"],
         form=form,
+
+        # Display a warning when phabricator not is not available
+        phabricator_token_available=api.has_phabricator_token(),
     )

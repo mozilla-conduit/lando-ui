@@ -7,9 +7,8 @@ import logging
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, HiddenField, StringField, TextAreaField, \
-    ValidationError, RadioField, SelectMultipleField
+    ValidationError, RadioField, SelectField
 from wtforms.validators import Required, InputRequired, optional, Regexp
-from wtforms.widgets import ListWidget, CheckboxInput
 
 logger = logging.getLogger(__name__)
 
@@ -96,22 +95,6 @@ class UserSettingsForm(FlaskForm):
     reset_phab_api_token = BooleanField('Delete', default="")
 
 
-class RepositoriesField(SelectMultipleField):
-    """
-    Form field to select one or more Phabricator repositories
-    using a list of checkboxes
-    """
-    widget = ListWidget(prefix_label=False)
-    option_widget = CheckboxInput()
-
-    # Select at least one repository
-    validators = [Required(message='Please select a repository')]
-
-    def process_data(self, repositories=[], *args, **kwargs):
-        # Populate initial data using the repositories slugs from the view
-        self.choices = [(repo, repo) for repo in repositories]
-
-
 class YesNoField(RadioField):
     """
     A simple boolean field displayed as a list of radio buttons
@@ -135,7 +118,11 @@ class BugsField(StringField):
 
 class UpliftRequestForm(FlaskForm):
     """Form to create a new uplift request"""
-    repositories = RepositoriesField('Repository to request uplift')
+
+    repository = SelectField(
+        'Repository to request uplift',
+        validators=[Required(message='Please select a repository')],
+    )
 
     user_impact = TextAreaField(
         'User impact if declined', validators=[
@@ -177,10 +164,6 @@ class UpliftRequestForm(FlaskForm):
             ('yes', 'Yes'),
             ('no', 'No'),
         ],
-    )
-
-    bug_ids = BugsField(
-        'List of other uplifts needed',
     )
 
     risk = RadioField(
