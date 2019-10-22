@@ -6,12 +6,12 @@ import json
 import logging
 
 from flask import (
-    Blueprint, current_app, render_template, redirect, session, url_for,
-    jsonify, request
+    abort, Blueprint, current_app, jsonify, redirect, render_template, request,
+    session, url_for
 )
 
 from landoui.app import oidc
-from landoui.forms import TransplantRequestForm, SecApprovalRequestForm
+from landoui.forms import SecApprovalRequestForm, TransplantRequestForm
 from landoui.helpers import (
     get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
 )
@@ -227,12 +227,34 @@ def revisions_handler(revision_id, diff_id=None):
 
 @revisions.route('/request-sec-approval', methods=('POST', ))
 def sec_approval_request_handler():
-    form = SecApprovalRequestForm()
-    # Errors are stored in a dict containing a list of errors for each field.
+    if not current_app.config.get("ENABLE_SEC_APPROVAL"):
+        abort(404)
+
     if not is_user_authenticated():
-        errors = {'Error': ['You must be logged in to request sec-approval']}
+        errors = make_form_error(
+            'You must be logged in to request sec-approval'
+        )
         return jsonify(errors=errors), 401
-    elif not form.validate():
+
+    token = get_phabricator_api_token()
+    if not token:
+        # The user has not set their API Token. Lando API will return an
+        # error if it is missing.
+        errors = make_form_error(
+            'You must set your Phabricator API token in the Lando User '
+            'Settings to request sec-approval'
+        )
+        return jsonify(errors=errors), 400
+
+    api = LandoAPI(
+        current_app.config['LANDO_API_URL'],
+        auth0_access_token=session.get('access_token'),
+        phabricator_api_token=token,
+    )
+
+    form = SecApprovalRequestForm()
+
+    if not form.validate():
         return jsonify(errors=form.errors), 400
     else:
         logger.info(
@@ -240,4 +262,28 @@ def sec_approval_request_handler():
             extra={"revision_id": form.revision_id.data}
         )
 
+        # NOTE: We let errors in the upstream service get turned into
+        # exceptions and bubble up to the application's default exception
+        # handler. It will generate a HTTP 500 for the UI to handle.
+        api.request(
+            "POST",
+            "requestSecApproval",
+            require_auth0=True,
+            json={
+                "revision_id": form.revision_id.data,
+                "sanitized_message": form.new_message.data,
+            }
+        )
+
     return jsonify({})
+
+
+def make_form_error(message):
+    """Turn a string into an error that looks like a WTForm validation error.
+
+    This can be used to generate one-off errors, like auth errors, that need
+    to be displayed in the same space as WTForm validation errors.
+    """
+    # WTForm errors are stored in a dict. Keys are the field names, values are
+    # a list of errors for that field.
+    return {'Error': [message]}

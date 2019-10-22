@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import time
 from copy import deepcopy
-from unittest.mock import patch
+from unittest.mock import patch, ANY
 
 import pytest
 
@@ -120,6 +120,10 @@ class LandoAPIDouble:
             # Mock response for the "GET /transplants/dryrun" operation.
             # Pretend there are no landing warnings or blockers.
             return {}
+        elif operation == "requestSecApproval":
+            # Mock response for the "POST /requestSecApproval" operation.
+            # Pretend there were no problems.
+            return {}
         else:
             raise RuntimeError(
                 "The API method for {} is not implemented by this stub".
@@ -222,3 +226,34 @@ def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
     rv = client.get("/D1/")
     assert rv.status_code == 200
     assert not sec_approval_revision_in_page(rv)
+
+
+def test_submit_alt_commit_message(
+    app, client, authenticated_session, apidouble
+):
+    # Disable CSRF protection so we can submit forms without tokens.
+    app.config["WTF_CSRF_ENABLED"] = False
+
+    client.set_cookie('localhost', 'phabricator-api-token', 'api-123abc')
+
+    formdata = {
+        "revision_id": "D1",
+        "revision_url": "http://phabricator.test/D1",
+        "new_message": "s3cr3t",
+    }
+
+    rv = client.post(
+        "/request-sec-approval", data=formdata, follow_redirects=True
+    )
+
+    assert rv.status_code == 200
+    apidouble.assert_called_once_with(
+        ANY,
+        "POST",
+        "requestSecApproval",
+        require_auth0=True,
+        json={
+            "revision_id": "D1",
+            "sanitized_message": "s3cr3t",
+        },
+    )
