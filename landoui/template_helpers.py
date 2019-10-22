@@ -214,6 +214,16 @@ def revision_url(text, diff_id=None):
 
 
 @template_helpers.app_template_filter()
+def revision_id_to_int(text):
+    if isinstance(text, str) and text.startswith('D'):
+        try:
+            return int(text[1:])
+        except ValueError:
+            pass
+    return text
+
+
+@template_helpers.app_template_filter()
 def repo_path(repo_url):
     """Returns the path of a repository url without the leading slash.
 

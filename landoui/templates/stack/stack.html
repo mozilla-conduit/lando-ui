@@ -28,6 +28,9 @@
           <th>Status</th>
           <th>Revision</th>
           <th>Reviewers</th>
+          {% if target_repo.approval_required %}
+          <th>Approval</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -77,6 +80,11 @@
             {% include "stack/partials/revision-reviewers.html" %}
             {% endwith %}
           </td>
+          {% if target_repo.approval_required %}
+          <td>
+            <a class="button is-primary is-light is-small" href="{{ url_for('uplift.approval', revision_id=revision['id'] | revision_id_to_int) }}">Add approval request</a>
+          </td>
+          {% endif %}
         </tr>
       {% endfor %}
       </tbody>

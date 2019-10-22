@@ -1,0 +1,6 @@
+{% if not phabricator_token_available %}
+<div class="notification is-warning">
+  <h4>Missing Phabricator API token</h4>
+  Lando needs a Phabricator API token to be able to post uplift revisions and comments on your behalf. Please fill the settings form when clicking on your user name in the navigation bar above.
+</div>
+{% endif %}

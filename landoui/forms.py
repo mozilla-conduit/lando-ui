@@ -8,7 +8,7 @@ import logging
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, HiddenField, StringField, TextAreaField, \
     ValidationError, RadioField, SelectField
-from wtforms.validators import Required, InputRequired, optional, Regexp
+from wtforms.validators import DataRequired, InputRequired, optional, Regexp
 
 logger = logging.getLogger(__name__)
 
@@ -106,23 +106,8 @@ class YesNoField(RadioField):
         self.data = values.get(self.data)
 
 
-class BugsField(StringField):
-    """
-    Convert a string into a list of bugs
-    """
-
-    def post_validate(self, *args, **kwargs):
-        # TODO: check those are valid bugs
-        self.data = [value.strip() for value in self.data.split(',')]
-
-
-class UpliftRequestForm(FlaskForm):
-    """Form to create a new uplift request"""
-
-    repository = SelectField(
-        'Repository to request uplift',
-        validators=[Required(message='Please select a repository')],
-    )
+class ApprovalRequestForm(FlaskForm):
+    """Form to create a new approval request"""
 
     user_impact = TextAreaField(
         'User impact if declined', validators=[
@@ -177,4 +162,14 @@ class UpliftRequestForm(FlaskForm):
 
     string_changes = StringField(
         'String changes made/needed',
+    )
+
+
+class UpliftRequestForm(ApprovalRequestForm):
+    """Form to create a new uplift request
+    This is an approval request while choosing a repository"""
+
+    repository = SelectField(
+        'Repository to request uplift',
+        validators=[DataRequired(message='Please select a repository')],
     )

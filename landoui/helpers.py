@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flask import (request, session)
+import functools
 
 
 def is_user_authenticated():
@@ -46,3 +47,22 @@ def get_phabricator_api_token():
         return request.cookies['phabricator-api-token']
 
     return None
+
+
+def oidc_auth_optional(f):
+    """Decorator that runs auth only if the user is logged in."""
+    from landoui.app import oidc
+
+    no_auth_f = f
+    auth_f = oidc.oidc_auth(f) if oidc else f
+
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not is_user_authenticated():
+            handler = no_auth_f
+        else:
+            handler = auth_f
+
+        return handler(*args, **kwargs)
+
+    return wrapped

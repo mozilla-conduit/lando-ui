@@ -1,0 +1,29 @@
+<form method="POST" action="{{ url_for(form_view, revision_id=revision_id) }}">
+  {{form.csrf_token}}
+  {% if form.repository %}
+  {{ input(form.repository ) }}
+  {% endif %}
+  {{ input(form.user_impact, "textarea") }}
+  {{ input(form.steps_to_reproduce, "textarea") }}
+  {{ input(form.risky, "textarea") }}
+  {{ radio(form.automated_tests) }}
+  {{ radio(form.nightly) }}
+  {{ radio(form.manual_qe) }}
+  {{ radio(form.risk) }}
+  {{ input(form.string_changes) }}
+
+  <div class="field is-horizontal">
+    <div class="field-label">
+      <!-- Left empty for spacing -->
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <button class="button is-primary" {% if not phabricator_token_available %}disabled="disabled"{% endif %}>
+            Create request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

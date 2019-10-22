@@ -2,16 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from landoui.uplift import render_uplift_comment
+from landoui.uplift import render_approval_comment
 
-VALID_COMMENT = """
-
-
-= Uplift request details =
-
-View [source revision D1234](/D1234)
-
-===== User impact if declined  =====
+COMMON_COMMENT = """===== User impact if declined  =====
 
 Not a lot of impact.
 
@@ -46,11 +39,47 @@ medium
 
 None."""
 
+VALID_UPLIFT_COMMENT = """
 
-def test_comment_rendering(app):
+
+
+= Uplift request details =
+
+View [source revision D1234](/D1234)
+
+""" + COMMON_COMMENT
+
+VALID_APPROVAL_COMMENT = """
+
+
+
+= Approval request details =
+
+""" + COMMON_COMMENT
+
+
+def test_uplift_comment_rendering(app):
     """Test rendering the uplift form"""
-    form = render_uplift_comment(
-        1234,
+    form = render_approval_comment(
+        form_data={
+            "user_impact": "Not a lot of impact.",
+            "steps_to_reproduce": "Crash it, that's all.",
+            "risky": "Really risky",
+            "automated_tests": True,
+            "nightly": False,
+            "risk": "medium",
+            "manual_qe": True,
+            "string_changes": "None.",
+            "bug_ids": ["1233"],
+        },
+        source_revision_id=1234,
+    )
+    assert form == VALID_UPLIFT_COMMENT
+
+
+def test_approval_comment_rendering(app):
+    """Test rendering the approval form"""
+    form = render_approval_comment(
         form_data={
             "user_impact": "Not a lot of impact.",
             "steps_to_reproduce": "Crash it, that's all.",
@@ -63,4 +92,4 @@ def test_comment_rendering(app):
             "bug_ids": ["1233"],
         },
     )
-    assert form == VALID_COMMENT
+    assert form == VALID_APPROVAL_COMMENT

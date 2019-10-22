@@ -1,0 +1,35 @@
+{% extends "partials/layout.html" %}
+
+{% from "partials/forms.html" import input, radio %}
+
+{% block main %}
+<main class="container content">
+  <div>
+    <h1>New Uplift Request for <a href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a></h1>
+
+    {% include "uplift/_phab_warning.html" %}
+
+    {% if uplift_request %}
+    <article class="message is-info">
+      <div class="message-header">
+        <p>New uplift request on {{ uplift_request.repository }}</p>
+      </div>
+      <div class="message-body">
+        A new revision <a href="{{ uplift_request.url }}" target="_blank">D{{ uplift_request.revision_id }}</a> has been created.
+      </div>
+    </article>
+
+    {% elif repositories %}
+
+      {% set form_view = "uplift.create" %}
+      {% include "uplift/_form.html" %}
+
+    {% else %}
+    <div class="notification is-info">
+      No repositories need an uplift request to land that revision.
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}

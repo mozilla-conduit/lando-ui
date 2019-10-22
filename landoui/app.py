@@ -112,9 +112,11 @@ def create_app(
     # Register routes via Flask Blueprints
     from landoui.pages import pages
     from landoui.revisions import revisions
+    from landoui.uplift import uplift
     from landoui.dockerflow import dockerflow
     app.register_blueprint(pages)
     app.register_blueprint(revisions)
+    app.register_blueprint(uplift)
     app.register_blueprint(dockerflow)
 
     # Register template helpers

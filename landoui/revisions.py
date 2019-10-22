@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import functools
 import json
 import logging
 
@@ -17,15 +16,12 @@ from flask import (
     jsonify,
 )
 
-from landoui.app import oidc
-from landoui.forms import (
-    TransplantRequestForm, SecApprovalRequestForm, UpliftRequestForm
-)
+from landoui.forms import (TransplantRequestForm, SecApprovalRequestForm)
 from landoui.helpers import (
-    get_phabricator_api_token, is_user_authenticated, set_last_local_referrer
+    get_phabricator_api_token, is_user_authenticated, set_last_local_referrer,
+    oidc_auth_optional
 )
 from landoui.landoapi import LandoAPI, LandoAPIError
-from landoui.uplift import render_uplift_comment
 from landoui.errorhandlers import RevisionNotFound
 from landoui.stacks import draw_stack_graph, Edge, sort_stack_topological
 
@@ -33,23 +29,6 @@ logger = logging.getLogger(__name__)
 
 revisions = Blueprint('revisions', __name__)
 revisions.before_request(set_last_local_referrer)
-
-
-def oidc_auth_optional(f):
-    """Decorator that runs auth only if the user is logged in."""
-    no_auth_f = f
-    auth_f = oidc.oidc_auth(f)
-
-    @functools.wraps(f)
-    def wrapped(*args, **kwargs):
-        if not is_user_authenticated():
-            handler = no_auth_f
-        else:
-            handler = auth_f
-
-        return handler(*args, **kwargs)
-
-    return wrapped
 
 
 def annotate_sec_approval_workflow_info(revisions):
@@ -298,60 +277,3 @@ def make_form_error(message):
     # WTForm errors are stored in a dict. Keys are the field names, values are
     # a list of errors for that field.
     return {'Error': [message]}
-
-
-@revisions.route('/uplift/D<int:revision_id>/', methods=('GET', 'POST'))
-@oidc.oidc_auth
-def uplift(revision_id):
-    """Render and submit an uplift request for a specific revision"""
-
-    # Load the revision's entire stack
-    api = LandoAPI(
-        current_app.config['LANDO_API_URL'],
-        auth0_access_token=session.get('access_token'),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
-    try:
-        stack = api.request('GET', 'stacks/D{}'.format(revision_id))
-    except LandoAPIError as e:
-        if e.status_code == 404:
-            raise RevisionNotFound(revision_id)
-        else:
-            raise
-
-    # Build and process the form
-    form = UpliftRequestForm(request.form)
-    form.repository.choices = [
-        (repo, repo) for repo in stack["uplift_repositories"]
-    ]
-    if (request.method == 'POST' and api.has_phabricator_token()
-            and form.validate()):
-
-        # Send uplift request to backend
-        uplift_request = api.request(
-            'POST',
-            'uplift',
-            require_auth0=True,
-            json={
-                'revision_id': revision_id,
-                'repository': form.data['repository'],
-                'form_content':
-                render_uplift_comment(int(revision_id), form.data),
-            }
-        )
-
-        return render_template(
-            'uplift/form.html',
-            uplift_request=uplift_request,
-            revision_id=revision_id
-        )
-
-    return render_template(
-        'uplift/form.html',
-        revision_id=revision_id,
-        repositories=stack["uplift_repositories"],
-        form=form,
-
-        # Display a warning when phabricator not is not available
-        phabricator_token_available=api.has_phabricator_token(),
-    )

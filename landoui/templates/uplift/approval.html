@@ -1,0 +1,43 @@
+{% extends "partials/layout.html" %}
+
+{% from "partials/forms.html" import input, radio %}
+
+{% block main %}
+<main class="container content">
+  <div>
+    {% if repository %}
+      <h1>New Approval Request for <a href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a> on {{ repository.short_name }}</h1>
+
+      {% include "uplift/_phab_warning.html" %}
+
+      {% if approval_request %}
+      <article class="message is-info">
+        <div class="message-header">
+          <p>New approval request</p>
+        </div>
+        <div class="message-body">
+          A new approval request comment has been posted on <a href="{{ approval_request.url }}" target="_blank">D{{ revision_id }}</a>.
+        </div>
+      </article>
+
+      {% elif repository.approval_required %}
+
+        {% set form_view = "uplift.approval" %}
+        {% include "uplift/_form.html" %}
+
+      {% else %}
+        <div class="notification is-info">
+          The target repository <strong>{{ repository.short_name }}</strong> does not need an approval. You can land directly the patch.
+        </div>
+      {% endif %}
+
+    {% else %}
+    <div class="notification is-info">
+      No target repository available for this revision.
+    </div>
+    {% endif %}
+
+
+  </div>
+</main>
+{% endblock %}

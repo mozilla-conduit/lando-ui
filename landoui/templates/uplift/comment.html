@@ -9,10 +9,13 @@
 {% endif %}
 {%- endmacro %}
 
+{% if source_revision_id %}
 = Uplift request details =
 
 View [source revision D{{ source_revision_id }}](/D{{ source_revision_id }})
-
+{% else %}
+= Approval request details =
+{% endif %}
 ===== User impact if declined  =====
 
 {{ uplift.user_impact|default('Unknown') }}
