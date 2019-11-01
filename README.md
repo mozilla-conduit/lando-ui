@@ -171,7 +171,7 @@ project README.
 [docker-compose]: https://docs.docker.com/compose/install/
 [Docker for Mac]: https://docs.docker.com/docker-for-mac/install/
 [Docker for Windows]: https://docs.docker.com/docker-for-windows/install/
-[requires a real server name]: http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
+[requires a real server name]: https://flask.palletsprojects.com/en/1.1.x/config/#SESSION_COOKIE_DOMAIN
 [Docker Machine]: https://docs.docker.com/machine/
 [Git Bash]: https://git-for-windows.github.io/
 [Auth0]: https://auth0.com/
