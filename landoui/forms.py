@@ -106,8 +106,12 @@ class YesNoField(RadioField):
         self.data = values.get(self.data)
 
 
-class ApprovalRequestForm(FlaskForm):
-    """Form to create a new approval request"""
+class UpliftApprovalForm(FlaskForm):
+    """Form to create a new uplift approval request
+
+    Landing a patch on a protected repository needs release-managers approval
+    and a specifically formatted summary
+    """
 
     user_impact = TextAreaField(
         'User impact if declined', validators=[
@@ -165,7 +169,7 @@ class ApprovalRequestForm(FlaskForm):
     )
 
 
-class UpliftRequestForm(ApprovalRequestForm):
+class UpliftRequestForm(UpliftApprovalForm):
     """Form to create a new uplift request
     This is an approval request while choosing a repository"""
 

@@ -12,7 +12,7 @@ from flask import (
     session,
 )
 
-from landoui.forms import ApprovalRequestForm, UpliftRequestForm
+from landoui.forms import UpliftApprovalForm, UpliftRequestForm
 from landoui.helpers import (
     get_phabricator_api_token, set_last_local_referrer, oidc_auth_optional
 )
@@ -38,7 +38,7 @@ def render_approval_comment(form_data: dict, source_revision_id=None) -> str:
     )
 
 
-@uplift.route('/uplift/D<int:revision_id>/', methods=('GET', 'POST'))
+@uplift.route('/uplift/request/D<int:revision_id>/', methods=('GET', 'POST'))
 @oidc_auth_optional
 def create(revision_id):
     """Render and submit an uplift request for a specific revision"""
@@ -93,7 +93,7 @@ def create(revision_id):
     )
 
 
-@uplift.route('/approval/D<int:revision_id>/', methods=('GET', 'POST'))
+@uplift.route('/uplift/approval/D<int:revision_id>/', methods=('GET', 'POST'))
 @oidc_auth_optional
 def approval(revision_id):
     """Render and submit an approval request for a specific revision"""
@@ -134,7 +134,7 @@ def approval(revision_id):
             pass
 
     # Build and process the form
-    form = ApprovalRequestForm(request.form)
+    form = UpliftApprovalForm(request.form)
     approval_request = None
     if (request.method == 'POST' and api.has_phabricator_token()
             and form.validate() and target_repo is not None):
