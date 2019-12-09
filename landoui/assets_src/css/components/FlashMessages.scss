@@ -1,0 +1,7 @@
+.FlashMessages {
+  display: block;
+  & .modal-card-foot {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

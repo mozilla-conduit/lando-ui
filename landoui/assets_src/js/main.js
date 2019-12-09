@@ -5,6 +5,7 @@ $(document).ready(function() {
   let $landingPreview = $('.StackPage-landingPreview');
   let $stack = $('.StackPage-stack');
   let $secRequestSubmitted = $('.StackPage-secRequestSubmitted');
+  let $flashMessages = $('.FlashMessages');
   let $queue = $('.QueuePage');
 
   // Initialize components
@@ -13,5 +14,6 @@ $(document).ready(function() {
   $landingPreview.landingPreview();
   $stack.stack();
   $secRequestSubmitted.secRequestSubmitted();
+  $flashMessages.flashMessages();
   $queue.queue();
 });
