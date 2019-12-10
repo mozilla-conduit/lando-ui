@@ -1,0 +1,26 @@
+<div class="StackPage-landingPreview-secureRevisionWarning">
+  {% if revision.security.has_security_review %}
+    <p>
+      A security review has been requested for this revision.  <a href="{{ revision.id|revision_url }}">Check the review status</a>.
+    </p>
+    {% if revision.security.has_secure_commit_message %}
+      <p>
+        This revision has been given a secure commit message. <a href="{{ url_for("secapproval.change_commit_message", revision_id=revision["int_id"]) }}">Provide a different message</a>.
+      </p>
+    {% else %}
+      <p>
+        <a href="{{ url_for("secapproval.change_commit_message", revision_id=revision["int_id"]) }}">(Optional) Add a secure commit message.</a>
+      </p>
+    {% endif %}
+  {% else %}
+    <p>
+      <strong>Warning:</strong> This is a secure revision and should follow the
+      <a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">Security Bug Approval Process</a>.
+    </p>
+    <p>
+      Please consider whether you changes require a review from the Firefox
+      Security Team.  If you aren't sure, please <strong><em>request a review</em></strong>.
+    </p>
+    <a class="button" href="{{ url_for("secapproval.create", revision_id=revision["int_id"]) }}">Request a Security Review</a>
+  {% endif %}
+</div>

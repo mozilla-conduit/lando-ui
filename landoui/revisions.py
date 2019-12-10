@@ -117,8 +117,9 @@ def revision(revision_id):
     revision = None
     revisions = {}
     for r in stack['revisions']:
+        r['int_id'] = int(r['id'][1:])
         revisions[r['phid']] = r
-        if r['id'] == 'D{}'.format(revision_id):
+        if r['int_id'] == revision_id:
             revision = r['phid']
 
     # Build a mapping from phid to repository.
