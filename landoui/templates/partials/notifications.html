@@ -4,7 +4,7 @@
       {% for category, message in messages %}
         <div class="container">
           <div class="FlashMessages-content notification {{ category | message_type_to_css_class }}">
-            <button class="delete"></button>
+            <button class="FlashMessages-close delete"></button>
             {{ message }}
           </div>
         </div>
