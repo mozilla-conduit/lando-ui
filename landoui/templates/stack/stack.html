@@ -162,26 +162,5 @@
     </div>
   </div>
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="FlashMessages modal">
-        <div class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head"></header>
-          <section class="modal-card-body">
-            <ul>
-              {%  for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          </section>
-          <footer class="modal-card-foot">
-            <button class="FlashMessages-close button" aria-label="close">Close</button>
-          </footer>
-        </div>
-      </div>
-    {% endif %}
-  {% endwith %}
-
 </main>
 {% endblock %}

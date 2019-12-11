@@ -1,7 +1,19 @@
 .FlashMessages {
-  display: block;
-  & .modal-card-foot {
-    display: flex;
-    justify-content: flex-end;
+  padding: 1.5rem;
+
+  &-content {
+    margin-bottom: 1rem;
+
+    &.notification {
+      &.is-success {
+        background: #ddefdd;
+        color: #326d34;
+      }
+
+      &.is-warning {
+        background: #fdf3da;
+        color: #77612d;
+      }
+    }
   }
 }
