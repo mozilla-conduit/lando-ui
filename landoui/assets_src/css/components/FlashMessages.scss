@@ -1,3 +1,5 @@
+@import "../colors";
+
 .FlashMessages {
   padding: 1.5rem;
 
@@ -11,8 +13,8 @@
       }
 
       &.is-warning {
-        background: #fdf3da;
-        color: #77612d;
+        background: #f49810;
+        color: $black;
       }
     }
   }
