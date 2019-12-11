@@ -292,8 +292,8 @@ def graph_below_path(col, below):
 
 
 @template_helpers.app_template_filter()
-def message_type_to_css_class(flash_message_category):
-    """Map a Flask flash message category to a Bulma notificaton CSS class.
+def message_type_to_notification_class(flash_message_category):
+    """Map a Flask flash message category to a Bulma notification CSS class.
 
     See https://bulma.io/documentation/elements/notification/ for the list of
     Bulma notification states.
