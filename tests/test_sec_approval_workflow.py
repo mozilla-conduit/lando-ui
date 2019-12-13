@@ -7,7 +7,9 @@ from unittest.mock import patch, ANY
 
 import pytest
 
-SEC_APPROVAL_HTML_MARK = b'<div class="StackPage-landingPreview-secureRevisionWarning">'  # noqa
+SEC_APPROVAL_HTML_MARK = (
+    b'<div class="StackPage-landingPreview-secureRevisionWarning">'
+)  # noqa
 
 LANDO_API_STACK = {
     "revisions": [
@@ -37,7 +39,7 @@ LANDO_API_STACK = {
             "status": {
                 "display": "Accepted",
                 "value": "accepted",
-                "closed": False,
+                "closed": False
             },
             "id":
             "D1",
@@ -59,8 +61,11 @@ LANDO_API_STACK = {
                     "blocking_landing": False,
                 },
             ],
-            "is_secure":
-            False,
+            "security": {
+                "is_secure": False,
+                "has_security_review": False,
+                "has_secure_commit_message": False,
+            },
             "author": {
                 "phid": "PHID-USER-oqf26aifqpk7nzcvsy75",
                 "username": "conduit",
@@ -166,6 +171,8 @@ def authenticated_session(client):
         session["id_token_jwt"] = "foo_jwt"
         session["last_authenticated"] = time.time()
 
+    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
+
 
 @pytest.fixture
 def anonymous_session(client):
@@ -212,7 +219,7 @@ def test_sec_approval_workflow_mark_hidden_if_revision_is_public(
 def test_sec_approval_workflow_mark_shown_if_revision_is_secure(
     client, authenticated_session, apidouble
 ):
-    apidouble.side_effect.stack_response["revisions"][0]["is_secure"] = True
+    apidouble.side_effect.stack_response["revisions"][0]["security"]["is_secure"] = True  # noqa
     rv = client.get("/D1/")
     assert rv.status_code == 200
     assert sec_approval_revision_in_page(rv)
@@ -222,38 +229,80 @@ def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
     app, client, authenticated_session, apidouble
 ):
     app.config["ENABLE_SEC_APPROVAL"] = False
-    apidouble.side_effect.stack_response["revisions"][0]["is_secure"] = True
+    apidouble.side_effect.stack_response["revisions"][0]["security"]["is_secure"] = True  # noqa
     rv = client.get("/D1/")
     assert rv.status_code == 200
     assert not sec_approval_revision_in_page(rv)
 
 
-def test_submit_alt_commit_message(
+def test_show_sec_approval_form(app, client, authenticated_session, apidouble):
+    rv = client.get("/sec-approval/D1/")
+    assert rv.status_code == 200
+
+
+def test_submit_sec_approval(app, client, authenticated_session, apidouble):
+    # Disable CSRF protection so we can submit forms without tokens.
+    app.config["WTF_CSRF_ENABLED"] = False
+
+    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
+
+    formdata = {
+        "difficulty_of_constructing_exploit_from_patch": "x",
+        "patch_makes_flaw_obvious": "yes",
+        "branches_affected_by_flaw": "x",
+        "author_has_backports_for_affected_branches": "yes",
+        "risk_of_patch_causing_regression": "x",
+    }
+
+    rv = client.post(
+        "/sec-approval/D1/", data=formdata, follow_redirects=False
+    )
+
+    assert rv.status_code == 302
+    apidouble.assert_called_with(
+        ANY,
+        "POST",
+        "requestSecApproval",
+        require_auth0=True,
+        json={"revision_id": "D1",
+              "form_content": ANY},
+    )
+
+
+def test_submit_alt_commit_message_with_form(
     app, client, authenticated_session, apidouble
 ):
     # Disable CSRF protection so we can submit forms without tokens.
     app.config["WTF_CSRF_ENABLED"] = False
 
-    client.set_cookie('localhost', 'phabricator-api-token', 'api-123abc')
+    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
 
     formdata = {
-        "revision_id": "D1",
-        "revision_url": "http://phabricator.test/D1",
-        "new_message": "s3cr3t",
+        "difficulty_of_constructing_exploit_from_patch": "x",
+        "patch_makes_flaw_obvious": "yes",
+        "branches_affected_by_flaw": "x",
+        "author_has_backports_for_affected_branches": "yes",
+        "risk_of_patch_causing_regression": "x",
+        "new_title": "clean title",
+        "new_summary": "clean summary",
     }
 
     rv = client.post(
-        "/request-sec-approval", data=formdata, follow_redirects=True
+        "/sec-approval/D1/", data=formdata, follow_redirects=False
     )
 
-    assert rv.status_code == 200
-    apidouble.assert_called_once_with(
+    assert rv.status_code == 302
+
+    new_message = "clean title\n\nclean summary"
+
+    apidouble.assert_called_with(
         ANY,
         "POST",
         "requestSecApproval",
         require_auth0=True,
         json={
             "revision_id": "D1",
-            "sanitized_message": "s3cr3t",
+            "form_content": ANY,
+            "sanitized_message": new_message,
         },
     )

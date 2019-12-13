@@ -1,0 +1,55 @@
+{# Render a WTForms TextAreaField as a Bulma CSS form element #}
+{% macro textarea(field, class="textarea") -%}
+  <div class="field">
+    {{ field.label(class="label") }}
+    <div class="control">
+      {{ field(class=class, **kwargs) }}
+    </div>
+    {{ render_errors(field) }}
+  </div>
+{%- endmacro %}
+
+{# Render a WTForms RadioField as a Bulma CSS form element #}
+{% macro radiobuttons(field) -%}
+  <div class="field">
+    <fieldset class="control">
+      {{ field.label(class="label") }}
+      {# Set the 'required' <input> attribute by hand because WTForms won't do it. #}
+      {% for radiofield in field %}
+        {{ radiofield(class="radio", required=True) }}
+        {{ radiofield.label(class="radio") }}
+      {% endfor %}
+    </fieldset>
+    {{ render_errors(field) }}
+  </div>
+{%- endmacro %}
+
+{# Render a WTForms StringField as a Bulma CSS form element #}
+{% macro input(field, class="input") %}
+  <div class="field">
+    {{ field.label(class="label") }}
+    <div class="control">
+      {{ field(class=class, **kwargs) }}
+    </div>
+    {{ render_errors(field) }}
+  </div>
+{%- endmacro %}
+
+{# Render WTForms CSRF token errors as Bulma CSS form elements #}
+{% macro render_csrf_errors(form) -%}
+  {% if form.csrf_token.errors %}
+    <div class="container">
+      {{ render_errors(form.csrf_token) }}
+      <p class="help is-danger">Please refresh the page.</p>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{# Render a WTForms field's errors as a Bulma CSS form element #}
+{% macro render_errors(field) -%}
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+  {% endif %}
+{%- endmacro %}

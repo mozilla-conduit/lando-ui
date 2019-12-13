@@ -53,7 +53,7 @@ def annotate_sec_approval_workflow_info(revisions):
     """
     for revision in revisions.values():
         if current_app.config.get("ENABLE_SEC_APPROVAL"):
-            should_use_workflow = revision.get("is_secure", False)
+            should_use_workflow = revision["security"]["is_secure"]
         else:
             should_use_workflow = False
         revision['should_use_sec_approval_workflow'] = should_use_workflow
