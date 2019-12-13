@@ -35,6 +35,16 @@
   </div>
 {%- endmacro %}
 
+{# Render WTForms CSRF token errors as Bulma CSS form elements #}
+{% macro render_csrf_errors(form) -%}
+  {% if form.csrf_token.errors %}
+    <div class="container">
+      {{ render_errors(form.csrf_token) }}
+      <p class="help is-danger">Please refresh the page.</p>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
 {# Render a WTForms field's errors as a Bulma CSS form element #}
 {% macro render_errors(field) -%}
   {% if field.errors %}

@@ -1,6 +1,6 @@
 {% extends "partials/layout.html" %}
 
-{% from "secapproval/_macros.html" import input, textarea, radiobuttons %}
+{% from "secapproval/_macros.html" import input, textarea, radiobuttons, render_csrf_errors %}
 
 {% block main %}
   <main class="SecApprovalPage container">
@@ -10,6 +10,7 @@
 
     <form class="SecApprovalPage-form" method="post">
       {{ form.hidden_tag() }}
+      {{ render_csrf_errors(form) }}
       <section class="SecApprovalPage-form-secquestions section box">
         <h2 class="">Information for the security reviewers</h2>
 
