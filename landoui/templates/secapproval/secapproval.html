@@ -1,0 +1,85 @@
+{% extends "partials/layout.html" %}
+
+{% from "secapproval/_macros.html" import input, textarea, radiobuttons %}
+
+{% block main %}
+  <main class="SecApprovalPage container">
+    <h1>New Security Review Request for <a
+            href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a>
+    </h1>
+
+    <form class="SecApprovalPage-form" method="post">
+      {{ form.hidden_tag() }}
+      <section class="SecApprovalPage-form-secquestions section box">
+        <h2 class="">Information for the security reviewers</h2>
+
+        <div class="SecApprovalPage-form-fields">
+          {{ textarea(form.difficulty_of_constructing_exploit_from_patch) }}
+
+          {{ radiobuttons(form.patch_makes_flaw_obvious) }}
+
+          {{ input(form.branches_affected_by_flaw) }}
+
+          {{ input(form.introduced_by_bug_number, size=10, placeholder='Bug ID') }}
+
+          {{ radiobuttons(form.author_has_backports_for_affected_branches) }}
+
+          {{ textarea(form.difficulty_of_backporting_fix) }}
+
+          {{ textarea(form.risk_of_patch_causing_regression) }}
+        </div>
+
+      </section>
+      <section class="SecApprovalPage-form-altmessage section box">
+        <h2 class="">Is your commit message secure?</h2>
+        <div class="SecApprovalPage-form-fields">
+          <div class="content">
+            <h3>How to write a secure message:</h3>
+            <p>
+              The commit message for your patch needs to be secure so that it does not
+              leak
+              security-sensitive information into the Mozilla source repositories.
+            </p>
+            <p>If possible, your commit message should:</p>
+            <ul>
+              <li>Not mention security</li>
+              <li>Not mention security bugs</li>
+              <li>Not mention sec-approver groups or individuals</li>
+            </ul>
+            <p>
+              While comprehensive commit messages are generally encouraged, they should
+              be
+              omitted for security bugs and instead be posted in the bug report (which
+              will
+              eventually become public).
+            </p>
+            <p>
+              If your commit message is not secure you may provide an updated commit
+              message
+              below.
+            </p>
+          </div>
+
+          <h3>Your current commit message:</h3>
+          <pre class="SecApprovalPage-form-altmessage-preview">{{ commit_message|linkify_bug_numbers|linkify_revision_urls|safe }}</pre>
+
+          <fieldset>
+            <legend>(Optional) Provide an updated commit message title and summary:
+            </legend>
+
+            {{ input(form.new_title, class="SecApprovalPage-form-updatedtitle input") }}
+
+            {{ textarea(form.new_summary, class="SecApprovalPage-form-updatedsummary textarea") }}
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="section">
+        <button class="button is-primary">
+          Ask for Security Review
+        </button>
+      </section>
+
+    </form>
+  </main>
+{% endblock %}

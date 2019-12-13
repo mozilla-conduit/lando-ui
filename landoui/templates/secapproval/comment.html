@@ -1,0 +1,42 @@
+{# This template renders in Remarkup, not HTML, to be displayed in Phabricator #}
+{% macro yes_no(value) -%}
+{% if value == True %}
+{icon check color=green} Yes
+{% elif value == False %}
+{icon times color=red} No
+{% else %}
+{icon question color=blue} Unknown
+{% endif %}
+{%- endmacro %}
+
+{% macro render_answer(field) -%}
+{{ form[field].label.text }}
+
+{% set data = form[field].data %}
+{% if data %}
+  {{ data }}
+{% else %}
+  [blank]
+{% endif %}
+
+{%- endmacro %}
+
+===== Security Approval Request =====
+
+{{ render_answer('difficulty_of_constructing_exploit_from_patch') }}
+
+{{ form.patch_makes_flaw_obvious.label.text }}
+
+{{ yes_no(form.patch_makes_flaw_obvious.data) }}
+
+{{ render_answer('branches_affected_by_flaw') }}
+
+{{ render_answer('introduced_by_bug_number') }}
+
+{{ form.author_has_backports_for_affected_branches.label.text }}
+
+{{ yes_no(form.author_has_backports_for_affected_branches.data) }}
+
+{{ render_answer('difficulty_of_backporting_fix') }}
+
+{{ render_answer('risk_of_patch_causing_regression') }}

@@ -113,9 +113,11 @@ def create_app(
     from landoui.pages import pages
     from landoui.revisions import revisions
     from landoui.dockerflow import dockerflow
+    from landoui.secapproval import secapproval
     app.register_blueprint(pages)
     app.register_blueprint(revisions)
     app.register_blueprint(dockerflow)
+    app.register_blueprint(secapproval)
 
     # Register template helpers
     from landoui.template_helpers import template_helpers
