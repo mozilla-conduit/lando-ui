@@ -12,7 +12,7 @@ from flask import abort, Blueprint, current_app, flash, redirect, \
     render_template, session, url_for
 
 from landoui.app import oidc
-from landoui.forms import SecApprovalRequestForm
+from landoui.forms import SecApprovalRequestForm, SecureCommitMessageForm
 from landoui.helpers import (
     get_phabricator_api_token,
     set_last_local_referrer,
@@ -79,6 +79,66 @@ def create(revision_id):
     return (
         render_template(
             "secapproval/secapproval.html",
+            form=form,
+            revision_id=revision_id,
+            commit_message=revision["commit_message"],
+            commit_message_title=revision["title"],
+            commit_message_summary=revision["summary"],
+        ), status,
+    )
+
+
+@secapproval.route("/message/D<int:revision_id>/", methods=("GET", "POST"))
+@oidc.oidc_auth
+def change_commit_message(revision_id):
+    """Render and submit a new commit message for sec-approval."""
+    if not current_app.config.get("ENABLE_SEC_APPROVAL"):
+        abort(404)
+
+    form = SecureCommitMessageForm()
+    api_token = get_phabricator_api_token()
+
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=api_token,
+    )
+
+    rname = "D{}".format(revision_id)
+    stack = api.request("GET", "stacks/{}".format(rname))
+    revision = next(r for r in stack["revisions"] if r["id"] == rname)
+
+    if form.validate_on_submit() and api_token:
+        logger.info(
+            "sec-approval requested", extra={"revision_id": revision_id}
+        )
+
+        sanitized_message = "{}\n\n{}".format(
+            form.new_title.data, form.new_summary.data
+        ).strip()
+
+        api.request(
+            "POST",
+            "requestSecApproval",
+            require_auth0=True,
+            json={
+                "revision_id": rname,
+                "sanitized_message": sanitized_message
+            },
+        )
+
+        flash(
+            "Your commit message has been updated and the security team has "
+            "been asked to review it.",
+            category="success",
+        )
+        return redirect(url_for('revisions.revision', revision_id=revision_id))
+
+    status = 400 if form.errors else 200
+
+    return (
+        render_template(
+            "secapproval/changecommitmessage.html",
             form=form,
             revision_id=revision_id,
             commit_message=revision["commit_message"],

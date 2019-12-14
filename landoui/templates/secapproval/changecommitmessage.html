@@ -1,0 +1,64 @@
+{% extends "partials/layout.html" %}
+
+{% from "secapproval/_macros.html" import input, textarea, radiobuttons, render_csrf_errors %}
+
+
+{% block main %}
+  <main class="SecApprovalPage container">
+    <h1>Provide a Secure Commit Message for <a
+            href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a>
+    </h1>
+
+    <form method="post" class="SecApprovalPage-form">
+      {{ form.hidden_tag() }}
+      {{ render_csrf_errors(form) }}
+      <section class="SecApprovalPage-form-altmessage section box">
+        <div class="SecApprovalPage-form-fields">
+          <div class="content">
+            <h3>How to write a secure message:</h3>
+            <p>
+              The commit message for your patch needs to be secure so that it does not
+              leak
+              security-sensitive information into the Mozilla source repositories.
+            </p>
+            <p>If possible, your commit message should:</p>
+            <ul>
+              <li>Not mention security</li>
+              <li>Not mention security bugs</li>
+              <li>Not mention sec-approver groups or individuals</li>
+            </ul>
+            <p>
+              While comprehensive commit messages are generally encouraged, they should
+              be omitted for security bugs and instead be posted to the Phabricator
+              revision summary (which will eventually become public).
+            </p>
+            <p>
+              If your commit message is not secure you may provide an updated commit
+              message
+              below.
+            </p>
+          </div>
+
+          <h3>Your current commit message:</h3>
+          <pre class="SecApprovalPage-form-altmessage-preview">{{ commit_message|linkify_bug_numbers|linkify_revision_urls|safe }}</pre>
+
+          <fieldset>
+            <legend>(Optional) Provide an updated commit message title and summary:
+            </legend>
+
+            {{ input(form.new_title, class="SecApprovalPage-form-updatedtitle input") }}
+
+            {{ textarea(form.new_summary, class="SecApprovalPage-form-updatedsummary textarea") }}
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="section">
+        <button class="button is-primary">
+          Ask for Security Review
+        </button>
+      </section>
+
+    </form>
+  </main>
+{% endblock %}

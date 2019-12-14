@@ -219,7 +219,9 @@ def test_sec_approval_workflow_mark_hidden_if_revision_is_public(
 def test_sec_approval_workflow_mark_shown_if_revision_is_secure(
     client, authenticated_session, apidouble
 ):
-    apidouble.side_effect.stack_response["revisions"][0]["security"]["is_secure"] = True  # noqa
+    apidouble.side_effect.stack_response["revisions"][0]["security"][
+        "is_secure"
+    ] = True  # noqa
     rv = client.get("/D1/")
     assert rv.status_code == 200
     assert sec_approval_revision_in_page(rv)
@@ -229,7 +231,9 @@ def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
     app, client, authenticated_session, apidouble
 ):
     app.config["ENABLE_SEC_APPROVAL"] = False
-    apidouble.side_effect.stack_response["revisions"][0]["security"]["is_secure"] = True  # noqa
+    apidouble.side_effect.stack_response["revisions"][0]["security"][
+        "is_secure"
+    ] = True  # noqa
     rv = client.get("/D1/")
     assert rv.status_code == 200
     assert not sec_approval_revision_in_page(rv)
@@ -269,7 +273,7 @@ def test_submit_sec_approval(app, client, authenticated_session, apidouble):
     )
 
 
-def test_submit_alt_commit_message_with_form(
+def test_submit_alt_commit_message_with_question_form(
     app, client, authenticated_session, apidouble
 ):
     # Disable CSRF protection so we can submit forms without tokens.
@@ -303,6 +307,36 @@ def test_submit_alt_commit_message_with_form(
         json={
             "revision_id": "D1",
             "form_content": ANY,
+            "sanitized_message": new_message
+        },
+    )
+
+
+def test_submit_alt_commit_message_standalone(
+    app, client, authenticated_session, apidouble
+):
+    # Disable CSRF protection so we can submit forms without tokens.
+    app.config["WTF_CSRF_ENABLED"] = False
+
+    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
+
+    formdata = {"new_title": "clean title", "new_summary": "clean summary"}
+
+    rv = client.post(
+        "/sec-approval/message/D1/", data=formdata, follow_redirects=False
+    )
+
+    assert rv.status_code == 302
+
+    new_message = "clean title\n\nclean summary"
+
+    apidouble.assert_called_with(
+        ANY,
+        "POST",
+        "requestSecApproval",
+        require_auth0=True,
+        json={
+            "revision_id": "D1",
             "sanitized_message": new_message,
         },
     )
