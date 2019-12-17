@@ -299,10 +299,11 @@ def test_submit_alt_commit_message_with_form(
     apidouble.assert_called_with(
         ANY,
         "POST",
-        "requestSecApprovalForCommitMessage",
+        "requestSecApproval",
         require_auth0=True,
         json={
             "revision_id": "D1",
+            "form_content": ANY,
             "sanitized_message": new_message,
         },
     )

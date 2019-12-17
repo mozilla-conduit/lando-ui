@@ -58,32 +58,24 @@ def create(revision_id):
             "sec-approval requested", extra={"revision_id": revision_id}
         )
 
-        api.request(
-            "POST",
-            "requestSecApproval",
-            require_auth0=True,
-            json={
-                "revision_id":
-                rname,
-                "form_content":
-                render_sec_approval_request_comment(form, revision_id),
-            },
-        )
+        payload = {
+            "revision_id": rname,
+            "form_content":
+            render_sec_approval_request_comment(form, revision_id),
+        }
 
         if form.new_title.data:
             sanitized_message = "{}\n\n{}".format(
                 form.new_title.data, form.new_summary.data
             ).strip()
+            payload["sanitized_message"] = sanitized_message
 
-            api.request(
-                "POST",
-                "requestSecApprovalForCommitMessage",
-                require_auth0=True,
-                json={
-                    "revision_id": rname,
-                    "sanitized_message": sanitized_message
-                },
-            )
+        api.request(
+            "POST",
+            "requestSecApproval",
+            require_auth0=True,
+            json=payload,
+        )
 
         flash("Your request for security review was successful.")
         return redirect(url_for('revisions.revision', revision_id=revision_id))
