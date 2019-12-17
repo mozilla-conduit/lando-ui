@@ -8,7 +8,7 @@
     {% if repository %}
       <h1>New Approval Request for <a href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a> on {{ repository.short_name }}</h1>
 
-      {% include "uplift/_phab_warning.html" %}
+      {% include "uplift/partials/phab_warning.html" %}
 
       {% if approval_request %}
       <article class="message is-info">
@@ -23,7 +23,7 @@
       {% elif repository.approval_required %}
 
         {% set form_view = "uplift.approval" %}
-        {% include "uplift/_form.html" %}
+        {% include "uplift/partials/form.html" %}
 
       {% else %}
         <div class="notification is-info">

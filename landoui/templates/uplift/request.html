@@ -7,7 +7,7 @@
   <div>
     <h1>New Uplift Request for <a href="{{ url_for('revisions.revision', revision_id=revision_id) }}">D{{ revision_id }}</a></h1>
 
-    {% include "uplift/_phab_warning.html" %}
+    {% include "uplift/partials/phab_warning.html" %}
 
     {% if uplift_request %}
     <article class="message is-info">
@@ -22,7 +22,7 @@
     {% elif repositories %}
 
       {% set form_view = "uplift.create" %}
-      {% include "uplift/_form.html" %}
+      {% include "uplift/partials/form.html" %}
 
     {% else %}
     <div class="notification is-info">
