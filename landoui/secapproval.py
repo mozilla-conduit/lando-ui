@@ -35,14 +35,6 @@ def create(revision_id):
     form = SecApprovalRequestForm()
     api_token = get_phabricator_api_token()
 
-    if not api_token:
-        flash(
-            "Lando needs your Phabricator API token to post sec-approval "
-            "requests and comments on your behalf. Please click on your "
-            "username in the navigation bar above and fill in your "
-            "Phabricator API key.", "warning"
-        )
-
     api = LandoAPI(
         current_app.config["LANDO_API_URL"],
         auth0_access_token=session.get("access_token"),
