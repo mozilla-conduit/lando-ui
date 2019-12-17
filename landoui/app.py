@@ -190,6 +190,18 @@ def initialize_logging():
 
 @click.command()
 @click.option('--debug', envvar='DEBUG', type=bool, default=False)
+@click.option(
+    '--reload/--no-reload',
+    default=None,
+    help='Enable or disable the reloader. By default the reloader '
+    'is active if debug is enabled.'
+)
+@click.option(
+    '--debugger/--no-debugger',
+    default=None,
+    help='Enable or disable the debugger. By default the debugger '
+    'is active if debug is enabled.'
+)
 @click.option('--host', envvar='HOST', default='0.0.0.0')
 @click.option('--port', envvar='PORT', type=int, default=80)
 @click.option(
@@ -211,9 +223,9 @@ def initialize_logging():
 )
 @click.option('--lando-api-url', envvar='LANDO_API_URL', default=None)
 def run_dev_server(
-    debug, host, port, version_path, secret_key, session_cookie_name,
-    session_cookie_domain, session_cookie_secure, use_https,
-    enable_asset_pipeline, lando_api_url
+    debug, reload, debugger, host, port, version_path, secret_key,
+    session_cookie_name, session_cookie_domain, session_cookie_secure,
+    use_https, enable_asset_pipeline, lando_api_url
 ):
     """
     Run the development server which auto reloads when things change.
@@ -227,7 +239,13 @@ def run_dev_server(
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    app.run(debug=debug, port=port, host=host)
+    app.run(
+        debug=debug,
+        port=port,
+        host=host,
+        use_reloader=reload,
+        use_debugger=debug
+    )
 
 
 def _lookup_service_url(lando_api_url, service_name):
