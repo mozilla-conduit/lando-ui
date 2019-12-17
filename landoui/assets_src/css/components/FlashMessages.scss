@@ -1,11 +1,9 @@
 @import "../colors";
 
 .FlashMessages {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 0.5rem;
 
   &-content {
-    margin-bottom: 1rem;
-
     &.notification {
       &.is-success {
         background: #ddefdd;
