@@ -52,8 +52,7 @@ def create(revision_id):
 
         payload = {
             "revision_id": rname,
-            "form_content":
-            render_sec_approval_request_comment(form, revision_id),
+            "form_content": render_sec_approval_request_comment(form),
         }
 
         if form.new_title.data:
@@ -86,9 +85,7 @@ def create(revision_id):
     )
 
 
-def render_sec_approval_request_comment(
-    form: SecApprovalRequestForm, revision_id: int
-) -> str:
+def render_sec_approval_request_comment(form: SecApprovalRequestForm) -> str:
     """Render a Phabricator ReMarkup comment holding the user's answers to
     the sec-approval request form questions.
     """
