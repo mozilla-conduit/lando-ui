@@ -1,0 +1,19 @@
+@import "../colors";
+
+.FlashMessages {
+  padding: 1.5rem 1.5rem 0.5rem;
+
+  &-content {
+    &.notification {
+      &.is-success {
+        background: #ddefdd;
+        color: #326d34;
+      }
+
+      &.is-warning {
+        background: #ffa83b;
+        color: $black;
+      }
+    }
+  }
+}

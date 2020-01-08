@@ -1,0 +1,14 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <section class="FlashMessages">
+      <div class="container">
+        {% for category, message in messages %}
+          <div class="FlashMessages-content notification {{ category | message_type_to_notification_class }}">
+            <button class="FlashMessages-close delete"></button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endwith %}
