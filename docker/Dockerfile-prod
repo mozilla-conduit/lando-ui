@@ -34,7 +34,7 @@ RUN echo "{ \
     " > /version.json
 
 RUN apk add --update ruby && rm -rf /var/cache/apk/*
-RUN gem install sass --no-ri --no-rdoc -v 3.4.25
+RUN gem install sass --no-document -v 3.4.25
 
 ENV OIDC_DOMAIN=dontcare
 ENV OIDC_CLIENT_ID=dontcare

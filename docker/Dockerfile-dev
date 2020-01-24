@@ -18,7 +18,7 @@ COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
 RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
-RUN gem install sass --no-ri --no-rdoc -v 3.4.25
+RUN gem install sass --no-document -v 3.4.25
 
 # Create a Dockerflow version file at the root so
 # we don't map over it below.
