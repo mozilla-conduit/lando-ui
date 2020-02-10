@@ -14,7 +14,7 @@ version: 2
 # This is not part of circleci, but it lets us not repeat ourselves.
 STUFF:
   python_image: &python_image
-    image: python:3.5-alpine
+    image: python:3.8-alpine
 
   # it's useful to not build branches that contain slashes,
   # if it is later decided to map branches to docker tags.
@@ -24,16 +24,6 @@ STUFF:
         - /\//
 
 jobs:
-  lint:
-    working_directory: /app
-    docker:
-      - *python_image
-    steps:
-      - checkout
-      - run: pip install yapf==0.16.1 && pip install flake8==3.5.0 && pip install pytest==3.6.3
-      - run: yapf --diff --recursive ./
-      - run: flake8 .
-
   test:
     working_directory: /app
     docker:
@@ -102,14 +92,9 @@ workflows:
   version: 2
   main:
     jobs:
-      - lint:
-          filters: *main_filters
       - test:
           filters: *main_filters
-          requires:
-            - lint
       - build:
           filters: *main_filters
           requires:
-            - lint
             - test

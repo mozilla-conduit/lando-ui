@@ -1,3 +1,13 @@
+Unless otherwise specified, the files in this repository are covered by the
+Mozilla Public License 2.0.
+
+The following files in this repository are covered by the Apache License,
+Version 2.0: landoui/support/pyoidc.py, landoui/support/flask_pyoidc.py. For
+the full text of the Apache License, Version 2.0, please see
+http://www.apache.org/licenses/LICENSE-2.0.
+
+
+
 Mozilla Public License Version 2.0
 ==================================
 

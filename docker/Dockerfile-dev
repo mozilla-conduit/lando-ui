@@ -1,4 +1,4 @@
-FROM python:3.5-alpine
+FROM python:3.8-alpine
 
 RUN mkdir /python_requirements
 COPY requirements.txt /python_requirements.txt
@@ -9,13 +9,7 @@ COPY docker/*.sh /usr/local/bin
 # OS package dependencies.
 RUN install-deps.sh /python_requirements.txt
 
-# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
-# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
-# has this requirement, it will still work with the older version of `oic`.
-# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
-# working with Auth0.
-COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
-RUN pip install --no-cache -r /oic_downgrade_requirements.txt
+# TODO: separate dev-specific packages into their own requirements file
 
 RUN apk add --update nodejs ruby && rm -rf /var/cache/apk/*
 RUN gem install sass --no-document -v 3.4.25
