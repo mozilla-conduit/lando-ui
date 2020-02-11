@@ -18,7 +18,9 @@
             {% if status['status'] == 'landed' %}
               <strong>Result:</strong> {{status['details']|escape_html|linkify_transplant_details(status)|safe}}
             {% elif status['details'] %}
-              <strong>Details:</strong> {{status['details']}}
+              <div class="StackPage-timeline-item-error">
+                <strong>Details:</strong> {{status['details']}}
+              </div>
             {% endif %}
           </div>
         </div>
