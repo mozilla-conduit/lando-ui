@@ -72,7 +72,7 @@ def sort_stack_topological(nodes, edges, *, key=lambda x: x):
                 sources.add(child)
 
     if g:
-        raise ValueError('Provided graph has a cycle.')
+        raise ValueError("Provided graph has a cycle.")
 
     return order
 
@@ -118,10 +118,7 @@ def draw_stack_graph(nodes, edges, order):
     # Iterate over the order and build the drawing.
     for i, node in enumerate(order):
         # What column should this node go in?
-        col = (
-            next_node.index(node)
-            if next_node.count(node) else empty_column_or_new()
-        )
+        col = next_node.index(node) if next_node.count(node) else empty_column_or_new()
 
         # Calculate connections from earlier rows.
         below = set()
@@ -142,9 +139,7 @@ def draw_stack_graph(nodes, edges, order):
         if g[node].children:
             # Place the closest child in the order above
             # the current node.
-            closest = order[min(
-                [order.index(child) for child in g[node].children]
-            )]
+            closest = order[min([order.index(child) for child in g[node].children])]
             next_node[col] = closest
             above.add(col)
 
@@ -156,11 +151,11 @@ def draw_stack_graph(nodes, edges, order):
 
         drawing.rows.append(
             {
-                'node': node,
-                'pos': col,
-                'above': sorted(above),
-                'below': sorted(below),
-                'other': sorted(other),
+                "node": node,
+                "pos": col,
+                "above": sorted(above),
+                "below": sorted(below),
+                "other": sorted(other),
             }
         )
 

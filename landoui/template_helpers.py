@@ -6,16 +6,16 @@ import logging
 import re
 import urllib.parse
 
-from flask import (Blueprint, current_app, escape)
+from flask import Blueprint, current_app, escape
 from landoui.forms import UserSettingsForm
 
 from landoui import helpers
 
-FAQ_URL = 'https://wiki.mozilla.org/Phabricator/FAQ#Lando'
-SEC_BUG_WIKI = 'https://wiki.mozilla.org/Security/Bug_Approval_Process'
+FAQ_URL = "https://wiki.mozilla.org/Phabricator/FAQ#Lando"
+SEC_BUG_WIKI = "https://wiki.mozilla.org/Security/Bug_Approval_Process"
 
 logger = logging.getLogger(__name__)
-template_helpers = Blueprint('template_helpers', __name__)
+template_helpers = Blueprint("template_helpers", __name__)
 
 
 @template_helpers.app_template_global()
@@ -59,63 +59,63 @@ def calculate_duration(start, end=None):
 @template_helpers.app_template_filter()
 def tostatusbadgeclass(status):
     mapping = {
-        'aborted': 'Badge Badge--negative',
-        'submitted': 'Badge Badge--warning',
-        'landed': 'Badge Badge--positive',
-        'failed': 'Badge Badge--negative'
+        "aborted": "Badge Badge--negative",
+        "submitted": "Badge Badge--warning",
+        "landed": "Badge Badge--positive",
+        "failed": "Badge Badge--negative",
     }
-    return mapping.get(status['status'], 'Badge Badge--negative')
+    return mapping.get(status["status"], "Badge Badge--negative")
 
 
 @template_helpers.app_template_filter()
 def reviewer_to_status_badge_class(reviewer):
     return {
         # status: (current_diff, for_other_diff),
-        'accepted': ('Badge Badge--positive', 'Badge Badge--neutral'),
-        'rejected': ('Badge Badge--negative', 'Badge Badge--warning'),
-        'added': ('Badge', 'Badge'),
-        'blocking': ('Badge', 'Badge'),
-        'resigned': ('Badge', 'Badge'),
-    }.get(
-        reviewer['status'], ('Badge Badge--warning', 'Badge Badge--warning')
-    )[1 if reviewer['for_other_diff'] else 0]
+        "accepted": ("Badge Badge--positive", "Badge Badge--neutral"),
+        "rejected": ("Badge Badge--negative", "Badge Badge--warning"),
+        "added": ("Badge", "Badge"),
+        "blocking": ("Badge", "Badge"),
+        "resigned": ("Badge", "Badge"),
+    }.get(reviewer["status"], ("Badge Badge--warning", "Badge Badge--warning"))[
+        1 if reviewer["for_other_diff"] else 0
+    ]
 
 
 @template_helpers.app_template_filter()
 def reviewer_to_action_text(reviewer):
     options = {
         # status: (current_diff, for_other_diff),
-        'accepted': ('accepted', 'accepted a prior diff'),
-        'rejected': ('requested changes', 'requested changes to a prior diff'),
-        'added': ('to review', 'to review'),
-        'blocking': ('must review', 'must review'),
-        'resigned': ('resigned', 'resigned'),
-    }.get(reviewer['status'], ('UNKNOWN STATE', 'UNKNOWN STATE'))
-    return options[1 if reviewer['for_other_diff'] else 0]
+        "accepted": ("accepted", "accepted a prior diff"),
+        "rejected": ("requested changes", "requested changes to a prior diff"),
+        "added": ("to review", "to review"),
+        "blocking": ("must review", "must review"),
+        "resigned": ("resigned", "resigned"),
+    }.get(reviewer["status"], ("UNKNOWN STATE", "UNKNOWN STATE"))
+    return options[1 if reviewer["for_other_diff"] else 0]
 
 
 @template_helpers.app_template_filter()
 def revision_status_to_badge_class(status):
     return {
-        "abandoned": 'Badge',
-        "accepted": 'Badge Badge--positive',
-        "changes-planned": 'Badge Badge--neutral',
-        "published": 'Badge',
-        "needs-review": 'Badge Badge--warning',
-        "needs-revision": 'Badge Badge--negative',
-        "draft": 'Badge Badge--neutral',
-    }.get(status, 'Badge Badge--warning')
+        "abandoned": "Badge",
+        "accepted": "Badge Badge--positive",
+        "changes-planned": "Badge Badge--neutral",
+        "published": "Badge",
+        "needs-review": "Badge Badge--warning",
+        "needs-revision": "Badge Badge--negative",
+        "draft": "Badge Badge--neutral",
+    }.get(status, "Badge Badge--warning")
 
 
 @template_helpers.app_template_filter()
 def tostatusbadgename(status):
     mapping = {
-        'aborted': 'Aborted',
-        'submitted': 'Landing Queued',
-        'landed': 'Successfully Landed',
-        'failed': 'Failed to Land'
+        "aborted": "Aborted",
+        "submitted": "Landing Queued",
+        "landed": "Successfully Landed",
+        "failed": "Failed to Land",
     }
-    return mapping.get(status['status'], status['status'].capitalize())
+    return mapping.get(status["status"], status["status"].capitalize())
 
 
 @template_helpers.app_template_filter()
@@ -127,17 +127,18 @@ def avatar_url(url):
     try:
         parsed_url = urllib.parse.urlsplit(url)
         if not parsed_url.netloc:
-            raise ValueError('Avatar URLs should not be relative')
+            raise ValueError("Avatar URLs should not be relative")
     except (AttributeError, ValueError):
-        logger.debug('Invalid avatar url provided', extra={'url': url})
-        return ''
+        logger.debug("Invalid avatar url provided", extra={"url": url})
+        return ""
 
-    if parsed_url.netloc in ('s.gravatar.com', 'www.gravatar.com'):
+    if parsed_url.netloc in ("s.gravatar.com", "www.gravatar.com"):
         query = urllib.parse.parse_qs(parsed_url.query)
-        query['d'] = 'identicon'
+        query["d"] = "identicon"
         parsed_url = (
-            parsed_url[:3] +
-            (urllib.parse.urlencode(query, doseq=True), ) + parsed_url[4:]
+            parsed_url[:3]
+            + (urllib.parse.urlencode(query, doseq=True),)
+            + parsed_url[4:]
         )
 
     return urllib.parse.urlunsplit(parsed_url)
@@ -145,9 +146,9 @@ def avatar_url(url):
 
 @template_helpers.app_template_filter()
 def linkify_bug_numbers(text):
-    search = r'(?=\b)(Bug (\d+))(?=\b)'
+    search = r"(?=\b)(Bug (\d+))(?=\b)"
     replace = r'<a href="{bmo_url}/show_bug.cgi?id=\g<2>">\g<1></a>'.format(
-        bmo_url=current_app.config['BUGZILLA_URL']
+        bmo_url=current_app.config["BUGZILLA_URL"]
     )
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
@@ -155,8 +156,7 @@ def linkify_bug_numbers(text):
 @template_helpers.app_template_filter()
 def linkify_revision_urls(text):
     search = (
-        r'(?=\b)(' + re.escape(current_app.config['PHABRICATOR_URL']) +
-        r'/D\d+)(?=\b)'
+        r"(?=\b)(" + re.escape(current_app.config["PHABRICATOR_URL"]) + r"/D\d+)(?=\b)"
     )
     replace = r'<a href="\g<1>">\g<1></a>'
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
@@ -166,49 +166,45 @@ def linkify_revision_urls(text):
 def linkify_transplant_details(text, transplant):
     # The transplant result is not always guaranteed to be a commit id. It
     # can be a message saying that the landing was queued and will land later.
-    if transplant['status'] != 'landed':
+    if transplant["status"] != "landed":
         return text
 
-    commit_id = transplant['details']
-    search = r'(?=\b)(' + re.escape(commit_id) + r')(?=\b)'
-    replace = (
-        r'<a href="{repo_url}/rev/\g<1>">{repo_url}/rev/\g<1></a>'.format(
-            repo_url=transplant['repository_url']
-        )
+    commit_id = transplant["details"]
+    search = r"(?=\b)(" + re.escape(commit_id) + r")(?=\b)"
+    replace = r'<a href="{repo_url}/rev/\g<1>">{repo_url}/rev/\g<1></a>'.format(
+        repo_url=transplant["repository_url"]
     )
     return re.sub(search, replace, str(text))  # This is case sensitive
 
 
 @template_helpers.app_template_filter()
 def linkify_faq(text):
-    search = r'\b(FAQ)\b'
+    search = r"\b(FAQ)\b"
     replace = r'<a href="{faq_url}">\g<1></a>'.format(faq_url=FAQ_URL)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
 @template_helpers.app_template_filter()
 def linkify_sec_bug_wiki(text):
-    search = r'\b(Security Bug Approval Process)\b'
+    search = r"\b(Security Bug Approval Process)\b"
     replace = r'<a href="{wiki_url}">\g<1></a>'.format(wiki_url=SEC_BUG_WIKI)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
 @template_helpers.app_template_filter()
 def bug_url(text):
-    return '{bmo_url}/show_bug.cgi?id={bug_number}'.format(
-        bmo_url=current_app.config['BUGZILLA_URL'], bug_number=text
+    return "{bmo_url}/show_bug.cgi?id={bug_number}".format(
+        bmo_url=current_app.config["BUGZILLA_URL"], bug_number=text
     )
 
 
 @template_helpers.app_template_filter()
 def revision_url(text, diff_id=None):
-    url = '{phab_url}/{revision_id}'.format(
-        phab_url=current_app.config['PHABRICATOR_URL'], revision_id=text
+    url = "{phab_url}/{revision_id}".format(
+        phab_url=current_app.config["PHABRICATOR_URL"], revision_id=text
     )
-    if diff_id is not None and diff_id != '':
-        url = '{revision_url}?id={diff_id}'.format(
-            revision_url=url, diff_id=diff_id
-        )
+    if diff_id is not None and diff_id != "":
+        url = "{revision_url}?id={diff_id}".format(revision_url=url, diff_id=diff_id)
 
     return url
 
@@ -221,21 +217,21 @@ def repo_path(repo_url):
     """
     if not repo_url:
         return ""
-    repo = urllib.parse.urlsplit(repo_url).path.strip().strip('/')
+    repo = urllib.parse.urlsplit(repo_url).path.strip().strip("/")
     return repo if repo else repo_url
 
 
 GRAPH_DRAWING_COL_WIDTH = 14
 GRAPH_DRAWING_HEIGHT = 44
 GRAPH_DRAWING_COLORS = [
-    '#cc0000',
-    '#cc0099',
-    '#6600cc',
-    '#0033cc',
-    '#00cccc',
-    '#00cc33',
-    '#66cc00',
-    '#cc9900',
+    "#cc0000",
+    "#cc0099",
+    "#6600cc",
+    "#0033cc",
+    "#00cccc",
+    "#00cc33",
+    "#66cc00",
+    "#cc9900",
 ]
 
 
@@ -272,7 +268,7 @@ def graph_above_path(col, above):
             y=GRAPH_DRAWING_HEIGHT / 2,
         ),
     ]
-    return ' '.join(commands)
+    return " ".join(commands)
 
 
 @template_helpers.app_template_filter()
@@ -286,9 +282,9 @@ def graph_below_path(col, below):
             y2=3 * GRAPH_DRAWING_HEIGHT / 4,
             x=graph_x_pos(below),
             y=GRAPH_DRAWING_HEIGHT,
-        )
+        ),
     ]
-    return ' '.join(commands)
+    return " ".join(commands)
 
 
 @template_helpers.app_template_filter()
@@ -298,8 +294,6 @@ def message_type_to_notification_class(flash_message_category):
     See https://bulma.io/documentation/elements/notification/ for the list of
     Bulma notification states.
     """
-    return {
-        "info": "is-info",
-        "success": "is-success",
-        "warning": "is-warning",
-    }.get(flash_message_category, "is-info")
+    return {"info": "is-info", "success": "is-success", "warning": "is-warning",}.get(
+        flash_message_category, "is-info"
+    )

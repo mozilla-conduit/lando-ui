@@ -30,10 +30,10 @@ jobs:
       - *python_image
     steps:
       - checkout
-      - run: pip install yapf==0.16.1 && pip install flake8==3.5.0 && pip install pytest==3.6.3
-      - run: yapf --diff --recursive ./
+      - run: apk add gcc linux-headers libc-dev
+      - run: pip install black==19.10b0 && pip install flake8==3.6.0
+      - run: black --diff .
       - run: flake8 .
-
   test:
     working_directory: /app
     docker:

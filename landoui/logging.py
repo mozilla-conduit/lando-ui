@@ -15,7 +15,7 @@ class MozLogFormatter(logging.Formatter):
     https://wiki.mozilla.org/Firefox/Services/Logging#MozLog_application_logging_standard
     """
 
-    MOZLOG_ENVVERSION = '2.0'
+    MOZLOG_ENVVERSION = "2.0"
 
     # Syslog severity levels.
     SL_EMERG = 0  # system is unusable
@@ -38,15 +38,33 @@ class MozLogFormatter(logging.Formatter):
 
     BUILTIN_LOGRECORD_ATTRIBUTES = set(
         (
-            'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename',
-            'funcName', 'levelname', 'levelno', 'lineno', 'module', 'msecs',
-            'message', 'msg', 'name', 'pathname', 'process', 'processName',
-            'relativeCreated', 'stack_info', 'thread', 'threadName'
+            "args",
+            "asctime",
+            "created",
+            "exc_info",
+            "exc_text",
+            "filename",
+            "funcName",
+            "levelname",
+            "levelno",
+            "lineno",
+            "module",
+            "msecs",
+            "message",
+            "msg",
+            "name",
+            "pathname",
+            "process",
+            "processName",
+            "relativeCreated",
+            "stack_info",
+            "thread",
+            "threadName",
         )
     )
 
     def __init__(self, *args, mozlog_logger=None, **kwargs):
-        self.mozlog_logger = mozlog_logger or 'Dockerflow'
+        self.mozlog_logger = mozlog_logger or "Dockerflow"
         self.hostname = socket.gethostname()
         super().__init__(*args, **kwargs)
 
@@ -54,28 +72,28 @@ class MozLogFormatter(logging.Formatter):
         """Formats a log record and serializes to mozlog json"""
 
         mozlog_record = {
-            'EnvVersion': self.MOZLOG_ENVVERSION,
-            'Hostname': self.hostname,
-            'Logger': self.mozlog_logger,
-            'Type': record.name,
-            'Timestamp': int(record.created * 1e9),
-            'Severity': self.PRIORITY.get(record.levelname, self.SL_WARNING),
-            'Pid': record.process,
-            'Fields': {
+            "EnvVersion": self.MOZLOG_ENVVERSION,
+            "Hostname": self.hostname,
+            "Logger": self.mozlog_logger,
+            "Type": record.name,
+            "Timestamp": int(record.created * 1e9),
+            "Severity": self.PRIORITY.get(record.levelname, self.SL_WARNING),
+            "Pid": record.process,
+            "Fields": {
                 k: v
                 for k, v in record.__dict__.items()
                 if k not in self.BUILTIN_LOGRECORD_ATTRIBUTES
-            }
+            },
         }
 
         msg = record.getMessage()
-        if msg and 'msg' not in mozlog_record['Fields']:
-            mozlog_record['Fields']['msg'] = msg
+        if msg and "msg" not in mozlog_record["Fields"]:
+            mozlog_record["Fields"]["msg"] = msg
 
         if record.exc_info is not None:
-            mozlog_record['Fields']['exc'] = {
-                'error': repr(record.exc_info[1]),  # Instance
-                'traceback': ''.join(traceback.format_tb(record.exc_info[2])),
+            mozlog_record["Fields"]["exc"] = {
+                "error": repr(record.exc_info[1]),  # Instance
+                "traceback": "".join(traceback.format_tb(record.exc_info[2])),
             }
 
         return self.serialize(mozlog_record)
@@ -100,9 +118,4 @@ def log_config_change(setting_name, value):
         setting_name: The setting being changed.
         value: The setting's new value.
     """
-    logger.info(
-        'app configuration', extra={
-            'setting': setting_name,
-            'value': value,
-        }
-    )
+    logger.info("app configuration", extra={"setting": setting_name, "value": value,})

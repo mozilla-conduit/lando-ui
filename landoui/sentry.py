@@ -22,11 +22,11 @@ def initialize_sentry(app, release):
             a git sha).  Will be used as the Sentry "release" identifier. See
             the Sentry client configuration docs for details.
     """
-    sentry_dsn = os.environ.get('SENTRY_DSN', None)
+    sentry_dsn = os.environ.get("SENTRY_DSN", None)
     if sentry_dsn:
-        log_config_change('SENTRY_DSN', '********')
+        log_config_change("SENTRY_DSN", "********")
     else:
-        log_config_change('SENTRY_DSN', 'none (sentry disabled)')
+        log_config_change("SENTRY_DSN", "none (sentry disabled)")
 
     # Do this after logging the DSN so if there is a DSN URL parsing error
     # the logs will record the configured value before the Sentry client
@@ -37,13 +37,13 @@ def initialize_sentry(app, release):
     # Set these attributes directly because their keyword arguments can't be
     # passed into Sentry.__init__() or make_client().
     sentry.client.release = release
-    log_config_change('SENTRY_LOG_RELEASE_AS', release)
+    log_config_change("SENTRY_LOG_RELEASE_AS", release)
 
-    environment = os.environ.get('ENV', None)
+    environment = os.environ.get("ENV", None)
     sentry.client.environment = environment
-    log_config_change('SENTRY_LOG_ENVIRONMENT_AS', environment)
+    log_config_change("SENTRY_LOG_ENVIRONMENT_AS", environment)
 
     sentry.client.processors = (
-        'raven.processors.SanitizePasswordsProcessor',
-        'raven.processors.RemoveStackLocalsProcessor',
+        "raven.processors.SanitizePasswordsProcessor",
+        "raven.processors.RemoveStackLocalsProcessor",
     )

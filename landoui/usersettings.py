@@ -16,19 +16,19 @@ def manage_phab_api_token_cookie(form, payload):
     Returns:
         `flask.Response` with a `Set-Cookie` header
     """
-    payload['phab_api_token_set'] = (
+    payload["phab_api_token_set"] = (
         form.phab_api_token.data and not form.reset_phab_api_token.data
     )
     response = jsonify(payload)
 
     if form.reset_phab_api_token.data:
-        response.delete_cookie('phabricator-api-token')
+        response.delete_cookie("phabricator-api-token")
     elif form.phab_api_token.data:
         response.set_cookie(
-            'phabricator-api-token',
+            "phabricator-api-token",
             value=form.phab_api_token.data,
-            secure=current_app.config['USE_HTTPS'],
-            httponly=True
+            secure=current_app.config["USE_HTTPS"],
+            httponly=True,
         )
 
     return response

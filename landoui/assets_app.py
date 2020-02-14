@@ -14,13 +14,13 @@ import os
 from landoui.app import create_app
 
 app = create_app(
-    version_path='/version.json',
+    version_path="/version.json",
     secret_key=str(binascii.b2a_hex(os.urandom(15))),
-    session_cookie_name='lando-ui.test',
-    session_cookie_domain='lando-ui.test',
+    session_cookie_name="lando-ui.test",
+    session_cookie_domain="lando-ui.test",
     session_cookie_secure=False,
     use_https=0,
     enable_asset_pipeline=True,
-    lando_api_url='http://lando-api.test',
-    debug=True
+    lando_api_url="http://lando-api.test",
+    debug=True,
 )
