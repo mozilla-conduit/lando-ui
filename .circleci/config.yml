@@ -14,7 +14,7 @@ version: 2
 # This is not part of circleci, but it lets us not repeat ourselves.
 STUFF:
   python_image: &python_image
-    image: python:3.5-alpine
+    image: python:3.6-alpine
 
   # it's useful to not build branches that contain slashes,
   # if it is later decided to map branches to docker tags.
