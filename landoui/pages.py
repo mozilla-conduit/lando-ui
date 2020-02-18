@@ -22,68 +22,63 @@ from landoui.usersettings import manage_phab_api_token_cookie
 
 logger = logging.getLogger(__name__)
 
-pages = Blueprint('page', __name__)
+pages = Blueprint("page", __name__)
 pages.before_request(set_last_local_referrer)
 
 
-@pages.route('/')
+@pages.route("/")
 def home():
-    enable_transplant_ui = current_app.config.get(
-        "ENABLE_EMBEDDED_TRANSPLANT_UI"
-    )
+    enable_transplant_ui = current_app.config.get("ENABLE_EMBEDDED_TRANSPLANT_UI")
     if not (enable_transplant_ui and is_user_authenticated()):
         # Return a static HTML page for users that are not logged in.
-        return render_template('home.html')
+        return render_template("home.html")
 
     # Render the landing queue.
-    return render_template('queue/queue.html')
+    return render_template("queue/queue.html")
 
 
-@pages.route('/signin')
+@pages.route("/signin")
 @oidc.oidc_auth("AUTH0")
 def signin():
-    redirect_url = session.get('last_local_referrer') or '/'
+    redirect_url = session.get("last_local_referrer") or "/"
     return redirect(redirect_url)
 
 
-@pages.route('/signout')
+@pages.route("/signout")
 def signout():
-    return render_template('signout.html')
+    return render_template("signout.html")
 
 
-@pages.route('/logout')
+@pages.route("/logout")
 @oidc.oidc_logout
 def logout():
-    protocol = 'https' if current_app.config['USE_HTTPS'] else 'http'
+    protocol = "https" if current_app.config["USE_HTTPS"] else "http"
 
-    return_url = '{protocol}://{host}/signout'.format(
-        protocol=protocol, host=current_app.config['SERVER_NAME']
+    return_url = "{protocol}://{host}/signout".format(
+        protocol=protocol, host=current_app.config["SERVER_NAME"]
     )
 
     logout_url = (
-        'https://{auth0_host}/v2/logout?returnTo={return_url}&'
-        'client_id={client_id}'.format(
-            auth0_host=os.environ['OIDC_DOMAIN'],
+        "https://{auth0_host}/v2/logout?returnTo={return_url}&"
+        "client_id={client_id}".format(
+            auth0_host=os.environ["OIDC_DOMAIN"],
             return_url=return_url,
-            client_id=os.environ['OIDC_CLIENT_ID']
+            client_id=os.environ["OIDC_CLIENT_ID"],
         )
     )
 
     response = make_response(redirect(logout_url, code=302))
-    response.delete_cookie('phabricator-api-token')
+    response.delete_cookie("phabricator-api-token")
     return response
 
 
-@pages.route('/settings', methods=['POST'])
+@pages.route("/settings", methods=["POST"])
 @oidc.oidc_auth("AUTH0")
 def settings():
     if not is_user_authenticated():
         # Accessing it unauthenticated from UI is protected by CSP
         return jsonify(
-            dict(
-                success=False,
-                errors=dict(form_errors=['User is not authenticated'])
-            )
+            dict(success=False, errors=dict(form_errors=["User is not authenticated"]))
         )
 
     form = UserSettingsForm()
@@ -122,25 +117,18 @@ def oidc_error(error=None, error_description=None):
     try again from a fresh state. If the user wasn't logged in to begin with,
     then we display an error message and log it.
     """
-    if (
-            is_user_authenticated() or
-            error in ('login_required', 'interaction_required')
-       ):
+    if is_user_authenticated() or error in ("login_required", "interaction_required"):
         # last_local_referrer is guaranteed to not be a signin/signout route.
-        redirect_url = session.get('last_local_referrer') or '/'
+        redirect_url = session.get("last_local_referrer") or "/"
         session.clear()
         response = make_response(redirect(redirect_url))
-        response.delete_cookie('phabricator-api-token')
+        response.delete_cookie("phabricator-api-token")
         return response
     else:
         logger.error(
-            'authentication error',
-            extra={
-                'error': error,
-                'error_description': error_description
-            }
+            "authentication error",
+            extra={"error": error, "error_description": error_description},
         )  # yapf: disable
         raise UIError(
-            title='Authentication Error: {}'.format(error),
-            message=error_description
+            title="Authentication Error: {}".format(error), message=error_description
         )

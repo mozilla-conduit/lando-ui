@@ -18,8 +18,9 @@
 # https://github.com/OpenIDC/pyoidc/blob/v1.1.2/src/oic/oic/message.py
 
 """
-This module implements a custom `IdToken` class that inherits from `oic.oic.message.IdToken`, as
-well as an `AccessTokenResponse` class that is used to override the verification of the ID token.
+This module implements a custom `IdToken` class that inherits from
+`oic.oic.message.IdToken`, as well as an `AccessTokenResponse` class that is used to
+override the verification of the ID token.
 """
 
 
@@ -39,15 +40,16 @@ class IdToken(oic_message.IdToken):
     This is a known issue with Auth0, which they have a fix for but is not
     enabled for Mozilla.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.c_param["updated_at"] = oauth2_message.ParamDefinition(
             datetime,
             False,
             lambda d, *args: f"{datetime.fromtimestamp(d).isoformat()}Z",
-            lambda d, **kwargs: int(
-                datetime.fromisoformat(d[:-1]).timestamp()),
-            True)
+            lambda d, **kwargs: int(datetime.fromisoformat(d[:-1]).timestamp()),
+            True,
+        )
 
 
 class AccessTokenResponse(oauth2_message.AccessTokenResponse):
@@ -85,8 +87,7 @@ class AccessTokenResponse(oauth2_message.AccessTokenResponse):
 
         idt = IdToken().from_jwt(_jws, keyjar=keyjar)
         if not idt.verify(keyjar=keyjar):
-            raise oic_message.VerificationError(
-                "Could not verify id_token", idt)
+            raise oic_message.VerificationError("Could not verify id_token", idt)
 
         return idt
 

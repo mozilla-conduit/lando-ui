@@ -24,6 +24,16 @@ STUFF:
         - /\//
 
 jobs:
+  lint:
+    working_directory: /app
+    docker:
+      - *python_image
+    steps:
+      - checkout
+      - run: apk add gcc linux-headers libc-dev
+      - run: pip install black==19.10b0 && pip install flake8==3.6.0
+      - run: black --diff .
+      - run: flake8 .
   test:
     working_directory: /app
     docker:
@@ -92,9 +102,14 @@ workflows:
   version: 2
   main:
     jobs:
+      - lint:
+          filters: *main_filters
       - test:
           filters: *main_filters
+          requires:
+            - lint
       - build:
           filters: *main_filters
           requires:
+            - lint
             - test

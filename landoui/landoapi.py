@@ -13,14 +13,9 @@ class LandoAPI:
     """Client for Lando API."""
 
     def __init__(
-        self,
-        url,
-        *,
-        phabricator_api_token=None,
-        auth0_access_token=None,
-        session=None
+        self, url, *, phabricator_api_token=None, auth0_access_token=None, session=None
     ):
-        self.url = url + '/' if url[-1] == '/' else url + '/'
+        self.url = url + "/" if url[-1] == "/" else url + "/"
         self.phabricator_api_token = phabricator_api_token
         self.auth0_access_token = auth0_access_token
         self.session = session or self.create_session()
@@ -50,32 +45,28 @@ class LandoAPI:
                 If there is an error communicating with the API.
         """
         headers = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         }
 
         if require_auth0:
             assert self.auth0_access_token is not None
-            headers['Authorization'] = (
-                'Bearer {}'.format(self.auth0_access_token)
-            )
+            headers["Authorization"] = "Bearer {}".format(self.auth0_access_token)
 
         if self.phabricator_api_token:
-            headers['X-Phabricator-API-Key'] = self.phabricator_api_token
+            headers["X-Phabricator-API-Key"] = self.phabricator_api_token
 
-        headers.update(kwargs.get('headers', {}))
-        kwargs['headers'] = headers
+        headers.update(kwargs.get("headers", {}))
+        kwargs["headers"] = headers
 
         try:
-            response = self.session.request(
-                method, self.url + url_path, **kwargs
-            )
+            response = self.session.request(method, self.url + url_path, **kwargs)
 
             logger.debug(
-                'lando-api response',
+                "lando-api response",
                 extra={
-                    'status_code': response.status_code,
-                    'content_type': response.headers.get('Content-Type'),
-                }
+                    "status_code": response.status_code,
+                    "content_type": response.headers.get("Content-Type"),
+                },
             )
 
             data = response.json()
@@ -117,16 +108,16 @@ class LandoAPIError(LandoAPIException):
         self.type = None
 
         try:
-            self.detail = data.get('detail')
-            self.instance = data.get('instance')
-            self.status = data.get('status')
-            self.title = data.get('title')
-            self.type = data.get('type')
+            self.detail = data.get("detail")
+            self.instance = data.get("instance")
+            self.status = data.get("status")
+            self.title = data.get("title")
+            self.type = data.get("type")
         except AttributeError:
             # Data wasn't a dictionary.
             pass
 
-        super().__init__(self.detail or '')
+        super().__init__(self.detail or "")
 
     @classmethod
     def raise_if_error(cls, response_obj, data):

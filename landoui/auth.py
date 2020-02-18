@@ -14,7 +14,9 @@ from flask_pyoidc.provider_configuration import (
 )
 
 from landoui.support.flask_pyoidc import (
-    parse_response_wrapper, userinfo_request_wrapper)
+    parse_response_wrapper,
+    userinfo_request_wrapper,
+)
 
 
 class OIDCConfig:
@@ -24,20 +26,19 @@ class OIDCConfig:
         self.OIDC_DOMAIN = os.environ["OIDC_DOMAIN"]
         self.OIDC_CLIENT_ID = os.environ["OIDC_CLIENT_ID"]
         self.OIDC_CLIENT_SECRET = os.environ["OIDC_CLIENT_SECRET"]
-        self.LANDO_API_OIDC_IDENTIFIER = os.environ[
-            "LANDO_API_OIDC_IDENTIFIER"]
+        self.LANDO_API_OIDC_IDENTIFIER = os.environ["LANDO_API_OIDC_IDENTIFIER"]
         self.LOGIN_URL = "https://{DOMAIN}/login?client={CLIENT_ID}".format(
             DOMAIN=self.OIDC_DOMAIN, CLIENT_ID=self.OIDC_CLIENT_ID
         )
 
     def auth_endpoint(self):
-        return 'https://{DOMAIN}/authorize'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/authorize".format(DOMAIN=self.OIDC_DOMAIN)
 
     def token_endpoint(self):
-        return 'https://{DOMAIN}/oauth/token'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/oauth/token".format(DOMAIN=self.OIDC_DOMAIN)
 
     def userinfo_endpoint(self):
-        return 'https://{DOMAIN}/userinfo'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/userinfo".format(DOMAIN=self.OIDC_DOMAIN)
 
     def client_id(self):
         return self.OIDC_CLIENT_ID
@@ -65,8 +66,7 @@ class OpenIDConnect:
     @property
     def provider_metadata(self):
         return ProviderMetadata(
-            issuer="https://{DOMAIN}/".format(
-                DOMAIN=self.oidc_config.OIDC_DOMAIN,),
+            issuer="https://{DOMAIN}/".format(DOMAIN=self.oidc_config.OIDC_DOMAIN,),
             authorization_endpoint=self.oidc_config.auth_endpoint(),
             token_endpoint=self.oidc_config.token_endpoint(),
             userinfo_endpoint=self.oidc_config.userinfo_endpoint(),
@@ -100,11 +100,8 @@ class OpenIDConnect:
         - profile - Permission to get additional information about the user
           such as their real name, picture url, and LDAP information.
         """
-        oidc = OIDCAuthentication(
-            {"AUTH0": self.provider_configuration}, app=app
-        )
+        oidc = OIDCAuthentication({"AUTH0": self.provider_configuration}, app=app)
         auth0 = oidc.clients["AUTH0"]
         oidc.clients["AUTH0"]._parse_response = parse_response_wrapper(auth0)
-        oidc.clients["AUTH0"].userinfo_request = userinfo_request_wrapper(
-            auth0)
+        oidc.clients["AUTH0"].userinfo_request = userinfo_request_wrapper(auth0)
         return oidc

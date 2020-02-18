@@ -214,11 +214,11 @@ $.fn.landingPreview = function() {
     $previewButton.on('click', (e) => {
       e.preventDefault();
       calculateLandButtonState();
-      $landingPreview.show();
+      $landingPreview.css("display", "flex");
     });
     $close.on('click', (e) => {
       e.preventDefault();
-      $landingPreview.hide();
+      $landingPreview.css("display", "none");
     });
     $warnings.on('change', () => {
       calculateLandButtonState();

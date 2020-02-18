@@ -16,10 +16,10 @@
 # https://github.com/zamzterz/Flask-pyoidc/blob/v3.2.0/src/flask_pyoidc/pyoidc_facade.py
 
 """
-This module implements two wrappers, `parse_response_wrapper` and `userinfo_request_wrapper`. Both
-methods return methods that are used to override functionality in
-`flask_pyoidc.pyoidc_facade.PyoidcFacade` in order to properly parse the returned response from
-Auth0.
+This module implements two wrappers, `parse_response_wrapper` and
+`userinfo_request_wrapper`. Both methods return methods that are used to override
+functionality in `flask_pyoidc.pyoidc_facade.PyoidcFacade` in order to properly parse
+the returned response from Auth0.
 """
 
 
@@ -27,8 +27,7 @@ from landoui.support.pyoidc import IdToken, AccessTokenResponse
 
 
 def parse_response_wrapper(auth0):
-    def _parse_response(
-            response_params, success_response_cls, error_response_cls):
+    def _parse_response(response_params, success_response_cls, error_response_cls):
         """Parse response from the client and return a token response object.
 
         This method is modified from the original version to support a custom
@@ -47,7 +46,7 @@ def parse_response_wrapper(auth0):
             `landoui.support.pyoidc.AccessTokenResponse` if there is no error,
             otherwise returns `oic.oic.message.TokenErrorResponse`.
         """
-        if 'error' in response_params:
+        if "error" in response_params:
             response = error_response_cls(**response_params)
         else:
             if "id_token" in response_params:
@@ -56,6 +55,7 @@ def parse_response_wrapper(auth0):
                 response = success_response_cls(**response_params)
             response.verify(keyjar=auth0._client.keyjar)
         return response
+
     return _parse_response
 
 
@@ -72,14 +72,16 @@ def userinfo_request_wrapper(auth0):
         Returns:
             landoui.support.pyoidc.IdToken
         """
-        http_method = (
-            auth0._provider_configuration.userinfo_endpoint_method)
-        if not access_token or http_method is None or (
-                not auth0._client.userinfo_endpoint):
+        http_method = auth0._provider_configuration.userinfo_endpoint_method
+        if (
+            not access_token
+            or http_method is None
+            or (not auth0._client.userinfo_endpoint)
+        ):
             return None
         userinfo_response = auth0._client.do_user_info_request(
-                method=http_method,
-                token=access_token,
-                user_info_schema=IdToken)
+            method=http_method, token=access_token, user_info_schema=IdToken
+        )
         return userinfo_response
+
     return userinfo_request
