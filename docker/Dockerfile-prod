@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM python:3.5-alpine AS assets
+FROM python:3.6-alpine AS assets
 
 COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin
@@ -43,7 +43,7 @@ ENV LANDO_API_OIDC_IDENTIFIER=dontcare
 ENV FLASK_APP=/app/landoui/assets_app.py
 RUN flask assets build
 
-FROM python:3.5-alpine
+FROM python:3.6-alpine
 
 COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin

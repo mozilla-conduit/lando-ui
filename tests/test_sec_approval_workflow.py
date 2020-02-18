@@ -7,15 +7,15 @@ from unittest.mock import patch, ANY
 
 import pytest
 
-SEC_APPROVAL_HTML_MARK = b'<div class="StackPage-landingPreview-secureRevisionWarning">'  # noqa
+SEC_APPROVAL_HTML_MARK = (
+    b'<div class="StackPage-landingPreview-secureRevisionWarning">'  # noqa
+)
 
 LANDO_API_STACK = {
     "revisions": [
         {
-            "repo_phid":
-            "PHID-REPO-tk2tekowvewl4wfqh24m",
-            "date_created":
-            "2019-06-04T00:40:44+00:00",
+            "repo_phid": "PHID-REPO-tk2tekowvewl4wfqh24m",
+            "date_created": "2019-06-04T00:40:44+00:00",
             "diff": {
                 "date_created": "2019-06-04T00:40:43+00:00",
                 "date_modified": "2019-06-04T00:40:44+00:00",
@@ -26,21 +26,12 @@ LANDO_API_STACK = {
                     "email": "conduit@mozilla.bugs",
                 },
             },
-            "summary":
-            "",
-            "url":
-            "http://phabricator.test/D1",
-            "phid":
-            "PHID-DREV-p4cpedtcru7sos24hc7h",
-            "blocked_reason":
-            "",
-            "status": {
-                "display": "Accepted",
-                "value": "accepted",
-                "closed": False,
-            },
-            "id":
-            "D1",
+            "summary": "",
+            "url": "http://phabricator.test/D1",
+            "phid": "PHID-DREV-p4cpedtcru7sos24hc7h",
+            "blocked_reason": "",
+            "status": {"display": "Accepted", "value": "accepted", "closed": False,},
+            "id": "D1",
             "reviewers": [
                 {
                     "phid": "PHID-PROJ-vcgw2npz7ck6io7jdtwl",
@@ -59,23 +50,18 @@ LANDO_API_STACK = {
                     "blocking_landing": False,
                 },
             ],
-            "is_secure":
-            False,
+            "is_secure": False,
             "author": {
                 "phid": "PHID-USER-oqf26aifqpk7nzcvsy75",
                 "username": "conduit",
                 "real_name": "Conduit Test User",
             },
-            "date_modified":
-            "2019-06-13T15:04:33+00:00",
-            "commit_message":
-            "Bug 2 - test secure commits r=sec-approval,ConduitReviewer\n\nDifferential Revision: http://phabricator.test/D1",  # noqa
-            "commit_message_title":
-            "Bug 2 - test secure commits r=sec-approval,ConduitReviewer",
-            "bug_id":
-            2,
-            "title":
-            "test secure commits",
+            "date_modified": "2019-06-13T15:04:33+00:00",
+            "commit_message": "Bug 2 - test secure commits r=sec-approval,ConduitReviewer\n\nDifferential Revision: http://phabricator.test/D1",  # noqa
+            "commit_message_title": "Bug 2 - test "
+            "secure commits r=sec-approval,ConduitReviewer",
+            "bug_id": 2,
+            "title": "test secure commits",
         }
     ],
     "landable_paths": [["PHID-DREV-p4cpedtcru7sos24hc7h"]],
@@ -99,9 +85,7 @@ class LandoAPIDouble:
     def __init__(self):
         self.stack_response = deepcopy(self.default_stack_response)
 
-    def __call__(
-        self, patch_object_self, http_method, operation, *args, **kwargs
-    ):
+    def __call__(self, patch_object_self, http_method, operation, *args, **kwargs):
         """A replacement for LandoAPI.request().
 
         Knows how to return canned responses for the various operations
@@ -126,8 +110,9 @@ class LandoAPIDouble:
             return {}
         else:
             raise RuntimeError(
-                "The API method for {} is not implemented by this stub".
-                format(operation)
+                "The API method for {} is not implemented by this stub".format(
+                    operation
+                )
             )
 
 
@@ -228,13 +213,11 @@ def test_sec_approval_workflow_mark_hidden_if_feature_flag_is_off(
     assert not sec_approval_revision_in_page(rv)
 
 
-def test_submit_alt_commit_message(
-    app, client, authenticated_session, apidouble
-):
+def test_submit_alt_commit_message(app, client, authenticated_session, apidouble):
     # Disable CSRF protection so we can submit forms without tokens.
     app.config["WTF_CSRF_ENABLED"] = False
 
-    client.set_cookie('localhost', 'phabricator-api-token', 'api-123abc')
+    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
 
     formdata = {
         "revision_id": "D1",
@@ -242,9 +225,7 @@ def test_submit_alt_commit_message(
         "new_message": "s3cr3t",
     }
 
-    rv = client.post(
-        "/request-sec-approval", data=formdata, follow_redirects=True
-    )
+    rv = client.post("/request-sec-approval", data=formdata, follow_redirects=True)
 
     assert rv.status_code == 200
     apidouble.assert_called_once_with(
@@ -252,8 +233,5 @@ def test_submit_alt_commit_message(
         "POST",
         "requestSecApproval",
         require_auth0=True,
-        json={
-            "revision_id": "D1",
-            "sanitized_message": "s3cr3t",
-        },
+        json={"revision_id": "D1", "sanitized_message": "s3cr3t",},
     )

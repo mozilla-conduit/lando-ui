@@ -1,6 +1,7 @@
-FROM python:3.5-alpine
+FROM python:3.6-alpine
 
-RUN pip install yapf==0.16.0 && pip install flake8==3.6.0
+RUN apk add gcc linux-headers libc-dev
+RUN pip install black==19.10b0  && pip install flake8==3.6.0
 
 ADD . /code/
 WORKDIR /code/

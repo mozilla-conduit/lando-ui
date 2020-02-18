@@ -1,8 +1,9 @@
 [flake8]
+max-line-length = 88
+select = C,E,F,W,B,B9
+ignore = E203, E231, W503
 exclude =
-    .hg,
     .git,
     __pycache__,
-    .cache,
     # Don't check parts of the tree where there is no python.
     docker,

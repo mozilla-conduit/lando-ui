@@ -13,24 +13,22 @@ class OIDCConfig:
     """Convenience object for returning required vars to flask."""
 
     def __init__(self):
-        self.OIDC_DOMAIN = os.environ['OIDC_DOMAIN']
-        self.OIDC_CLIENT_ID = os.environ['OIDC_CLIENT_ID']
-        self.OIDC_CLIENT_SECRET = os.environ['OIDC_CLIENT_SECRET']
-        self.LANDO_API_OIDC_IDENTIFIER = (
-            os.environ['LANDO_API_OIDC_IDENTIFIER']
-        )
-        self.LOGIN_URL = 'https://{DOMAIN}/login?client={CLIENT_ID}'.format(
+        self.OIDC_DOMAIN = os.environ["OIDC_DOMAIN"]
+        self.OIDC_CLIENT_ID = os.environ["OIDC_CLIENT_ID"]
+        self.OIDC_CLIENT_SECRET = os.environ["OIDC_CLIENT_SECRET"]
+        self.LANDO_API_OIDC_IDENTIFIER = os.environ["LANDO_API_OIDC_IDENTIFIER"]
+        self.LOGIN_URL = "https://{DOMAIN}/login?client={CLIENT_ID}".format(
             DOMAIN=self.OIDC_DOMAIN, CLIENT_ID=self.OIDC_CLIENT_ID
         )
 
     def auth_endpoint(self):
-        return 'https://{DOMAIN}/authorize'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/authorize".format(DOMAIN=self.OIDC_DOMAIN)
 
     def token_endpoint(self):
-        return 'https://{DOMAIN}/oauth/token'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/oauth/token".format(DOMAIN=self.OIDC_DOMAIN)
 
     def userinfo_endpoint(self):
-        return 'https://{DOMAIN}/userinfo'.format(DOMAIN=self.OIDC_DOMAIN)
+        return "https://{DOMAIN}/userinfo".format(DOMAIN=self.OIDC_DOMAIN)
 
     def client_id(self):
         return self.OIDC_CLIENT_ID
@@ -52,7 +50,7 @@ class OpenIDConnect:
         return dict(
             client_id=self.oidc_config.client_id(),
             client_secret=self.oidc_config.client_secret(),
-            session_refresh_interval_seconds=900  # 15 minutes
+            session_refresh_interval_seconds=900,  # 15 minutes
         )
 
     def provider_info(self):
@@ -85,7 +83,7 @@ class OpenIDConnect:
             client_registration_info=self.client_info(),
             extra_request_args={
                 "audience": [self.oidc_config.lando_api_oidc_id()],
-                'scope': ['openid', 'profile', 'email', 'lando']
-            }
+                "scope": ["openid", "profile", "email", "lando"],
+            },
         )
         return oidc
