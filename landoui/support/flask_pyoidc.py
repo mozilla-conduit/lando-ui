@@ -26,7 +26,7 @@ the returned response from Auth0.
 from landoui.support.pyoidc import IdToken, AccessTokenResponse
 
 
-def parse_response_wrapper(auth0):
+def parse_response_wrapper(auth_client):
     def _parse_response(response_params, success_response_cls, error_response_cls):
         """Parse response from the client and return a token response object.
 
@@ -53,13 +53,13 @@ def parse_response_wrapper(auth0):
                 response = AccessTokenResponse(**response_params)
             else:
                 response = success_response_cls(**response_params)
-            response.verify(keyjar=auth0._client.keyjar)
+            response.verify(keyjar=auth_client._client.keyjar)
         return response
 
     return _parse_response
 
 
-def userinfo_request_wrapper(auth0):
+def userinfo_request_wrapper(auth_client):
     def userinfo_request(access_token):
         """Fetch user info from the auth client.
 
@@ -72,14 +72,14 @@ def userinfo_request_wrapper(auth0):
         Returns:
             landoui.support.pyoidc.IdToken
         """
-        http_method = auth0._provider_configuration.userinfo_endpoint_method
+        http_method = auth_client._provider_configuration.userinfo_endpoint_method
         if (
             not access_token
             or http_method is None
-            or (not auth0._client.userinfo_endpoint)
+            or (not auth_client._client.userinfo_endpoint)
         ):
             return None
-        userinfo_response = auth0._client.do_user_info_request(
+        userinfo_response = auth_client._client.do_user_info_request(
             method=http_method, token=access_token, user_info_schema=IdToken
         )
         return userinfo_response

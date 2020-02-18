@@ -31,7 +31,7 @@ jobs:
     steps:
       - checkout
       - run: apk add gcc linux-headers libc-dev
-      - run: pip install black==19.10b0 && pip install flake8==3.6.0
+      - run: pip install black==19.10b0 && pip install flake8==3.7.9
       - run: black --diff .
       - run: flake8 .
   test:
