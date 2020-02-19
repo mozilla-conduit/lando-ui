@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM python:3.6-alpine AS assets
+FROM python:3.8-alpine AS assets
 
 COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin
@@ -11,14 +11,6 @@ COPY docker/*.sh /usr/local/bin
 # uninstall any compile-time OS package dependencies and keep only the run-time
 # OS package dependencies.
 RUN install-deps.sh /app/requirements.txt
-
-# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
-# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
-# has this requirement, it will still work with the older version of `oic`.
-# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
-# working with Auth0.
-COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
-RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 COPY . /app
 RUN pip install --no-cache /app
@@ -43,7 +35,7 @@ ENV LANDO_API_OIDC_IDENTIFIER=dontcare
 ENV FLASK_APP=/app/landoui/assets_app.py
 RUN flask assets build
 
-FROM python:3.6-alpine
+FROM python:3.8-alpine
 
 COPY requirements.txt /app/requirements.txt
 COPY docker/*.sh /usr/local/bin
@@ -52,14 +44,6 @@ COPY docker/*.sh /usr/local/bin
 # uninstall any compile-time OS package dependencies and keep only the run-time
 # OS package dependencies.
 RUN install-deps.sh /app/requirements.txt
-
-# `Flask-pyoidc` upstream 1.2.0+ requires a version of `oic` which is
-# broken with Auth0 (Auth0 is not spec compliant). Even though `Flask-pyoidc`
-# has this requirement, it will still work with the older version of `oic`.
-# We force a downgrade of `oic` after installing `Flask-pyoidc` so we can keep
-# working with Auth0.
-COPY oic_downgrade_requirements.txt /oic_downgrade_requirements.txt
-RUN pip install --no-cache -r /oic_downgrade_requirements.txt
 
 COPY . /app
 RUN pip install --no-cache /app

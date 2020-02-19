@@ -37,7 +37,7 @@ revisions.before_request(set_last_local_referrer)
 def oidc_auth_optional(f):
     """Decorator that runs auth only if the user is logged in."""
     no_auth_f = f
-    auth_f = oidc.oidc_auth(f)
+    auth_f = oidc.oidc_auth("AUTH0")(f)
 
     @functools.wraps(f)
     def wrapped(*args, **kwargs):

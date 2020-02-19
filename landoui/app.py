@@ -152,7 +152,6 @@ def initialize_logging():
             "loggers": {
                 "landoui": {"level": level, "handlers": ["console"],},
                 "request.summary": {"level": level, "handlers": ["console"],},
-                "flask": {"handlers": ["null"],},
                 "werkzeug": {"level": "ERROR", "handlers": ["console"],},
             },
             "root": {"handlers": ["null"],},

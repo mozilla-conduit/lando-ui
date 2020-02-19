@@ -1,2 +1,0 @@
-oic==0.9.1.0 \
-    --hash=sha256:ac4f63b53c68869fe1e770ee2003d892fb9f4fae1d6081fa6dbbc07fff598c3e

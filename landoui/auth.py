@@ -7,6 +7,16 @@ A set of classes to facilitate Auth0 login using OIDC methodology
 import os
 
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
+from flask_pyoidc.provider_configuration import (
+    ClientMetadata,
+    ProviderConfiguration,
+    ProviderMetadata,
+)
+
+from landoui.support.flask_pyoidc import (
+    parse_response_wrapper,
+    userinfo_request_wrapper,
+)
 
 
 class OIDCConfig:
@@ -46,19 +56,32 @@ class OpenIDConnect:
     def __init__(self, configuration):
         self.oidc_config = configuration
 
-    def client_info(self):
-        return dict(
+    @property
+    def client_metadata(self):
+        return ClientMetadata(
             client_id=self.oidc_config.client_id(),
             client_secret=self.oidc_config.client_secret(),
-            session_refresh_interval_seconds=900,  # 15 minutes
         )
 
-    def provider_info(self):
-        return dict(
-            issuer=self.oidc_config.OIDC_DOMAIN,
+    @property
+    def provider_metadata(self):
+        return ProviderMetadata(
+            issuer="https://{DOMAIN}/".format(DOMAIN=self.oidc_config.OIDC_DOMAIN,),
             authorization_endpoint=self.oidc_config.auth_endpoint(),
             token_endpoint=self.oidc_config.token_endpoint(),
             userinfo_endpoint=self.oidc_config.userinfo_endpoint(),
+        )
+
+    @property
+    def provider_configuration(self):
+        return ProviderConfiguration(
+            client_metadata=self.client_metadata,
+            provider_metadata=self.provider_metadata,
+            session_refresh_interval_seconds=15 * 60,
+            auth_request_params={
+                "audience": [self.oidc_config.lando_api_oidc_id()],
+                "scope": ["openid", "profile", "email", "lando"],
+            },
         )
 
     def auth(self, app):
@@ -77,13 +100,8 @@ class OpenIDConnect:
         - profile - Permission to get additional information about the user
           such as their real name, picture url, and LDAP information.
         """
-        oidc = OIDCAuthentication(
-            app,
-            provider_configuration_info=self.provider_info(),
-            client_registration_info=self.client_info(),
-            extra_request_args={
-                "audience": [self.oidc_config.lando_api_oidc_id()],
-                "scope": ["openid", "profile", "email", "lando"],
-            },
-        )
+        oidc = OIDCAuthentication({"AUTH0": self.provider_configuration}, app=app)
+        auth0 = oidc.clients["AUTH0"]
+        oidc.clients["AUTH0"]._parse_response = parse_response_wrapper(auth0)
+        oidc.clients["AUTH0"].userinfo_request = userinfo_request_wrapper(auth0)
         return oidc

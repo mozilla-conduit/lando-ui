@@ -38,7 +38,7 @@ def home():
 
 
 @pages.route("/signin")
-@oidc.oidc_auth
+@oidc.oidc_auth("AUTH0")
 def signin():
     redirect_url = session.get("last_local_referrer") or "/"
     return redirect(redirect_url)
@@ -73,7 +73,7 @@ def logout():
 
 
 @pages.route("/settings", methods=["POST"])
-@oidc.oidc_auth
+@oidc.oidc_auth("AUTH0")
 def settings():
     if not is_user_authenticated():
         # Accessing it unauthenticated from UI is protected by CSP
