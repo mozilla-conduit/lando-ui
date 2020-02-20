@@ -22,3 +22,4 @@ pyyaml==5.3
 raven==6.10.0
 requests_mock==1.7.0
 werkzeug==1.0.0
+webassets==0.12.1
