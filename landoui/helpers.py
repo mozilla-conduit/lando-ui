@@ -29,7 +29,7 @@ def set_last_local_referrer():
 
     This does not activate for the IGNORED_ROUTES defined inside this method.
     """
-    IGNORED_ROUTES = ["/signin", "/signout"]
+    IGNORED_ROUTES = ["/signin", "/signout", "/logout"]
     full_path = request.script_root + request.path
     if full_path not in IGNORED_ROUTES:
         session["last_local_referrer"] = request.url
