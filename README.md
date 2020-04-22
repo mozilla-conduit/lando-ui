@@ -177,3 +177,7 @@ project README.
 [Auth0]: https://auth0.com/
 [lando-api docker-compose.yml]: https://github.com/mozilla-conduit/lando-api/blob/master/docker-compose.yml
 [Conduit Suite]: https://github.com/mozilla-conduit/suite
+
+## Support
+
+To chat with Lando users and developers, join them on [Matrix](https://chat.mozilla.org/#/room/#conduit:mozilla.org).
