@@ -94,7 +94,7 @@ def unexpected_error(e):
             title="Oops! Something went wrong.",
             message=(
                 "Something just went wrong. Try again or tell the team at "
-                "#lando on Matrix."
+                "#conduit on Matrix (https://chat.mozilla.org/#/room/#conduit:mozilla.org)."
             ),
         ),
         500,
