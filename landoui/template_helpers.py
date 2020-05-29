@@ -61,10 +61,11 @@ def tostatusbadgeclass(status):
     mapping = {
         "aborted": "Badge Badge--negative",
         "submitted": "Badge Badge--warning",
+        "in_progress": "Badge Badge--warning",
         "landed": "Badge Badge--positive",
         "failed": "Badge Badge--negative",
     }
-    return mapping.get(status["status"], "Badge Badge--negative")
+    return mapping.get(status["status"].lower(), "Badge Badge--negative")
 
 
 @template_helpers.app_template_filter()
@@ -111,11 +112,12 @@ def revision_status_to_badge_class(status):
 def tostatusbadgename(status):
     mapping = {
         "aborted": "Aborted",
-        "submitted": "Landing Queued",
-        "landed": "Successfully Landed",
-        "failed": "Failed to Land",
+        "submitted": "Landing queued",
+        "in_progress": "In progress",
+        "landed": "Successfully landed",
+        "failed": "Failed to land",
     }
-    return mapping.get(status["status"], status["status"].capitalize())
+    return mapping.get(status["status"].lower(), status["status"].capitalize())
 
 
 @template_helpers.app_template_filter()
