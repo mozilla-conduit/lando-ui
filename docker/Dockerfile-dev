@@ -1,4 +1,23 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ARG BULMA_VERSION=0.9.0
+
 FROM python:3.8-alpine
+ARG BULMA_VERSION
+
+# Update below to upgrade bulma
+ENV BULMA_VERSION=$BULMA_VERSION
+ENV BULMA_CHECKSUM=ac77bc5312e723af96f52685833ded141463c2979448fe37a2d1f0bf62bb22ee
+
+RUN wget https://github.com/jgthms/bulma/releases/download/$BULMA_VERSION/bulma-$BULMA_VERSION.zip
+RUN echo "$BULMA_CHECKSUM  bulma-$BULMA_VERSION.zip" | sha256sum -c
+RUN unzip -q bulma-$BULMA_VERSION.zip
+
+FROM python:3.8-alpine
+ARG BULMA_VERSION
+ENV BULMA_VERSION=$BULMA_VERSION
 
 RUN mkdir /python_requirements
 COPY requirements.txt /python_requirements.txt
@@ -25,6 +44,9 @@ RUN echo '{\
 
 ADD . /app
 WORKDIR /app
+
+RUN rm -Rf landoui/static/build && rm -Rf landoui/static/.webassets
+COPY --from=0 bulma-$BULMA_VERSION assets_src/css/bulma
 
 # We install outside of the app directory to create the .egg-info in a
 # location that will not be mounted over. This means /app needs to be

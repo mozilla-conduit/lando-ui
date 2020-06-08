@@ -1,107 +1,107 @@
-<nav class="Navbar navbar container">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="/">
-      <img
-        class="Navbar-logo"
-        src="{{ url_for('static', filename='images/logo/bird_128.png') }}"/>
-      <span class="Navbar-title">LANDO&nbsp;</span>
-      <span class="Navbar-subtitle">- MOZILLA</span>
-    </a>
-
-    <div class="navbar-burger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-
-  <div id="Navbar-menu" class="navbar-menu">
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="field is-grouped">
-          <p class="control">
-            <a class="button" href="{{ config['PHABRICATOR_URL'] }}">
-              <span class="icon">
-                <i class="fa fa-cog"></i>
-              </span>
-              <span>Phabricator</span>
+<nav class="Navbar navbar">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <img class="Navbar-logo" src="{{ url_for('static', filename='images/logo/bird_128.png') }}"/>
+                <span class="Navbar-title">LANDO&nbsp;</span>
+                <span class="Navbar-subtitle">- MOZILLA</span>
             </a>
-          </p>
-          {% if is_user_authenticated() %}
-            <p class="control">
-              <a class="Navbar-userSettingsBtn button">
-                <span class="icon">
-                  <img src="{{ session['userinfo']['picture']|avatar_url }}" />
-                </span>
-                <span>&nbsp;{{ session['userinfo']['name'] }}&nbsp;</span>
-                <i class="fa fa-cogs"></i>
-              </a>
-            </p>
-          {% endif %}
-          <p class="control">
-            {% if is_user_authenticated() %}
-              <a class="button" href="/logout">
-                <span class="icon">
-                  <i class="fa fa-sign-out"></i>
-                </span>
-                <span>Logout</span>
-              </a>
-            {% else %}
-              <a class="Navbar-login button" href="/signin">
-                <span class="icon">
-                  <i class="fa fa-sign-in"></i>
-                </span>
-                <span>Login with Auth0</span>
-              </a>
-            {% endif %}
-          </p>
-          <p class="control">
-            <a class="button" href="http://moz-conduit.readthedocs.io/en/latest/lando-user.html">
-              <span class="icon">
-                <i class="fa fa-question-circle"></i>
-              </span>
-              <span>Help</span>
-            </a>
-          </p>
+
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  {% if is_user_authenticated() %}
-    <div class="Navbar-modal modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Settings</p>
-          <button class="Navbar-modalCancel delete"></button>
-        </header>
-        <section class="modal-card-body">
-          <form
-            class="userSettingsForm"
-            {% if request.cookies['phabricator-api-token'] %}
-              data-phabricator_api_token=1
-            {% endif %}>
-            {% set settings_form = new_settings_form() %}
-            {{ settings_form.phab_api_token.label() }} |
-            {{ settings_form.reset_phab_api_token.label() }}:
-            {{ settings_form.reset_phab_api_token(class_='checkbox') }}
-            {{ settings_form.phab_api_token(size=32, maxlength=32, minlength=32, class_='input') }}
-            {{ settings_form.csrf_token }}
-            <ul id="phab_api_token_errors" class="userSettingsForm-Errors"></ul>
-            <ul id="form_errors" class="userSettingsForm-Errors"></ul>
-          </form>
-          <p>
-            Your API token will be removed on log out.<br/>
-            The API token allows anybody with access to it to perform actions on your behalf.
-            It is important not to store your API token anywhere but here or on the Phabricator site.
-          </p>
-        </section>
-        <footer class="modal-card-foot">
-          <a class="Navbar-modalSubmit button is-success">Save changes</a>
-          <a class="Navbar-modalCancel button">Cancel</a>
-        </footer>
-      </div>
+        <div id="Navbar-menu" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="field is-grouped">
+                        <p class="control">
+                        <a class="button" href="{{ config['PHABRICATOR_URL'] }}">
+                            <span class="icon">
+                                <i class="fa fa-cog"></i>
+                            </span>
+                            <span>Phabricator</span>
+                        </a>
+                        </p>
+                        {% if is_user_authenticated() %}
+                        <p class="control">
+                        <a class="Navbar-userSettingsBtn button">
+                            <span class="icon">
+                                <img src="{{ session['userinfo']['picture']|avatar_url }}" />
+                            </span>
+                            <span>&nbsp;{{ session['userinfo']['name'] }}&nbsp;</span>
+                            <i class="fa fa-cogs"></i>
+                        </a>
+                        </p>
+                        {% endif %}
+                        <p class="control">
+                        {% if is_user_authenticated() %}
+                        <a class="button" href="/logout">
+                            <span class="icon">
+                                <i class="fa fa-sign-out"></i>
+                            </span>
+                            <span>Logout</span>
+                        </a>
+                        {% else %}
+                        <a class="Navbar-login button" href="/signin">
+                            <span class="icon">
+                                <i class="fa fa-sign-in"></i>
+                            </span>
+                            <span>Login with Auth0</span>
+                        </a>
+                        {% endif %}
+                        </p>
+                        <p class="control">
+                        <a class="button" href="http://moz-conduit.readthedocs.io/en/latest/lando-user.html">
+                            <span class="icon">
+                                <i class="fa fa-question-circle"></i>
+                            </span>
+                            <span>Help</span>
+                        </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if is_user_authenticated() %}
+        <div class="Navbar-modal modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Settings</p>
+                    <button class="Navbar-modalCancel delete"></button>
+                </header>
+                <section class="modal-card-body">
+                    <form
+                         class="userSettingsForm"
+                         {% if request.cookies['phabricator-api-token'] %}
+                         data-phabricator_api_token=1
+                         {% endif %}>
+                        {% set settings_form = new_settings_form() %}
+                        {{ settings_form.phab_api_token.label() }} |
+                        {{ settings_form.reset_phab_api_token.label() }}:
+                        {{ settings_form.reset_phab_api_token(class_='checkbox') }}
+                        {{ settings_form.phab_api_token(size=32, maxlength=32, minlength=32, class_='input') }}
+                        {{ settings_form.csrf_token }}
+                        <ul id="phab_api_token_errors" class="userSettingsForm-Errors"></ul>
+                        <ul id="form_errors" class="userSettingsForm-Errors"></ul>
+                    </form>
+                    <p>
+                    Your API token will be removed on log out.<br/>
+                    The API token allows anybody with access to it to perform actions on your behalf.
+                    It is important not to store your API token anywhere but here or on the Phabricator site.
+                    </p>
+                </section>
+                <footer class="modal-card-foot">
+                    <a class="Navbar-modalSubmit button is-success">Save changes</a>
+                    <a class="Navbar-modalCancel button">Cancel</a>
+                </footer>
+            </div>
+        </div>
+        {% endif %}
     </div>
-  {% endif %}
 </nav>

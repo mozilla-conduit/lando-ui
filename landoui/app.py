@@ -126,9 +126,7 @@ def create_app(
     assets = Environment(app)
     if enable_asset_pipeline:
         loader = YAMLLoader(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "assets_src/assets.yml"
-            )
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets.yml")
         )
         assets.register(loader.load_bundles())
 
