@@ -21,17 +21,16 @@
     font-size: 1.5rem;
   }
 
-  .Navbar-login {
-    border: 1px solid $blue;
-    color: $blue;
-  }
-
-  .navbar-end .navbar-item {
-    padding-top: 26px;
-  }
-
   /* overrides bulma's defaults */
   a.navbar-item:hover, a.navbar-item.is-active, .navbar-link:hover, .navbar-link.is-active {
     background: transparent;
+  }
+
+  .navbar-link .icon, .navbar-item .icon {
+      margin-left: 1rem;
+  }
+
+  a.navbar-item .icon {
+      margin-left: 0.5rem;
   }
 }

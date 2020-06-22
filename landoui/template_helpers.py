@@ -114,7 +114,7 @@ def tostatusbadgename(status):
         "aborted": "Aborted",
         "submitted": "Landing queued",
         "in_progress": "In progress",
-        "landed": "Successfully landed",
+        "landed": "Landed",
         "failed": "Failed to land",
     }
     return mapping.get(status["status"].lower(), status["status"].capitalize())

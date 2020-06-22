@@ -200,6 +200,20 @@ def revision(revision_id):
                 submitted_rev_url = rev["url"]
                 break
 
+    alerts = []
+    infos = []
+    selected_revision_closed = revisions[revision]["status"]["closed"] is True
+    if selected_revision_closed:
+        infos.append(f"This revision ({revisions[revision]['id']}) is closed.")
+    elif not is_user_authenticated():
+        infos.append("You must log in before you land this revision.")
+    else:
+        if not series:
+            # TODO: clarify wording here
+            alerts.append("Could not find a landable path for this revision.")
+        if series and not dryrun:
+            alerts.append("Could not check for issues that could prevent landing.")
+
     return render_template(
         "stack/stack.html",
         revision_id="D{}".format(revision_id),
@@ -211,11 +225,15 @@ def revision(revision_id):
         drawing_width=drawing_width,
         transplants=transplants,
         revisions=revisions,
+        repositories=repositories,
         revision_phid=revision,
+        selected_revision_closed=selected_revision_closed,
         sec_approval_form=sec_approval_form,
         submitted_rev_url=submitted_rev_url,
         target_repo=target_repo,
+        alerts=alerts,
         errors=errors,
+        infos=infos,
         form=form,
     )
 

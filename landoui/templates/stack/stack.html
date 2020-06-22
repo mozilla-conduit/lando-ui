@@ -2,165 +2,167 @@
 {% block page_title %}{{revision_id}} - Lando - Mozilla{% endblock %}
 
 {% block main %}
-<main class="StackPage container fullhd">
-  {% if errors %}
-  <div class="StackPage-errors">
-    <span>Landing Failed</span>
-    <ul>
-      {% for error in errors %}
-        <li>{{ error }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+<main class="StackPage container-fluid fullhd">
+{% for alert in alerts %}
+<div class="notification is-warning is-light">
+    {{ alert }}
+</div>
+{% endfor %}
 
-  <h1>Landings for Stack Containing {{revisions[revision_phid]['id']}}</h1>
-  {% include "stack/partials/timeline.html" %}
+{% for error in errors %}
+<div class="notification is-danger is-light">
+    {{ error }}
+</div>
+{% endfor %}
 
-  <h1>Stack containing revision {{revisions[revision_phid]['id']}}</h1>
-  <div class="StackPage-stack">
+{% for info in infos %}
+<div class="notification is-light">
+    {{ info }}
+</div>
+{% endfor %}
+
+<h1>Landings for Stack Containing {{revisions[revision_phid]['id']}}</h1>
+{% include "stack/partials/timeline.html" %}
+
+<h1>Stack containing revision {{revisions[revision_phid]['id']}}</h1>
+<div class="StackPage-stack">
     <table class="table">
-      <thead>
-        <tr>
-          <th>Land</th>
-          <th></th>
-          <th>Bug</th>
-          <th>Status</th>
-          <th>Revision</th>
-          <th>Reviewers</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for phid, drawing in rows %}
-        {% set revision = revisions[phid] %}
-        <tr
-          class="StackPage-revision{%
-            if series and phid in series %} StackPage-revision-in-series{% endif
-          %}{%
-            if phid in landable %} StackPage-revision-in-landable{% endif
-          %}{%
-            if revision['status']['closed'] %} StackPage-revision-is-closed{% endif
-          %}">
-          <td class="StackPage-revision-land">
-            {% if phid in landable %}
-              <input
-                class="StackPage-revision-land-radio"
-                id="{{revision['id']}}"
-                name="tip"
-                type="radio"
-                {% if phid == revision_phid %}checked{% endif %}
-              >
-            {% endif %}
-          </td>
-          <td class="StackPage-revision-graph">
-            <div class="StackPage-revision-graph-container">
-            {% include "stack/partials/graph-drawing.html" %}
-            </div>
-          </td>
-          <td class="StackPage-revision-bug">
-            {% if revision['bug_id'] is not none %}
-            <a href="{{revision['bug_id']|bug_url}}">{{revision['bug_id']}}</a>
-            {% else %}
-            -
-            {% endif %}
-          </td>
-          <td class="StackPage-revision-status">
-            {% include "stack/partials/revision-status.html" %}
-          </td>
-          <td class="StackPage-revision-title">
-            <div class="StackPage-revision-title-text">
-              <a href="{{revision['url']}}">{{revision['id']}}</a>: {{revision['title']}}
-            </div>
-          </td>
-          <td class="StackPage-revision-reviewers">
-            {% with reviewers=revision['reviewers'] %}
-            {% include "stack/partials/revision-reviewers.html" %}
-            {% endwith %}
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
+        <thead>
+            <tr>
+                <th>Land</th>
+                <th></th>
+                <th>Bug</th>
+                <th>Status</th>
+                <th>Revision</th>
+                <th>Repo</th>
+                <th>Reviewers</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for phid, drawing in rows %}
+            {% set revision = revisions[phid] %}
+            <tr
+           class="StackPage-revision{%
+           if series and phid in series %} StackPage-revision-in-series{% endif
+           %}{%
+           if phid in landable %} StackPage-revision-in-landable{% endif
+           %}{%
+           if revision['status']['closed'] %} StackPage-revision-is-closed{% endif
+           %}">
+                <td class="StackPage-revision-land">
+                    {% if phid in landable %}
+                    <input
+                    class="StackPage-revision-land-radio"
+                    id="{{revision['id']}}"
+                    name="tip"
+                    type="radio"
+                    {% if phid == revision_phid %}checked{% endif %}
+                    >
+                    {% endif %}
+                </td>
+                    <td class="StackPage-revision-graph">
+                        <div class="StackPage-revision-graph-container">
+                            {% include "stack/partials/graph-drawing.html" %}
+                        </div>
+                    </td>
+                    <td class="StackPage-revision-bug">
+                        {% if revision['bug_id'] is not none %}
+                        <a href="{{revision['bug_id']|bug_url}}">{{revision['bug_id']}}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td class="StackPage-revision-status">
+                        {% include "stack/partials/revision-status.html" %}
+                    </td>
+                    <td class="StackPage-revision-title">
+                        <div class="StackPage-revision-title-text">
+                            <a href="{{revision['url']}}">{{revision['id']}}</a>: {{revision['title']}}
+                        </div>
+                    </td>
+                    <td>
+                        {% set repo = repositories[revision['repo_phid']] %}
+                        <a target="blank" href="{{ repo.url }}">{{ repo.short_name }}</a>
+                    </td>
+                    <td class="StackPage-revision-reviewers">
+                        {% with reviewers=revision['reviewers'] %}
+                        {% include "stack/partials/revision-reviewers.html" %}
+                        {% endwith %}
+                    </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
-  </div>
+</div>
 
-  <div class="StackPage-landing-info">
+<div class="StackPage-landing-info">
 
-  {% set blockers = [] %}
-  {% if is_user_authenticated() and blockers %}
+    {% set blockers = [] %}
+    {% if is_user_authenticated() and blockers %}
     <h2>Landing is blocked:</h2>
     <ul class="StackPage-blockers">
-    {% for blocker in blockers %}
-      <li class="StackPage-blocker">
-          {{ blocker|escape_html|linkify_faq|safe }}
-      </li>
-    {% endfor %}
+        {% for blocker in blockers %}
+        <li class="StackPage-blocker">
+            {{ blocker|escape_html|linkify_faq|safe }}
+        </li>
+        {% endfor %}
     </ul>
-  {% endif %}
-  </div>
+    {% endif %}
+</div>
 
-  <div class="StackPage-actions">
-  {% if not is_user_authenticated() %}
-    <button disabled>
-      <div class="StackPage-actions-headline">Preview Landing</div>
-      <div class="StackPage-actions-subtitle">You must log in first</div>
-    </button>
-  {% elif not series or dryrun is none %}
-    <button disabled>
-      <div class="StackPage-actions-headline">Landing Blocked</div>
-      <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
-    </button>
-  {% else %}
+{% if is_user_authenticated() and (series or dryrun is not none) %}
+<div class="StackPage-actions">
     <button class="StackPage-preview-button">
-      <div class="StackPage-actions-headline">Preview Landing</div>
+        <div class="StackPage-actions-headline">Preview Landing</div>
     </button>
-  {% endif %}
-  </div>
+</div>
+{% endif %}
 
-  {% if is_user_authenticated() %}
-  <div class="StackPage-landingPreview modal">
+{% if is_user_authenticated() %}
+<div class="StackPage-landingPreview modal">
     <div class="modal-background"></div>
     <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Preview landing</p>
-        <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
-      </header>
-      <section class="modal-card-body">
-        {% include "stack/partials/landing-preview.html" %}
-      </section>
-      <footer class="modal-card-foot">
-        <form class="StackPage-form" action="" method="post">
-          {{form.csrf_token}}
-          {{form.landing_path}}
-          {{form.confirmation_token}}
-          <button
-              class="StackPage-landingPreview-land button"
-              data-target-repo="{{ target_repo['url']|repo_path }}"
-              disabled>
-            Land to {{ target_repo['url']|repo_path }}
-          </button>
-          <button class="StackPage-landingPreview-close button">Cancel</button>
-        </form>
-      </footer>
+        <header class="modal-card-head">
+            <p class="modal-card-title">Preview landing</p>
+            <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            {% include "stack/partials/landing-preview.html" %}
+        </section>
+        <footer class="modal-card-foot">
+            <form class="StackPage-form" action="" method="post">
+                {{form.csrf_token}}
+                {{form.landing_path}}
+                {{form.confirmation_token}}
+                <button
+                                                   class="StackPage-landingPreview-land button"
+                                                   data-target-repo="{{ target_repo['url']|repo_path }}"
+                                                   disabled>
+                    Land to {{ target_repo['url']|repo_path }}
+                </button>
+                <button class="StackPage-landingPreview-close button">Cancel</button>
+            </form>
+        </footer>
     </div>
-  </div>
-  {% endif %}
+</div>
+{% endif %}
 
-  <div class="StackPage-secRequestSubmitted modal">
+<div class="StackPage-secRequestSubmitted modal">
     <div class="modal-background"></div>
     <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Request submitted</p>
-        <button class="StackPage-secRequestSubmitted-close delete" aria-label="close"></button>
-      </header>
-      <section class="modal-card-body">
-        <p>Your request for review by the sec-approval team has been submitted.</p>
-        <p><a href="{{ submitted_rev_url }}">View my request in Phabricator</a></p>
-      </section>
-      <footer class="modal-card-foot">
-        <button class="StackPage-secRequestSubmitted-close button" aria-label="close">Close</button>
-      </footer>
+        <header class="modal-card-head">
+            <p class="modal-card-title">Request submitted</p>
+            <button class="StackPage-secRequestSubmitted-close delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Your request for review by the sec-approval team has been submitted.</p>
+            <p><a href="{{ submitted_rev_url }}">View my request in Phabricator</a></p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="StackPage-secRequestSubmitted-close button" aria-label="close">Close</button>
+        </footer>
     </div>
-  </div>
+</div>
 
 </main>
 {% endblock %}
