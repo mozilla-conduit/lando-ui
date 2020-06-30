@@ -1,25 +1,25 @@
 <div class="StackPage-timeline">
     {% if transplants %}
-      {%- for status in transplants|sort(attribute='updated_at', reverse=True) %}
+      {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
         <div class="StackPage-timeline-item">
           <div class="StackPage-timeline-itemStatus">
-            <span class="{{status|tostatusbadgeclass}}">{{status|tostatusbadgename}}</span>
+            <span class="{{transplant|tostatusbadgeclass}}">{{transplant|tostatusbadgename}}</span>
           </div>
 
           <div class="StackPage-timeline-itemDetail">
-            On <time data-timestamp="{{status['created_at']}}"></time>, by {{status['requester_email']}}.<br>
+            On <time data-timestamp="{{transplant['created_at']}}"></time>, by {{transplant['requester_email']}}.<br>
             <strong>Revisions:</strong>
-            {% for i in status['landing_path'] %}{{
+            {% for i in transplant['landing_path'] %}{{
               "" if loop.first else " ← "
             }}<a href="{{i['revision_id']|revision_url(diff_id=i['diff_id'])}}">
                 {{i['revision_id']}} diff {{i['diff_id']}}
             </a>{% endfor %}
             <br>
-            {% if status['status'] == 'landed' %}
-              <strong>Result:</strong> {{status['details']|escape_html|linkify_transplant_details(status)|safe}}
-            {% elif status['details'] %}
+            {% if transplant['status'].lower() == 'landed' %}
+              <strong>Result:</strong> {{transplant['details']|escape_html|linkify_transplant_details(transplant)|safe}}
+            {% elif transplant['details'] %}
               <div class="StackPage-timeline-item-error">
-                <strong>Details:</strong> {{status['details']}}
+                <strong>Details:</strong> {{transplant['details']}}
               </div>
             {% endif %}
           </div>
