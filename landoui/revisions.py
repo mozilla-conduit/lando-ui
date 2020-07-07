@@ -277,8 +277,8 @@ def sec_approval_request_handler():
     return jsonify({})
 
 
-@revisions.route("/landing_jobs/<int:landing_job_id>/cancel", methods=("PUT",))
-def cancel_landing_job(landing_job_id):
+@revisions.route("/landing_jobs/<int:landing_job_id>", methods=("PUT",))
+def update_landing_job(landing_job_id):
     if not is_user_authenticated():
         errors = make_form_error("You must be logged in to update a landing job.")
         return jsonify(errors=errors), 401
@@ -295,7 +295,7 @@ def cancel_landing_job(landing_job_id):
             "PUT",
             f"landing_jobs/{landing_job_id}",
             require_auth0=True,
-            json={"action": "CANCEL",},
+            json=request.get_json(),
         )
     except LandoAPIError as e:
         return e.response, e.response["status"]

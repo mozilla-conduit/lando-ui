@@ -14,9 +14,13 @@ $('button.cancel-landing-job').on('click', function(e) {
     var landing_job_id = this.dataset.landing_job_id;
 
     button.addClass("is-loading");
-    fetch(`/landing_jobs/${landing_job_id}/cancel`, {
+    fetch(`/landing_jobs/${landing_job_id}`, {
         method: 'PUT',
-        headers: {'Accept': 'application/json'},
+        body: JSON.stringify({"status": "CANCELLED"}),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
     }).then(response => {
         if (response.status == 200) {
             window.location.reload();
@@ -24,7 +28,10 @@ $('button.cancel-landing-job').on('click', function(e) {
             button.prop("disabled", true);
             button.removeClass("is-danger").removeClass("is-loading").addClass("is-warning");
             button.html("Could not cancel landing request");
-            // TODO: improve messaging here
+        } else {
+            button.prop("disabled", true);
+            button.removeClass("is-danger").removeClass("is-loading").addClass("is-warning");
+            button.html("An unknown error occurred");
         }
     });
 });
