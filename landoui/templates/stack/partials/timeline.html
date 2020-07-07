@@ -1,29 +1,29 @@
 <div class="StackPage-timeline">
     {% if transplants %}
-      {%- for job in transplants|sort(attribute='updated_at', reverse=True) %}
+      {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
         <div class="StackPage-timeline-item">
           <div class="StackPage-timeline-itemStatus">
-            <span class="{{job|tostatusbadgeclass}}">{{job|tostatusbadgename}}</span>
+            <span class="{{transplant|tostatusbadgeclass}}">{{transplant|tostatusbadgename}}</span>
           </div>
 
           <div class="StackPage-timeline-itemDetail">
-            On <time data-timestamp="{{job['created_at']}}"></time>, by {{job['requester_email']}}.<br>
+            On <time data-timestamp="{{transplant['created_at']}}"></time>, by {{transplant['requester_email']}}.<br>
             <strong>Revisions:</strong>
-            {% for i in job['landing_path'] %}{{
+            {% for i in transplant['landing_path'] %}{{
               "" if loop.first else " ← "
             }}<a href="{{i['revision_id']|revision_url(diff_id=i['diff_id'])}}">
                 {{i['revision_id']}} diff {{i['diff_id']}}
             </a>{% endfor %}
             <br>
-            {% if job.status.lower() == 'landed' %}
-              <strong>Result:</strong> {{job.details|escape_html|linkify_transplant_details(job)|safe}}
-            {% elif job.details %}
+            {% if transplant.status.lower() == 'landed' %}
+              <strong>Result:</strong> {{transplant.details|escape_html|linkify_transplant_details(transplant)|safe}}
+            {% elif transplant.details %}
               <div class="StackPage-timeline-item-error">
-                <strong>Details:</strong> {{job.details}}
+                <strong>Details:</strong> {{transplant.details}}
               </div>
             {% endif %}
-            {% if job.status == "SUBMITTED" %}
-                <button data-landing_job_id="{{job.id}}" class="cancel-landing-job button is-small is-danger">Cancel landing request</button>
+            {% if transplant.status == "SUBMITTED" %}
+                <button data-landing_job_id="{{transplant.id}}" class="cancel-landing-job button is-small is-danger">Cancel landing request</button>
             {% endif %}
           </div>
         </div>
