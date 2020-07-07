@@ -168,7 +168,7 @@ def linkify_revision_urls(text):
 def linkify_transplant_details(text, transplant):
     # The transplant result is not always guaranteed to be a commit id. It
     # can be a message saying that the landing was queued and will land later.
-    if transplant["status"] != "landed":
+    if transplant["status"].lower() != "landed":
         return text
 
     commit_id = transplant["details"]
