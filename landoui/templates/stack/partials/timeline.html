@@ -3,24 +3,27 @@
       {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
         <div class="StackPage-timeline-item">
           <div class="StackPage-timeline-itemStatus">
-            <span class="{{transplant|tostatusbadgeclass}}">{{transplant|tostatusbadgename}}</span>
+            <span class="{{ transplant|tostatusbadgeclass }}">{{transplant|tostatusbadgename}}</span>
           </div>
 
           <div class="StackPage-timeline-itemDetail">
-            On <time data-timestamp="{{transplant['created_at']}}"></time>, by {{transplant['requester_email']}}.<br>
+            On <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.<br>
             <strong>Revisions:</strong>
             {% for i in transplant['landing_path'] %}{{
               "" if loop.first else " ← "
-            }}<a href="{{i['revision_id']|revision_url(diff_id=i['diff_id'])}}">
-                {{i['revision_id']}} diff {{i['diff_id']}}
+            }}<a href="{{ i['revision_id']|revision_url(diff_id=i['diff_id']) }}">
+                {{ i['revision_id'] }} diff {{ i['diff_id'] }}
             </a>{% endfor %}
             <br>
             {% if transplant['status'].lower() == 'landed' %}
-              <strong>Result:</strong> {{transplant['details']|escape_html|linkify_transplant_details(transplant)|safe}}
+              <strong>Result:</strong> {{ transplant['details']|escape_html|linkify_transplant_details(transplant)|safe }}
             {% elif transplant['details'] %}
               <div class="StackPage-timeline-item-error">
-                <strong>Details:</strong> {{transplant['details']}}
+                <strong>Details:</strong> {{ transplant['details'] }}
               </div>
+            {% endif %}
+            {% if transplant['status'] == "SUBMITTED" %}
+                <button data-landing_job_id="{{ transplant['id'] }}" class="cancel-landing-job button is-small is-danger">Cancel landing request</button>
             {% endif %}
           </div>
         </div>
