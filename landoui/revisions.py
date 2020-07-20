@@ -54,7 +54,7 @@ def oidc_auth_optional(f):
 def annotate_sec_approval_workflow_info(revisions):
     """Annotate a dict of revisions with sec-approval workflow information.
 
-    See https://wiki.mozilla.org/Security/Bug_Approval_Process
+    See https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html # noqa: E501
 
     Args:
         revisions: A dict of (phid, revision_data) items. The dict will have
