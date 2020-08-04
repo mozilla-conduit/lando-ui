@@ -85,6 +85,23 @@
     </div>
   {% endfor %}
   </div>
+
+  {% if target_repo.commit_flags %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Flags:</h3>
+  <div class="StackPage-landingPreview-section">
+      {% for flag in target_repo.commit_flags %}
+        <ul>
+            <li>
+                <label class="checkbox">
+                    <input class="flag-checkbox" data-flag="{{ flag }}" type="checkbox">
+                    {{ flag }}
+                </label>
+            </li>
+        </ul>
+      {% endfor %}
+  </div>
+  {% endif %}
+
   <h3 class="StackPage-landingPreview-sectionLabel">Warnings:</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-warnings">
     {% if dryrun['warnings'] %}
