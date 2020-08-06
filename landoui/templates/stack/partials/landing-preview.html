@@ -89,6 +89,7 @@
   {% if target_repo.commit_flags %}
   <h3 class="StackPage-landingPreview-sectionLabel">Flags:</h3>
   <div class="StackPage-landingPreview-section">
+      Flags checked off below will be appended to the commit message.
       {% for flag in target_repo.commit_flags %}
         <ul>
             <li>
