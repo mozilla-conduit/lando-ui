@@ -98,6 +98,7 @@ def revision(revision_id):
                     json={
                         "landing_path": json.loads(form.landing_path.data),
                         "confirmation_token": form.confirmation_token.data,
+                        "flags": json.loads(form.flags.data),
                     },
                 )
                 # We don't actually need any of the data from the
