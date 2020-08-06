@@ -62,7 +62,7 @@ class TransplantRequestForm(FlaskForm):
         ],
     )
     confirmation_token = HiddenField("confirmation_token")
-    flags = HiddenField("flags", validators=[JSONDecodable(decode_type=list)])
+    flags = HiddenField("flags", validators=[JSONDecodable(decode_type=list)], default=[])
 
 
 class SecApprovalRequestForm(FlaskForm):
