@@ -72,6 +72,7 @@ LANDO_API_STACK = {
             "landing_supported": True,
             "url": "http://hg.test",
             "short_name": "test-repo",
+            "commit_flags": [],
         }
     ],
 }

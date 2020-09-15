@@ -90,12 +90,16 @@
   <h3 class="StackPage-landingPreview-sectionLabel">Advanced settings:</h3>
   <div class="StackPage-landingPreview-section">
       Flags selected below will be appended to the title of all commit messages in the stack.
-      {% for flag in target_repo.commit_flags %}
+      {% for flag in flags %}
         <ul>
             <li>
                 <label class="checkbox">
-                    <input class="flag-checkbox" data-flag="{{ flag }}" type="checkbox">
-                    {{ flag }}
+                    <input
+                        {% if existing_flags[flag] %} disabled checked {% endif %}
+                        class="flag-checkbox"
+                        data-flag="{{ flag[0] }}"
+                        type="checkbox">
+                    <strong>{{ flag[0] }}</strong>: {{ flag[1] }}
                 </label>
             </li>
         </ul>

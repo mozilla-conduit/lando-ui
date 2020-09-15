@@ -201,6 +201,20 @@ def revision(revision_id):
                 submitted_rev_url = rev["url"]
                 break
 
+    # Current implementation requires that all commits have the flags appended.
+    # This may change in the future. What we do here is:
+    # - if all commits have the flag, then disable the checkbox
+    # - if any commits do not have the flag, then enable the checkbox
+
+    if target_repo:
+        existing_flags = {f[0]: None for f in target_repo["commit_flags"]}
+        for flag in existing_flags:
+            existing_flags[flag] = all(
+                {flag in r["commit_message"] for r in revisions.values()}
+            )
+    else:
+        existing_flags = {}
+
     return render_template(
         "stack/stack.html",
         revision_id="D{}".format(revision_id),
@@ -218,6 +232,8 @@ def revision(revision_id):
         target_repo=target_repo,
         errors=errors,
         form=form,
+        flags=target_repo["commit_flags"] if target_repo else [],
+        existing_flags=existing_flags,
     )
 
 
