@@ -24,7 +24,7 @@ $.fn.landingPreview = function() {
         item.addEventListener('change', event => {
             let flags = [];
             document.querySelectorAll('.flag-checkbox:checked').forEach(flag => {
-                flags.push(flag.dataset.flag);
+                flags.push(flag.value);
             });
             $form.find("[name=flags]").val(JSON.stringify(flags));
         });

@@ -207,10 +207,10 @@ def revision(revision_id):
     # - if any commits do not have the flag, then enable the checkbox
 
     if target_repo:
-        existing_flags = {f[0]: None for f in target_repo["commit_flags"]}
+        existing_flags = {f[0]: False for f in target_repo["commit_flags"]}
         for flag in existing_flags:
             existing_flags[flag] = all(
-                {flag in r["commit_message"] for r in revisions.values()}
+                flag in r["commit_message"] for r in revisions.values()
             )
     else:
         existing_flags = {}

@@ -95,10 +95,11 @@
             <li>
                 <label class="checkbox">
                     <input
-                        {% if existing_flags[flag] %} disabled checked {% endif %}
+                        {% if existing_flags[flag[0]] %}disabled checked{% endif %}
                         class="flag-checkbox"
                         data-flag="{{ flag[0] }}"
-                        type="checkbox">
+                        type="checkbox"
+                        value="{{ flag[0] }}">
                     <strong>{{ flag[0] }}</strong>: {{ flag[1] }}
                 </label>
             </li>
