@@ -54,7 +54,7 @@ def oidc_auth_optional(f):
 def annotate_sec_approval_workflow_info(revisions):
     """Annotate a dict of revisions with sec-approval workflow information.
 
-    See https://wiki.mozilla.org/Security/Bug_Approval_Process
+    See https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html # noqa: E501
 
     Args:
         revisions: A dict of (phid, revision_data) items. The dict will have
@@ -98,6 +98,7 @@ def revision(revision_id):
                     json={
                         "landing_path": json.loads(form.landing_path.data),
                         "confirmation_token": form.confirmation_token.data,
+                        "flags": json.loads(form.flags.data),
                     },
                 )
                 # We don't actually need any of the data from the
@@ -214,6 +215,20 @@ def revision(revision_id):
         if series and not dryrun:
             alerts.append("Could not check for issues that could prevent landing.")
 
+    # Current implementation requires that all commits have the flags appended.
+    # This may change in the future. What we do here is:
+    # - if all commits have the flag, then disable the checkbox
+    # - if any commits do not have the flag, then enable the checkbox
+
+    if target_repo:
+        existing_flags = {f[0]: False for f in target_repo["commit_flags"]}
+        for flag in existing_flags:
+            existing_flags[flag] = all(
+                flag in r["commit_message"] for r in revisions.values()
+            )
+    else:
+        existing_flags = {}
+
     return render_template(
         "stack/stack.html",
         revision_id="D{}".format(revision_id),
@@ -235,6 +250,8 @@ def revision(revision_id):
         errors=errors,
         infos=infos,
         form=form,
+        flags=target_repo["commit_flags"] if target_repo else [],
+        existing_flags=existing_flags,
     )
 
 
@@ -293,6 +310,31 @@ def sec_approval_request_handler():
         )
 
     return jsonify({})
+
+
+@revisions.route("/landing_jobs/<int:landing_job_id>", methods=("PUT",))
+def update_landing_job(landing_job_id):
+    if not is_user_authenticated():
+        errors = make_form_error("You must be logged in to update a landing job.")
+        return jsonify(errors=errors), 401
+
+    token = get_phabricator_api_token()
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=token,
+    )
+
+    try:
+        data = api.request(
+            "PUT",
+            f"landing_jobs/{landing_job_id}",
+            require_auth0=True,
+            json=request.get_json(),
+        )
+    except LandoAPIError as e:
+        return e.response, e.response["status"]
+    return data
 
 
 def make_form_error(message):

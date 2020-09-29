@@ -122,27 +122,28 @@
 <div class="StackPage-landingPreview modal">
     <div class="modal-background"></div>
     <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">Preview landing</p>
-            <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
-        </header>
-        <section class="modal-card-body">
-            {% include "stack/partials/landing-preview.html" %}
-        </section>
-        <footer class="modal-card-foot">
-            <form class="StackPage-form" action="" method="post">
-                {{form.csrf_token}}
-                {{form.landing_path}}
-                {{form.confirmation_token}}
-                <button
-                                                   class="StackPage-landingPreview-land button"
-                                                   data-target-repo="{{ target_repo['url']|repo_path }}"
-                                                   disabled>
-                    Land to {{ target_repo['url']|repo_path }}
-                </button>
-                <button class="StackPage-landingPreview-close button">Cancel</button>
-            </form>
-        </footer>
+      <header class="modal-card-head">
+        <p class="modal-card-title">Preview landing</p>
+        <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        {% include "stack/partials/landing-preview.html" %}
+      </section>
+      <footer class="modal-card-foot">
+        <form class="StackPage-form" action="" method="post">
+          {{form.csrf_token}}
+          {{form.landing_path}}
+          {{form.confirmation_token}}
+          {{form.flags}}
+          <button
+              class="StackPage-landingPreview-land button"
+              data-target-repo="{{ target_repo['url']|repo_path }}"
+              disabled>
+            Land to {{ target_repo['url']|repo_path }}
+          </button>
+          <button class="StackPage-landingPreview-close button">Cancel</button>
+        </form>
+      </footer>
     </div>
 </div>
 {% endif %}

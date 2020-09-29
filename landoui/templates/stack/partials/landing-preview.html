@@ -85,6 +85,29 @@
     </div>
   {% endfor %}
   </div>
+
+  {% if target_repo.commit_flags %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Advanced settings:</h3>
+  <div class="StackPage-landingPreview-section">
+      Flags selected below will be appended to the title of all commit messages in the stack if they are not present already.
+      {% for flag in flags %}
+        <ul>
+            <li>
+                <label class="checkbox">
+                    <input
+                        {% if existing_flags[flag[0]] %}disabled checked{% endif %}
+                        class="flag-checkbox"
+                        data-flag="{{ flag[0] }}"
+                        type="checkbox"
+                        value="{{ flag[0] }}">
+                    <strong>{{ flag[0] }}</strong>: {{ flag[1] }}
+                </label>
+            </li>
+        </ul>
+      {% endfor %}
+  </div>
+  {% endif %}
+
   <h3 class="StackPage-landingPreview-sectionLabel">Warnings:</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-warnings">
     {% if dryrun['warnings'] %}
@@ -93,7 +116,7 @@
         <li class="StackPage-landingPreview-warning">
           <label>
             <input type="checkbox" name="warnings[]" value="1" />
-            {{ warning['display']|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_wiki|safe}}
+            {{ warning['display']|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_docs|safe}}
             [{% for instance in warning['instances'] %}{{
               ", " if not loop.first else ""
             }}{{instance['revision_id']

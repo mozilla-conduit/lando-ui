@@ -12,7 +12,7 @@ from landoui.forms import UserSettingsForm
 from landoui import helpers
 
 FAQ_URL = "https://wiki.mozilla.org/Phabricator/FAQ#Lando"
-SEC_BUG_WIKI = "https://wiki.mozilla.org/Security/Bug_Approval_Process"
+SEC_BUG_DOCS = "https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html"  # noqa: E501
 
 logger = logging.getLogger(__name__)
 template_helpers = Blueprint("template_helpers", __name__)
@@ -168,7 +168,7 @@ def linkify_revision_urls(text):
 def linkify_transplant_details(text, transplant):
     # The transplant result is not always guaranteed to be a commit id. It
     # can be a message saying that the landing was queued and will land later.
-    if transplant["status"] != "landed":
+    if transplant["status"].lower() != "landed":
         return text
 
     commit_id = transplant["details"]
@@ -187,9 +187,9 @@ def linkify_faq(text):
 
 
 @template_helpers.app_template_filter()
-def linkify_sec_bug_wiki(text):
+def linkify_sec_bug_docs(text):
     search = r"\b(Security Bug Approval Process)\b"
-    replace = r'<a href="{wiki_url}">\g<1></a>'.format(wiki_url=SEC_BUG_WIKI)
+    replace = r'<a href="{docs_url}">\g<1></a>'.format(docs_url=SEC_BUG_DOCS)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 

@@ -10,7 +10,7 @@ from landoui.template_helpers import (
     linkify_bug_numbers,
     linkify_revision_urls,
     linkify_faq,
-    linkify_sec_bug_wiki,
+    linkify_sec_bug_docs,
     repo_path,
     calculate_duration,
 )
@@ -144,11 +144,11 @@ def test_linkify_faq(app, input_text, output_text):
     [
         (
             "security bug approval process",
-            '<a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">security bug approval process</a>',  # noqa
+            '<a href="https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html">security bug approval process</a>',  # noqa
         ),
         (
             "Security Bug Approval Process",
-            '<a href="https://wiki.mozilla.org/Security/Bug_Approval_Process">Security Bug Approval Process</a>',  # noqa
+            '<a href="https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html">Security Bug Approval Process</a>',  # noqa
         ),
         (
             "security bug processes being used in a normal sentence",
@@ -156,8 +156,8 @@ def test_linkify_faq(app, input_text, output_text):
         ),
     ],
 )
-def test_linkify_sec_bug_wiki(app, input_text, output_text):
-    assert output_text == linkify_sec_bug_wiki(input_text)
+def test_linkify_sec_bug_docs(app, input_text, output_text):
+    assert output_text == linkify_sec_bug_docs(input_text)
 
 
 @pytest.mark.parametrize(

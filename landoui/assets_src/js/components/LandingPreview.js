@@ -15,6 +15,22 @@ $.fn.landingPreview = function() {
     // Reach outside my component, because I'm a pragmatist.
     let $previewButton = $('.StackPage-preview-button');
 
+
+
+    // Form currently resides in the footer in its own component, so we
+    // need to listen to changes on flags outside of the form and update
+    // form field accordingly. TODO: make this better.
+    document.querySelectorAll('.flag-checkbox').forEach(item => {
+        item.addEventListener('change', event => {
+            let flags = [];
+            document.querySelectorAll('.flag-checkbox:checked').forEach(flag => {
+                flags.push(flag.value);
+            });
+            $form.find("[name=flags]").val(JSON.stringify(flags));
+        });
+    });
+
+
     let calculateLandButtonState = () => {
       if($blocker.length > 0) {
         $landButton.attr({'disabled': true});
