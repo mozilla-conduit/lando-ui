@@ -9,7 +9,7 @@ certifi==2018.10.15
 cffi==1.14.0
 chardet==3.0.4
 click==7.0
-cryptography==3.2
+cryptography==3.3.2
 flake8==3.7.9
 flask-assets==0.12
 flask-pyoidc==3.2.0
