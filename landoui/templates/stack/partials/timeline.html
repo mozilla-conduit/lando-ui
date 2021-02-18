@@ -1,41 +1,65 @@
 <div class="StackPage-timeline">
     {% if transplants %}
-      {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
-        <div class="StackPage-timeline-item">
-          <div class="StackPage-timeline-itemStatus">
+    {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
+    <div class="StackPage-timeline-item">
+        <div class="StackPage-timeline-itemStatus">
             <span class="{{ transplant|tostatusbadgeclass }}">{{transplant|tostatusbadgename}}</span>
-          </div>
+        </div>
 
-          <div class="StackPage-timeline-itemDetail">
-            On <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.<br>
-            <strong>Revisions:</strong>
+        <div class="StackPage-timeline-itemDetail">
+            <p>Landing requested on <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.</p>
+            <p><strong>Revisions:</strong>
             {% for i in transplant['landing_path'] %}{{
-              "" if loop.first else " ← "
+            "" if loop.first else " ← "
             }}<a href="{{ i['revision_id']|revision_url(diff_id=i['diff_id']) }}">
                 {{ i['revision_id'] }} diff {{ i['diff_id'] }}
             </a>{% endfor %}
-            <br>
-            {% if transplant['status'].lower() == 'landed' %}
-              <strong>Result:</strong> {{ transplant['details']|escape_html|linkify_transplant_details(transplant)|safe }}
-            {% elif transplant['details'] %}
-              <div class="StackPage-timeline-item-error">
-                <strong>Details:</strong> {{ transplant['details'] }}
-              </div>
+            </p>
+            {% if transplant.error_breakdown %}
+            <p>The following files have a conflict with <a href="{{ transplant.error_breakdown.revision_id|revision_url() }}">revision D{{ transplant.error_breakdown.revision_id }}</a>:</p>
+            <div class="content">
+                <ul>
+                    {% for path in transplant.error_breakdown.failed_paths %}
+                        <li><strong>{{ path.path }}</strong> @ <a href="{{ path.url }}">{{ path.changeset_id }}</a></li>
+                        {% set reject_lines = transplant.error_breakdown.reject_paths[path.path].content.split("\n") %}
+                        {% if reject_lines.__len__() < 3 %}
+                            <pre>{{ "\n".join(reject_lines) }}</pre>
+                        {% else %}
+                            <pre class="snippet">{{ "\n".join(reject_lines[:2]) + "\n...\n" }}<button class="is-small is-light button toggle-content">expand diff</button></pre>
+                            <pre class="hidden-content">{{ "\n".join(reject_lines) }}<button class="is-small is-light button toggle-content">collapse diff</button></pre>
+                        {% endif %}
+                    {% endfor %}
+                </ul?>
+            </div>
             {% endif %}
-            {% if transplant['status'] == "SUBMITTED" %}
+            <div>
+                {% if transplant['status'].lower() == 'landed' %}
+                <strong>Result:</strong> {{ transplant['details']|escape_html|linkify_transplant_details(transplant)|safe }}
+                {% elif transplant['details'] %}
+                    <div class="StackPage-timeline-item-error">
+                    {% if transplant.error_breakdown %}
+                        <div><button type="button" class="is-light button toggle-content">Show raw error output</button></div>
+                        <pre class="hidden-content"><strong>Raw error output:</strong>{{ "\n" +  transplant['details'] }}</pre>
+                    {% else %}
+                        <pre><strong>Raw error output:</strong>{{ "\n" +  transplant['details'] }}</pre>
+                    {% endif %}
+                    </div>
+                {% endif %}
+                {% if transplant['status'] == "SUBMITTED" %}
                 <button data-landing_job_id="{{ transplant['id'] }}" class="cancel-landing-job button is-small is-danger">Cancel landing request</button>
-            {% endif %}
-          </div>
+                {% endif %}
+            </div>
         </div>
-      {% endfor %}
+    </div>
+    {% endfor %}
     {% else %}
-      <div class="StackPage-timeline-item">
+    <div class="StackPage-timeline-item">
         <div class="StackPage-timeline-itemStatus">
-          <span class="Badge">Not yet Landed</span>
+            <span class="Badge">Not yet Landed</span>
         </div>
         <div class="StackPage-timeline-itemDetail">
-          There has been no attempt to land revisions in this stack.
+            There has been no attempt to land revisions in this stack.
         </div>
-      </div>
+    </div>
     {% endif %}
-  </div>
+</div>
