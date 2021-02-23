@@ -25,8 +25,10 @@
                         {% if reject_lines.__len__() < 3 %}
                             <pre>{{ "\n".join(reject_lines) }}</pre>
                         {% else %}
-                            <pre class="snippet">{{ "\n".join(reject_lines[:2]) + "\n...\n" }}<button class="is-small is-light button toggle-content">expand diff</button></pre>
-                            <pre class="hidden-content">{{ "\n".join(reject_lines) }}<button class="is-small is-light button toggle-content">collapse diff</button></pre>
+                            <div>
+                                <pre class="snippet">{{ "\n".join(reject_lines[:2]) + "\n...\n" }}<button class="is-small is-light button toggle-content">expand diff</button></pre>
+                                <pre class="hidden-content">{{ "\n".join(reject_lines) }}<button class="is-small is-light button toggle-content">collapse diff</button></pre>
+                            </div>
                         {% endif %}
                     {% endfor %}
                 </ul?>
