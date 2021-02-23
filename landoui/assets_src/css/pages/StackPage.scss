@@ -321,8 +321,8 @@ ul.StackPage-blockers {
     display: grid;
     grid-template-columns: 150px auto;
     margin-bottom: 20px;
-    &-error {
-      white-space: pre-line;
+    pre {
+      background-color: #FFFFFF;
     }
   }
 }

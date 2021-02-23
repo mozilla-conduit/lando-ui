@@ -35,3 +35,16 @@ $('button.cancel-landing-job').on('click', function(e) {
         }
     });
 });
+
+$("a.toggle-content,button.toggle-content").on("click", function() {
+    /* A link with the `toggle-snippet` class will hide its parent, and show
+     * any of the parent's siblings. For example:
+     * <div>
+     *  <div>Some content <a href="#" class="toggle-content">toggle</a></div>
+     *  <div>Other content <a href="#" class="toggle-content">toggle</a></div>
+     * </div>
+    */
+    var link = $(this);
+    link.parent().hide();
+    link.parent().siblings().show()
+});
