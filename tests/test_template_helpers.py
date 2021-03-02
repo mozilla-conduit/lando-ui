@@ -215,3 +215,11 @@ def test_revision_url__string(app):
     expected_result = "http://phabricator.test/D1234"
     actual_result = revision_url(revision_id)
     assert expected_result == actual_result
+
+
+def test_revision_url__general_case_with_diff(app):
+    revision_id = 123
+    diff_id = 456
+    expected_result = "http://phabricator.test/D123?id=456"
+    actual_result = revision_url(revision_id, diff_id)
+    assert expected_result == actual_result
