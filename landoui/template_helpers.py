@@ -201,12 +201,16 @@ def bug_url(text):
 
 
 @template_helpers.app_template_filter()
-def revision_url(text, diff_id=None):
-    if not text.startswith("D"):
-        text = f"D{text}"
+def revision_url(revision_id, diff_id=None):
+    if type(revision_id) == int:
+        path = f"D{revision_id}"
+    elif type(revision_id) == str and not revision_id.startswith("D"):
+        path = f"D{revision_id}"
+    else:
+        path = revision_id
 
-    url = "{phab_url}/{revision_id}".format(
-        phab_url=current_app.config["PHABRICATOR_URL"], revision_id=text
+    url = "{phab_url}/{path}".format(
+        phab_url=current_app.config["PHABRICATOR_URL"], path=path
     )
     if diff_id is not None and diff_id != "":
         url = "{revision_url}?id={diff_id}".format(revision_url=url, diff_id=diff_id)
