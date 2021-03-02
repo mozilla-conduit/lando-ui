@@ -13,6 +13,7 @@ from landoui.template_helpers import (
     linkify_sec_bug_docs,
     repo_path,
     calculate_duration,
+    revision_url,
 )
 
 
@@ -193,3 +194,32 @@ def test_repo_path(app, repo_url, path):
 )
 def test_calculate_duration(app, start, end, duration):
     assert duration == calculate_duration(start, end)
+
+
+def test_revision_url__integer(app):
+    revision_id = 1234
+    expected_result = "http://phabricator.test/D1234"
+    actual_result = revision_url(revision_id)
+    assert expected_result == actual_result
+
+
+def test_revision_url__prepended_string(app):
+    revision_id = "D1234"
+    expected_result = "http://phabricator.test/D1234"
+    actual_result = revision_url(revision_id)
+    assert expected_result == actual_result
+
+
+def test_revision_url__string(app):
+    revision_id = "1234"
+    expected_result = "http://phabricator.test/D1234"
+    actual_result = revision_url(revision_id)
+    assert expected_result == actual_result
+
+
+def test_revision_url__general_case_with_diff(app):
+    revision_id = 123
+    diff_id = 456
+    expected_result = "http://phabricator.test/D123?id=456"
+    actual_result = revision_url(revision_id, diff_id)
+    assert expected_result == actual_result
