@@ -202,9 +202,9 @@ def bug_url(text):
 
 @template_helpers.app_template_filter()
 def revision_url(revision_id, diff_id=None):
-    if type(revision_id) == int:
+    if isinstance(revision_id, int):
         path = f"D{revision_id}"
-    elif type(revision_id) == str and not revision_id.startswith("D"):
+    elif isinstance(revision_id, str) and not revision_id.startswith("D"):
         path = f"D{revision_id}"
     else:
         path = revision_id
