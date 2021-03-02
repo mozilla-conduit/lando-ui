@@ -202,6 +202,9 @@ def bug_url(text):
 
 @template_helpers.app_template_filter()
 def revision_url(text, diff_id=None):
+    if not text.startswith("D"):
+        text = f"D{text}"
+
     url = "{phab_url}/{revision_id}".format(
         phab_url=current_app.config["PHABRICATOR_URL"], revision_id=text
     )
