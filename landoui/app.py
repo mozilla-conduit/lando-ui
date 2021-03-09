@@ -7,14 +7,12 @@ import logging.config
 import os
 from urllib.parse import urlparse
 
-import click
 from flask import Flask
 from flask_assets import Environment
 from flask_talisman import Talisman
 from webassets.loaders import YAMLLoader
 
 from landoui import auth, errorhandlers
-from landoui.helpers import str2bool
 from landoui.logging import log_config_change, MozLogFormatter
 from landoui.sentry import initialize_sentry
 
@@ -23,6 +21,27 @@ logger = logging.getLogger(__name__)
 # This global is required to allow OIDC initialization on the entire app,
 # yet still allow @oidc decorate uses for pages
 oidc = None
+
+
+def get_app_version(path):
+    try:
+        with open(path) as f:
+            version = json.load(f)
+            logger.info(f"version file ({path}) loaded.")
+    except (IOError, ValueError, TypeError):
+        logger.warning(f"version file ({path}) could not be loaded, assuming dev.")
+        version = {
+            "source": "https://github.com/mozilla-conduit/lando-ui",
+            "version": "0.0.0",
+            "commit": "",
+            "build": "dev",
+        }
+    return version
+
+
+def set_config_param(app, key, value, logger=logger, obfuscate=False):
+    app.config[key] = value
+    log_config_change(key, value if not obfuscate else "*" * 10)
 
 
 def create_app(
@@ -60,43 +79,35 @@ def create_app(
     app.debug = debug
 
     # Set configuration
-    app.config["VERSION_PATH"] = version_path
-    log_config_change("VERSION_PATH", version_path)
-
-    version_info = json.load(open(version_path))
+    version_info = get_app_version(version_path)
     logger.info("application version", extra=version_info)
+    initialize_sentry(app, version_info["version"])
 
-    this_app_version = version_info["version"]
-    initialize_sentry(app, this_app_version)
-
-    app.config["LANDO_API_URL"] = lando_api_url
-    log_config_change("LANDO_API_URL", lando_api_url)
-    app.config["BUGZILLA_URL"] = _lookup_service_url(lando_api_url, "bugzilla")
-    log_config_change("BUGZILLA_URL", app.config["BUGZILLA_URL"])
-    app.config["PHABRICATOR_URL"] = _lookup_service_url(lando_api_url, "phabricator")
-    log_config_change("PHABRICATOR_URL", app.config["PHABRICATOR_URL"])
-    app.config["ENABLE_SEC_APPROVAL"] = bool(os.getenv("ENABLE_SEC_APPROVAL"))
-    log_config_change("ENABLE_SEC_APPROVAL", app.config["ENABLE_SEC_APPROVAL"])
-    app.config["ENABLE_EMBEDDED_TRANSPLANT_UI"] = bool(
-        os.getenv("ENABLE_EMBEDDED_TRANSPLANT_UI")
+    set_config_param(app, "LANDO_API_URL", lando_api_url)
+    set_config_param(
+        app, "BUGZILLA_URL", _lookup_service_url(lando_api_url, "bugzilla")
     )
-    log_config_change(
-        "ENABLE_EMBEDDED_TRANSPLANT_UI", app.config["ENABLE_EMBEDDED_TRANSPLANT_UI"]
+    set_config_param(
+        app, "PHABRICATOR_URL", _lookup_service_url(lando_api_url, "phabricator")
     )
+    set_config_param(app, "SECRET_KEY", secret_key, obfuscate=True)
+    set_config_param(app, "SESSION_COOKIE_NAME", session_cookie_name)
+    set_config_param(app, "SESSION_COOKIE_DOMAIN", session_cookie_domain)
+    set_config_param(app, "SESSION_COOKIE_SECURE", session_cookie_secure)
+    set_config_param(app, "SERVER_NAME", session_cookie_domain)
+    set_config_param(app, "USE_HTTPS", use_https)
 
-    # Set remaining configuration
-    app.config["SECRET_KEY"] = secret_key
-    app.config["SESSION_COOKIE_NAME"] = session_cookie_name
-    log_config_change("SESSION_COOKIE_NAME", session_cookie_name)
-    app.config["SESSION_COOKIE_DOMAIN"] = session_cookie_domain
-    log_config_change("SESSION_COOKIE_DOMAIN", session_cookie_domain)
-    app.config["SESSION_COOKIE_SECURE"] = session_cookie_secure
-    log_config_change("SESSION_COOKIE_SECURE", session_cookie_secure)
-    app.config["SERVER_NAME"] = session_cookie_domain
-    log_config_change("SERVER_NAME", session_cookie_domain)
-    app.config["USE_HTTPS"] = use_https
-    log_config_change("USE_HTTPS", use_https)
     app.config["PREFERRED_URL_SCHEME"] = "https" if use_https else "http"
+    app.config["VERSION"] = version_info
+
+    # Flags that need to be deprecated in the future.
+    set_config_param(app, "ENABLE_SEC_APPROVAL", bool(os.getenv("ENABLE_SEC_APPROVAL")))
+
+    set_config_param(
+        app,
+        "ENABLE_EMBEDDED_TRANSPLANT_UI",
+        bool(os.getenv("ENABLE_EMBEDDED_TRANSPLANT_UI")),
+    )
 
     Talisman(app, content_security_policy=csp, force_https=use_https)
 
@@ -159,51 +170,6 @@ def initialize_logging():
         }
     )
     logger.info("logging configured", extra={"LOG_LEVEL": level})
-
-
-@click.command()
-@click.option("--debug", envvar="DEBUG", type=bool, default=False)
-@click.option("--host", envvar="HOST", default="0.0.0.0")
-@click.option("--port", envvar="PORT", type=int, default=80)
-@click.option("--version-path", envvar="VERSION_PATH", default="/app/version.json")
-@click.option("--secret-key", envvar="SECRET_KEY", default=None)
-@click.option("--session-cookie-name", envvar="SESSION_COOKIE_NAME", default=None)
-@click.option("--session-cookie-domain", envvar="SESSION_COOKIE_DOMAIN", default=None)
-@click.option("--session-cookie-secure", envvar="SESSION_COOKIE_SECURE", default=1)
-@click.option("--use-https", envvar="USE_HTTPS", default=1)
-@click.option("--enable-asset-pipeline", envvar="ENABLE_ASSET_PIPELINE", default=1)
-@click.option("--lando-api-url", envvar="LANDO_API_URL", default=None)
-def run_dev_server(
-    debug,
-    host,
-    port,
-    version_path,
-    secret_key,
-    session_cookie_name,
-    session_cookie_domain,
-    session_cookie_secure,
-    use_https,
-    enable_asset_pipeline,
-    lando_api_url,
-):
-    """
-    Run the development server which auto reloads when things change.
-    """
-    app = create_app(
-        version_path,
-        secret_key,
-        session_cookie_name,
-        session_cookie_domain,
-        str2bool(session_cookie_secure),
-        str2bool(use_https),
-        enable_asset_pipeline,
-        lando_api_url,
-        str2bool(debug),
-    )
-    app.jinja_env.auto_reload = True
-    app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-    app.run(debug=debug, port=port, host=host)
 
 
 def _lookup_service_url(lando_api_url, service_name):

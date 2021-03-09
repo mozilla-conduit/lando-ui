@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import json
 import logging
 import time
 
@@ -90,10 +89,5 @@ def lbheartbeat():
 
 @dockerflow.route("/__version__")
 def version():
-    """Respond with version information as defined by /app/version.json."""
-    try:
-        with open(current_app.config["VERSION_PATH"]) as f:
-            return jsonify(json.load(f))
-    except (IOError, ValueError):
-        # TODO log error
-        return "Unable to load version.json", 500
+    """Respond with version information as defined in the app config."""
+    return jsonify(current_app.config["VERSION"])

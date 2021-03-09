@@ -2,32 +2,23 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM python:3.8-alpine AS assets
+FROM python:3.9-slim AS assets
 
-COPY requirements.txt /app/requirements.txt
-COPY docker/*.sh /usr/local/bin
+COPY requirements.txt /requirements.txt
+COPY system_requirements.txt /system_requirements.txt
 
-# Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
-# uninstall any compile-time OS package dependencies and keep only the run-time
-# OS package dependencies.
-RUN install-deps.sh /app/requirements.txt
+RUN \
+    apt-get update && \
+    xargs apt-get install -y < /system_requirements.txt && \
+    apt-get clean
+
+RUN pip install -r /requirements.txt
 
 COPY . /app
 RUN pip install --no-cache /app
-
-ARG CIRCLE_SHA1
-ARG CIRCLE_BUILD_URL
-RUN echo "{ \
-        \"commit\": \"$CIRCLE_SHA1\", \
-        \"version\": \"$CIRCLE_SHA1\", \
-        \"source\": \"https://github.com/mozilla-conduit/lando-ui\", \
-        \"build\": \"$CIRCLE_BUILD_URL\" \
-    } \
-    " > /version.json
-
-RUN apk add --update ruby && rm -rf /var/cache/apk/*
 RUN gem install sass --no-document -v 3.4.25
 
+# TODO get rid of the below.
 ENV OIDC_DOMAIN=dontcare
 ENV OIDC_CLIENT_ID=dontcare
 ENV OIDC_CLIENT_SECRET=dontcare
@@ -35,27 +26,29 @@ ENV LANDO_API_OIDC_IDENTIFIER=dontcare
 ENV FLASK_APP=/app/landoui/assets_app.py
 RUN flask assets build
 
-FROM python:3.8-alpine
+FROM python:3.9-slim
 
-COPY requirements.txt /app/requirements.txt
-COPY docker/*.sh /usr/local/bin
+COPY requirements.txt /requirements.txt
+COPY system_requirements.txt /system_requirements.txt
 
-# Install pure-Python, compiled, and OS package dependencies.  Use scanelf to
-# uninstall any compile-time OS package dependencies and keep only the run-time
-# OS package dependencies.
-RUN install-deps.sh /app/requirements.txt
+RUN \
+    apt-get update && \
+    xargs apt-get install -y < /system_requirements.txt && \
+    apt-get clean
+
+RUN pip install -r /requirements.txt
+
+RUN \
+    addgroup --gid 10001 app && \
+    adduser --disabled-password --uid 10001 --gid 10001 --gecos "" --home /app app
 
 COPY . /app
 RUN pip install --no-cache /app
 
 COPY --from=assets /app/landoui/static/ /app/landoui/static/
-COPY --from=assets /version.json /version.json
-COPY --from=assets /version.json /app/version.json
 
 EXPOSE 9000
 CMD ["/usr/local/bin/uwsgi"]
-
-RUN addgroup -g 10001 app && adduser -D -u 10001 -G app -h /app app
 
 RUN chown -R app:app /app/landoui/static
 
