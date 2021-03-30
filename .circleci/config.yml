@@ -35,7 +35,7 @@ jobs:
           name: Build the image
           command: |
             docker build --pull \
-              -f docker/Dockerfile-prod\
+              -f docker/Dockerfile-prod \
               -t mozilla/landoui .
       - run:
           name: Get image id
