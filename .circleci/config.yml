@@ -10,93 +10,81 @@
 # DOCKER_PASS
 
 version: 2
-
-# This is not part of circleci, but it lets us not repeat ourselves.
-STUFF:
-  python_image: &python_image
-    image: python:3.8-alpine
-
-  # it's useful to not build branches that contain slashes,
-  # if it is later decided to map branches to docker tags.
-  main_filters: &main_filters
-    branches:
-      ignore:
-        - /\//
-
 jobs:
-  lint:
-    working_directory: /app
+  full:
     docker:
-      - *python_image
-    steps:
-      - checkout
-      - run: apk add gcc linux-headers libc-dev
-      - run: pip install black==19.10b0 && pip install flake8==3.7.9
-      - run: black --diff .
-      - run: flake8 .
-  test:
-    working_directory: /app
-    docker:
-      - *python_image
-    steps:
-      - checkout
-      - run: |
-          /app/docker/install-deps.sh \
-            /app/requirements.txt
-      - run: pip --no-cache install .
-      - run:
-          name: run tests
-          command: |
-            mkdir test-reports
-            pytest --junitxml=test-reports/junit.xml
-          environment:
-            # this is needed for pytest to run
-            PYTHONPATH: /app
-            # this lets you watch the build progress in the web UI
-            PYTHONUNBUFFERED: 1
-
-      - store_test_results:
-          path: test-reports
-
-      - store_artifacts:
-          path: test-reports
-
-  build:
-    docker:
-      - image: docker:17.06.1-ce
+      - image: cimg/base:2020.01
+        user: root
     steps:
       - setup_remote_docker
       - checkout
       - run:
-          name: build the prod image
+          name: Create version.json
+          command: |
+            echo "
+              {
+                \"commit\": \"$CIRCLE_SHA1\",
+                \"version\": \"$CIRCLE_SHA1\",
+                \"source\": \"https://github.com/mozilla-conduit/lando-ui\",
+                \"build\": \"$CIRCLE_BUILD_URL\"
+              }
+            " > version.json
+            mkdir /tmp/artifacts && cp version.json /tmp/artifacts/version.js
+
+      - run:
+          name: Build the image
           command: |
             docker build --pull \
-              --build-arg CIRCLE_SHA1="$CIRCLE_SHA1" \
-              --build-arg CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL" \
               -f docker/Dockerfile-prod \
-              -t "${DOCKERHUB_REPO:-mozilla/landoui}" .
+              -t mozilla/landoui .
       - run:
-          name: copy version.json
+          name: Get image id
           command: |
-            docker run -i "${DOCKERHUB_REPO:-mozilla/landoui}" cat /version.json > version.json
-            mkdir /artifacts && cp version.json /artifacts/version.js
-      - run:
-          name: get image id
-          command: |
-            docker inspect -f '{{.Id}}' "${DOCKERHUB_REPO:-mozilla/landoui}" \
-              | tee /artifacts/docker-image-shasum256.txt
+            docker inspect -f '{{.Id}}' mozilla/landoui \
+              | tee /tmp/artifacts/docker-image-shasum256.txt
       - store_artifacts:
-          path: /artifacts
+          path: /tmp/artifacts
+
+      - run:
+          name: Create docker volumes for copying data
+          command: |
+            docker volume create landoui_lando_test_results
+            docker create --name temp_container \
+              -v landoui_lando_test_results:/landoui_lando_test_results \
+              hello-world
+
+      - run:
+          name: Run the tests
+          command: |
+            docker-compose \
+              -f docker/docker-compose.ci.yml \
+              -p landoui \
+              run lando-ui pytest --junitxml=/test_results/junit.xml
+
+      - run:
+          name: Copy the test report
+          when: always
+          command: |
+            mkdir /tmp/test-reports
+            docker cp temp_container:/landoui_lando_test_results/junit.xml /tmp/test-reports/junit.xml
+
+      - store_test_results:
+          path: /tmp/test-reports
+
+      - store_artifacts:
+          path: /tmp/test-reports
+
       - deploy:
           command: |
             if [[ "x$DOCKERHUB_REPO" != x ]]; then
               docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-              docker tag "${DOCKERHUB_REPO}" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+              docker tag "mozilla/landoui" "${DOCKERHUB_REPO}"
+              docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
               docker push "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
               if [[ ${CIRCLE_BRANCH} == master ]]; then
                 docker push "${DOCKERHUB_REPO}:latest"
               elif [[ ${CIRCLE_BRANCH} == develop ]]; then
-                docker tag "${DOCKERHUB_REPO}" "${DOCKERHUB_REPO}:develop-latest"
+                docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:develop-latest"
                 docker push "${DOCKERHUB_REPO}:develop-latest"
               fi
             fi
@@ -105,14 +93,10 @@ workflows:
   version: 2
   main:
     jobs:
-      - lint:
-          filters: *main_filters
-      - test:
-          filters: *main_filters
-          requires:
-            - lint
-      - build:
-          filters: *main_filters
-          requires:
-            - lint
-            - test
+      - full:
+          filters:
+            branches:
+              ignore:
+                # It's useful to not build branches that contain slashes,
+                # if it is later decided to map branches to docker tags.
+                - /\//

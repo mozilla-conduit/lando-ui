@@ -1,0 +1,7 @@
+ gcc
+ git
+ libc-dev
+ musl-dev
+ libffi-dev
+ nodejs
+ ruby
