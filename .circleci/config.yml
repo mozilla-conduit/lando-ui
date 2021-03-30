@@ -13,7 +13,7 @@ version: 2
 jobs:
   full:
     docker:
-      - image: circleci/python
+      - image: cimg/base:2020.01
         user: root
     steps:
       - setup_remote_docker
@@ -97,4 +97,6 @@ workflows:
           filters:
             branches:
               ignore:
+                # It's useful to not build branches that contain slashes,
+                # if it is later decided to map branches to docker tags.
                 - /\//
