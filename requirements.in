@@ -12,7 +12,7 @@ click==7.0
 cryptography==3.3.2
 flake8==3.7.9
 flask-assets==0.12
-flask-pyoidc==3.2.0
+flask-pyoidc==3.7.0
 flask-talisman==0.6.0
 flask-wtf==0.14.3
 flask==1.1.1
@@ -20,7 +20,7 @@ pathlib2==2.3.2
 pyopenssl==18.0.0
 pytest-flask==0.15.1
 pytest==5.3.5
-pyyaml==5.3
+pyyaml==5.4.1
 raven==6.10.0
 requests_mock==1.7.0
 uwsgi==2.0.18
