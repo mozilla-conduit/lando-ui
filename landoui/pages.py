@@ -16,8 +16,13 @@ from flask import (
 
 from landoui.app import oidc
 from landoui.errorhandlers import UIError
-from landoui.forms import UserSettingsForm
-from landoui.helpers import set_last_local_referrer, is_user_authenticated
+from landoui.forms import UserSettingsForm, RepoNoticeForm
+from landoui.helpers import (
+    set_last_local_referrer,
+    is_user_authenticated,
+    get_phabricator_api_token,
+)
+from landoui.landoapi import LandoAPI
 from landoui.usersettings import manage_phab_api_token_cookie
 
 logger = logging.getLogger(__name__)
@@ -88,6 +93,26 @@ def settings():
     payload = dict(success=True)
     response = manage_phab_api_token_cookie(form, payload)
     return response
+
+
+@pages.route("/admin", methods=["GET"])
+@oidc.oidc_auth("AUTH0")
+def admin():
+    if not is_user_authenticated():
+        # Accessing it unauthenticated from UI is protected by CSP
+        return jsonify(
+            dict(success=False, errors=dict(form_errors=["User is not authenticated"]))
+        )
+
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=get_phabricator_api_token(),
+    )
+
+    response = api.request("GET", "repos/notices", require_auth0=True)
+    form = RepoNoticeForm()
+    return render_template("admin.html", form=form, **response)
 
 
 @oidc.error_view

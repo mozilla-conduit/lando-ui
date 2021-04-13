@@ -3,6 +3,13 @@
 
 {% block main %}
 <main class="StackPage container fullhd">
+{% for repo in stack.repo_notices %}
+    {% for notice in stack.repo_notices[repo] %}
+        <div class="notification Badge--warning">
+            {{ notice.message }}
+        </div>
+    {% endfor %}
+{% endfor %}
   {% if errors %}
   <div class="StackPage-errors">
     <span>Landing Failed</span>
