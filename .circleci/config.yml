@@ -95,6 +95,9 @@ workflows:
     jobs:
       - full:
           filters:
+            tags:
+              only:
+                - /^release-[0-9]+$/
             branches:
               ignore:
                 # It's useful to not build branches that contain slashes,
