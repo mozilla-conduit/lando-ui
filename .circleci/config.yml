@@ -82,6 +82,7 @@ jobs:
               docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
               docker push "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
               if [[ ${CIRCLE_TAG} =~ ^release-[0-9]+$ ]]; then
+                docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:${CIRCLE_TAG}"
                 docker push "${DOCKERHUB_REPO}:${CIRCLE_TAG}"
               elif [[ ${CIRCLE_BRANCH} == develop ]]; then
                 docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:develop-latest"
