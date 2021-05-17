@@ -81,8 +81,8 @@ jobs:
               docker tag "mozilla/landoui" "${DOCKERHUB_REPO}"
               docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
               docker push "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
-              if [[ ${CIRCLE_BRANCH} == master ]]; then
-                docker push "${DOCKERHUB_REPO}:latest"
+              if [[ ${CIRCLE_TAG} =~ ^release-[0-9]+$ ]]; then
+                docker push "${DOCKERHUB_REPO}:${CIRCLE_TAG}"
               elif [[ ${CIRCLE_BRANCH} == develop ]]; then
                 docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:develop-latest"
                 docker push "${DOCKERHUB_REPO}:develop-latest"
@@ -95,6 +95,9 @@ workflows:
     jobs:
       - full:
           filters:
+            tags:
+              only:
+                - /^release-[0-9]+$/
             branches:
               ignore:
                 # It's useful to not build branches that contain slashes,
