@@ -113,6 +113,19 @@
     {% if dryrun['warnings'] %}
     <ul class="StackPage-landingPreview-warningsList">
       {% for warning in dryrun['warnings'] %}
+        {% if warning.articulated %}
+        {% for w in warning.instances %}
+            {% for dw in w.details %}
+            <li class="StackPage-landingPreview-warning">
+              <label>
+                <input type="checkbox" name="warnings[]" value="1" />
+                {{ dw.message|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_docs|safe }}
+                [{{w.revision_id}}]
+              </label>
+            </li>
+            {% endfor %}
+        {% endfor %}
+        {% else %}
         <li class="StackPage-landingPreview-warning">
           <label>
             <input type="checkbox" name="warnings[]" value="1" />
@@ -123,6 +136,7 @@
             }}{% endfor %}]
           </label>
         </li>
+        {% endif %}
       {% endfor %}
     </ul>
     {% else %}
