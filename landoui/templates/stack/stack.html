@@ -28,6 +28,7 @@
           <th>Status</th>
           <th>Revision</th>
           <th>Reviewers</th>
+          <th>Modules Affected</th>
         </tr>
       </thead>
       <tbody>
@@ -76,6 +77,13 @@
             {% with reviewers=revision['reviewers'] %}
             {% include "stack/partials/revision-reviewers.html" %}
             {% endwith %}
+          </td>
+          <td>
+              {% if revision.lando_revision and revision.lando_revision.data and revision.lando_revision.data.mots %}
+                  {% for m in revision.lando_revision.data.mots.modules %}
+                  <span title="{{ m.machine_name }}" class="Badge Badge--neutral">{{ m.name }}</span>
+                  {% endfor %}
+              {% endif %}
           </td>
         </tr>
       {% endfor %}
