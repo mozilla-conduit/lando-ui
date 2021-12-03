@@ -119,5 +119,9 @@ def log_config_change(setting_name, value):
         value: The setting's new value.
     """
     logger.info(
-        "app configuration", extra={"setting": setting_name, "value": str(value),}
+        "app configuration",
+        extra={
+            "setting": setting_name,
+            "value": str(value),
+        },
     )

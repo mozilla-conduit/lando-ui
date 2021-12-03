@@ -154,18 +154,37 @@ def initialize_logging():
         {
             "version": 1,
             "formatters": {
-                "mozlog": {"()": MozLogFormatter, "mozlog_logger": "lando-ui",},
+                "mozlog": {
+                    "()": MozLogFormatter,
+                    "mozlog_logger": "lando-ui",
+                },
             },
             "handlers": {
-                "console": {"class": "logging.StreamHandler", "formatter": "mozlog",},
-                "null": {"class": "logging.NullHandler",},
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "mozlog",
+                },
+                "null": {
+                    "class": "logging.NullHandler",
+                },
             },
             "loggers": {
-                "landoui": {"level": level, "handlers": ["console"],},
-                "request.summary": {"level": level, "handlers": ["console"],},
-                "werkzeug": {"level": "ERROR", "handlers": ["console"],},
+                "landoui": {
+                    "level": level,
+                    "handlers": ["console"],
+                },
+                "request.summary": {
+                    "level": level,
+                    "handlers": ["console"],
+                },
+                "werkzeug": {
+                    "level": "ERROR",
+                    "handlers": ["console"],
+                },
             },
-            "root": {"handlers": ["null"],},
+            "root": {
+                "handlers": ["null"],
+            },
             "disable_existing_loggers": True,
         }
     )

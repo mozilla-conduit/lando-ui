@@ -72,7 +72,14 @@ def heartbeat():
         healthy = False
 
     return (
-        jsonify({"healthy": healthy, "services": {"lando_api": healthy,},}),
+        jsonify(
+            {
+                "healthy": healthy,
+                "services": {
+                    "lando_api": healthy,
+                },
+            }
+        ),
         200 if healthy else 502,
     )
 
