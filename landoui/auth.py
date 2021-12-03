@@ -66,7 +66,9 @@ class OpenIDConnect:
     @property
     def provider_metadata(self):
         return ProviderMetadata(
-            issuer="https://{DOMAIN}/".format(DOMAIN=self.oidc_config.OIDC_DOMAIN,),
+            issuer="https://{DOMAIN}/".format(
+                DOMAIN=self.oidc_config.OIDC_DOMAIN,
+            ),
             authorization_endpoint=self.oidc_config.auth_endpoint(),
             token_endpoint=self.oidc_config.token_endpoint(),
             userinfo_endpoint=self.oidc_config.userinfo_endpoint(),
@@ -85,7 +87,7 @@ class OpenIDConnect:
         )
 
     def auth(self, app):
-        """ Creates the OIDCAuthentication object to be used to protect routes.
+        """Creates the OIDCAuthentication object to be used to protect routes.
 
         Authentication is requested with the following audiences:
         - lando-api: The LANDO_API_OIDC_IDENTIFIER environment variable will

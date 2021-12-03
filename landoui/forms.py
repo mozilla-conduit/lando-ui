@@ -70,7 +70,9 @@ class TransplantRequestForm(FlaskForm):
 class SecApprovalRequestForm(FlaskForm):
     new_message = TextAreaField(
         "new_message",
-        validators=[InputRequired(message="A valid commit message must be provided"),],
+        validators=[
+            InputRequired(message="A valid commit message must be provided"),
+        ],
     )
     revision_id = StringField(
         "revision_id",

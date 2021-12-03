@@ -30,7 +30,11 @@ LANDO_API_STACK = {
             "url": "http://phabricator.test/D1",
             "phid": "PHID-DREV-p4cpedtcru7sos24hc7h",
             "blocked_reason": "",
-            "status": {"display": "Accepted", "value": "accepted", "closed": False,},
+            "status": {
+                "display": "Accepted",
+                "value": "accepted",
+                "closed": False,
+            },
             "id": "D1",
             "reviewers": [
                 {
@@ -170,8 +174,7 @@ def anonymous_session(client):
 
 
 def sec_approval_revision_in_page(rv) -> bool:
-    """Does the given response contain a sec-approval revision in its content?
-    """
+    """Does the given response contain a sec-approval revision in its content?"""
     return SEC_APPROVAL_HTML_MARK in rv.data
 
 
@@ -234,5 +237,8 @@ def test_submit_alt_commit_message(app, client, authenticated_session, apidouble
         "POST",
         "requestSecApproval",
         require_auth0=True,
-        json={"revision_id": "D1", "sanitized_message": "s3cr3t",},
+        json={
+            "revision_id": "D1",
+            "sanitized_message": "s3cr3t",
+        },
     )

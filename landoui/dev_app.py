@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_dev_app(**kwargs):
-    """Create the development server for Flask.
-    """
+    """Create the development server for Flask."""
     params = {
         "debug": False,
         "version_path": "/app/version.json",

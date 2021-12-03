@@ -60,7 +60,19 @@ def test_all(ctx):
 
 
 namespace = Collection(
-    Collection("test", test_python, test_all,),
-    Collection("lint", lint_all, lint_flake8, lint_black,),
-    Collection("format", format_all,),
+    Collection(
+        "test",
+        test_python,
+        test_all,
+    ),
+    Collection(
+        "lint",
+        lint_all,
+        lint_flake8,
+        lint_black,
+    ),
+    Collection(
+        "format",
+        format_all,
+    ),
 )

@@ -31,5 +31,9 @@ setup(
     packages=find_packages(exclude=["tests"]),
     install_requires=[],
     extras_require={},
-    entry_points={"flask.commands": ["assets = flask_assets:assets",],},
+    entry_points={
+        "flask.commands": [
+            "assets = flask_assets:assets",
+        ],
+    },
 )
