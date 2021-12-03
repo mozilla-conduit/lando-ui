@@ -143,6 +143,10 @@ def create_app(
         )
         assets.register(loader.load_bundles())
 
+    from werkzeug.middleware.profiler import ProfilerMiddleware
+
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
+
     logger.info("Application started successfully.")
     return app
 

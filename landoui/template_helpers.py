@@ -105,6 +105,11 @@ def revision_status_to_badge_class(status):
         "needs-review": "Badge Badge--warning",
         "needs-revision": "Badge Badge--negative",
         "draft": "Badge Badge--neutral",
+        "QUEUED": "Badge Badge--warning",
+        "FAILED": "Badge Badge--negative",
+        "PROBLEM": "Badge Badge--negative",
+        "LANDING": "Badge Badge--positive",
+        "LANDED": "Badge Badge--positive",
     }.get(status, "Badge Badge--warning")
 
 

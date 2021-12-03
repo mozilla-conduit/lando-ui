@@ -1,13 +1,24 @@
 <div class="StackPage-timeline">
     {% if transplants %}
     {%- for transplant in transplants|sort(attribute='updated_at', reverse=True) %}
+    <div class="content">
+    <div class="snippet">
+        <span class="{{ transplant|tostatusbadgeclass }}">{{transplant|tostatusbadgename}}</span>
+        {% if transplant['status'] in ("SUBMITTED", "DEFERRED") %}
+        <button data-landing_job_id="{{ transplant['id'] }}" class="cancel-landing-job button is-small is-danger">Cancel</button>
+        {% endif %}
+        Submitted on <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}
+        <a href="#" class="toggle-content"><small>... see more</small></a>
+    </div>
+    <div class="hidden-content">
     <div class="StackPage-timeline-item">
         <div class="StackPage-timeline-itemStatus">
             <span class="{{ transplant|tostatusbadgeclass }}">{{transplant|tostatusbadgename}}</span>
         </div>
 
         <div class="StackPage-timeline-itemDetail">
-            <p>Landing requested on <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.</p>
+            <p>Landing #{{ transplant["id"] }} requested on <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.</p>
+            <p><strong>Duration (seconds):</strong> {{ transplant["duration_seconds"] or "unknown" }}</p>
             <p><strong>Revisions:</strong>
             {% for i in transplant['landing_path'] %}{{
             "" if loop.first else " ← "
@@ -37,7 +48,7 @@
             {% endif %}
             <div>
                 {% if transplant['status'].lower() == 'landed' %}
-                <strong>Result:</strong> {{ transplant['details']|escape_html|linkify_transplant_details(transplant)|safe }}
+                <strong>Changeset:</strong> {{ transplant['details']|escape_html|linkify_transplant_details(transplant)|safe }}
                 {% elif transplant['details'] %}
                     <div class="StackPage-timeline-item-error">
                     {% if transplant.error_breakdown %}
@@ -54,15 +65,8 @@
             </div>
         </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="StackPage-timeline-item">
-        <div class="StackPage-timeline-itemStatus">
-            <span class="Badge">Not yet Landed</span>
-        </div>
-        <div class="StackPage-timeline-itemDetail">
-            There has been no attempt to land revisions in this stack.
-        </div>
     </div>
+    </div>
+    {% endfor %}
     {% endif %}
 </div>

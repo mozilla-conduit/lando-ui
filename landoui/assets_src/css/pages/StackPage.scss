@@ -169,8 +169,8 @@ ul.StackPage-blockers {
   border-radius: 3px;
   box-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
   padding: 3px 9px;
-  background: #f7e6e6;
-  color: #a53737;
+  background: lightgrey; // #f7e6e6;
+  color: black; // #a53737;
   margin-left: 2px;
   font-size: 0.8rem;
   transition: .25s all ease;
@@ -349,4 +349,8 @@ ul.StackPage-blockers {
   display: none;
   margin-top: 0.5em;
   width: 123ch;
+}
+
+.refresh-button {
+    display: none;
 }

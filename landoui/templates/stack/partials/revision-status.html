@@ -1,7 +1,12 @@
 {% if revision['blocked_reason'] %}
 <div class="StackPage-blockerReason">
-  <div class="Badge Badge--negative">
-    Blocked
+    {% if revision["lando_revision"] and "QUEUED" in revision["lando_revision"].status %}
+        <div class="Badge Badge--warning">Busy
+    {% elif revision["lando_revision"] and "LAND" in revision["lando_revision"].status %}
+        <div class="Badge Badge--positive">Waiting
+    {% else %}
+        <div class="Badge Badge--negative">Blocked
+    {% endif %}
     <span class="icon is-small">
       <i class="fa fa-info-circle"></i>
     </span>

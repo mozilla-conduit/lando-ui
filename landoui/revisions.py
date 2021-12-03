@@ -319,6 +319,33 @@ def update_landing_job(landing_job_id):
     return data
 
 
+@revisions.route("/stack_hashes/<int:revision_id>", methods=("GET",))
+def get_stack_hashes(revision_id):
+    # Is auth really needed? Hashes don't reveal anything and they're based on
+    # Lando IDs not phabricator revision IDs.
+    if not is_user_authenticated():
+        errors = make_form_error("You must be logged in to fetch stack hashes.")
+        return jsonify(errors=errors), 401
+
+    token = get_phabricator_api_token()
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=token,
+    )
+
+    try:
+        data = api.request(
+            "GET",
+            f"stack_hashes/{revision_id}",
+            require_auth0=True,
+            json=request.get_json(),
+        )
+    except LandoAPIError as e:
+        return e.response, e.response["status"]
+    return data
+
+
 def make_form_error(message):
     """Turn a string into an error that looks like a WTForm validation error.
 
