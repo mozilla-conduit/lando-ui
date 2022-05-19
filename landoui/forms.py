@@ -70,9 +70,7 @@ class TransplantRequestForm(FlaskForm):
 class SecApprovalRequestForm(FlaskForm):
     new_message = TextAreaField(
         "new_message",
-        validators=[
-            InputRequired(message="A valid commit message must be provided"),
-        ],
+        validators=[InputRequired(message="A valid commit message must be provided")],
     )
     revision_id = StringField(
         "revision_id",
@@ -81,6 +79,19 @@ class SecApprovalRequestForm(FlaskForm):
             Regexp("^D[0-9]+$"),
         ],
     )
+
+
+class UpliftRequestForm(FlaskForm):
+    """Form used to request uplift of a stack."""
+
+    landing_path = HiddenField(
+        "landing_path",
+        validators=[
+            InputRequired(message="A landing path is required"),
+            LandingPath(message="Landing path must be a JSON array of path objects"),
+        ],
+    )
+    confirmation_token = HiddenField("confirmation_token")
 
 
 class UserSettingsForm(FlaskForm):

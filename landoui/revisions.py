@@ -18,7 +18,11 @@ from flask import (
 )
 
 from landoui.app import oidc
-from landoui.forms import SecApprovalRequestForm, TransplantRequestForm
+from landoui.forms import (
+    SecApprovalRequestForm,
+    TransplantRequestForm,
+    UpliftRequestForm,
+)
 from landoui.helpers import (
     get_phabricator_api_token,
     is_user_authenticated,
@@ -79,6 +83,7 @@ def revision(revision_id):
 
     form = TransplantRequestForm()
     sec_approval_form = SecApprovalRequestForm()
+    uplift_request_form = UpliftRequestForm()
 
     errors = []
     if form.is_submitted():
@@ -108,6 +113,37 @@ def revision(revision_id):
             except LandoAPIError as e:
                 if not e.detail:
                     raise
+
+                errors.append(e.detail)
+
+    if uplift_request_form.is_submitted():
+        if not is_user_authenticated():
+            errors.append("You must be logged in to request an uplift")
+        elif not form.validate():
+            for _, field_errors in form.errors.items():
+                errors.extend(field_errors)
+        else:
+            try:
+                confirmation_token = uplift_request_form.confirmation_token.data
+                response = api.request(
+                    "POST",
+                    "uplift",
+                    require_auth0=True,
+                    json={
+                        "landing_path": json.loads(
+                            uplift_request_form.landing_path.data
+                        ),
+                        "confirmation_token": confirmation_token,
+                    },
+                )
+
+                # Ridirect to the tip revision's URL.
+                # TODO add js for auto-opening the uplift request Phabricator form.
+                tip_differential = response["tip_differential"]["url"]
+                return redirect(tip_differential)
+            except LandoAPIError as e:
+                if not e.detail:
+                    raise e
 
                 errors.append(e.detail)
 
