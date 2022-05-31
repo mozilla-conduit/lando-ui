@@ -12,9 +12,7 @@ from landoui.forms import UserSettingsForm
 from landoui import helpers
 
 FAQ_URL = "https://wiki.mozilla.org/Phabricator/FAQ#Lando"
-SEC_BUG_DOCS = (
-    "https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html"
-)  # noqa: E501
+SEC_BUG_DOCS = "https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html"  # noqa: E501
 
 logger = logging.getLogger(__name__)
 template_helpers = Blueprint("template_helpers", __name__)
