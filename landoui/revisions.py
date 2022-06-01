@@ -72,6 +72,50 @@ def annotate_sec_approval_workflow_info(revisions):
         revision["should_use_sec_approval_workflow"] = should_use_workflow
 
 
+@revisions.route("/uplift/", methods=("POST",))
+@oidc_auth_optional
+def uplift():
+    """Process the uplift request WTForms submission."""
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=get_phabricator_api_token(),
+    )
+    uplift_request_form = UpliftRequestForm()
+
+    errors = []
+    if uplift_request_form.is_submitted():
+        if not is_user_authenticated():
+            errors.append("You must be logged in to request an uplift")
+        elif not uplift_request_form.validate():
+            for _, field_errors in uplift_request_form.errors.items():
+                errors.extend(field_errors)
+        else:
+            try:
+                response = api.request(
+                    "POST",
+                    "uplift",
+                    require_auth0=True,
+                    json={
+                        "landing_path": json.loads(
+                            uplift_request_form.landing_path.data
+                        ),
+                    },
+                )
+
+                # Ridirect to the tip revision's URL.
+                # TODO add js for auto-opening the uplift request Phabricator form.
+                tip_differential = response["tip_differential"]["url"]
+                return redirect(tip_differential)
+            except LandoAPIError as e:
+                if not e.detail:
+                    raise e
+
+                errors.append(e.detail)
+
+    return jsonify(errors=errors), 500
+
+
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
 @oidc_auth_optional
 def revision(revision_id):
@@ -113,35 +157,6 @@ def revision(revision_id):
             except LandoAPIError as e:
                 if not e.detail:
                     raise
-
-                errors.append(e.detail)
-
-    if uplift_request_form.is_submitted():
-        if not is_user_authenticated():
-            errors.append("You must be logged in to request an uplift")
-        elif not uplift_request_form.validate():
-            for _, field_errors in uplift_request_form.errors.items():
-                errors.extend(field_errors)
-        else:
-            try:
-                response = api.request(
-                    "POST",
-                    "uplift",
-                    require_auth0=True,
-                    json={
-                        "landing_path": json.loads(
-                            uplift_request_form.landing_path.data
-                        ),
-                    },
-                )
-
-                # Ridirect to the tip revision's URL.
-                # TODO add js for auto-opening the uplift request Phabricator form.
-                tip_differential = response["tip_differential"]["url"]
-                return redirect(tip_differential)
-            except LandoAPIError as e:
-                if not e.detail:
-                    raise e
 
                 errors.append(e.detail)
 
