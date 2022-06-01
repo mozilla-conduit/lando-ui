@@ -157,9 +157,9 @@
       </header>
       <footer class="modal-card-foot">
         <form class="StackPage-form" action="" method="post">
-          {{form.csrf_token}}
-          {{form.landing_path}}
-          {{form.confirmation_token}}
+          {{uplift_request_form.csrf_token}}
+          {{uplift_request_form.landing_path}}
+          {{uplift_request_form.confirmation_token}}
           <button
               class="StackPage-landingPreview-land button"
               data-target-repo="{{ target_repo['url']|repo_path }}"

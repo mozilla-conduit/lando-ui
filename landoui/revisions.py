@@ -270,6 +270,7 @@ def revision(revision_id):
         form=form,
         flags=target_repo["commit_flags"] if target_repo else [],
         existing_flags=existing_flags,
+        uplift_request_form=uplift_request_form,
     )
 
 
