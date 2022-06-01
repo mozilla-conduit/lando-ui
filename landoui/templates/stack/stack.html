@@ -157,14 +157,13 @@
       </header>
       <footer class="modal-card-foot">
         <form class="StackPage-form" action="" method="post">
-          {{uplift_request_form.csrf_token}}
-          {{uplift_request_form.landing_path}}
-          {{uplift_request_form.confirmation_token}}
+          {{ uplift_request_form.csrf_token }}
+          {{ uplift_request_form.landing_path }}
           <button
               class="StackPage-landingPreview-land button"
-              data-target-repo="{{ target_repo['url']|repo_path }}"
+              data-target-repo="{{ uplift_repo }}"
               disabled>
-            Land to {{ target_repo['url']|repo_path }}
+            Land to {{ uplift_repo }}
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
         </form>

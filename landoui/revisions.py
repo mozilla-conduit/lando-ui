@@ -119,12 +119,11 @@ def revision(revision_id):
     if uplift_request_form.is_submitted():
         if not is_user_authenticated():
             errors.append("You must be logged in to request an uplift")
-        elif not form.validate():
-            for _, field_errors in form.errors.items():
+        elif not uplift_request_form.validate():
+            for _, field_errors in uplift_request_form.errors.items():
                 errors.extend(field_errors)
         else:
             try:
-                confirmation_token = uplift_request_form.confirmation_token.data
                 response = api.request(
                     "POST",
                     "uplift",
@@ -133,7 +132,6 @@ def revision(revision_id):
                         "landing_path": json.loads(
                             uplift_request_form.landing_path.data
                         ),
-                        "confirmation_token": confirmation_token,
                     },
                 )
 
@@ -205,7 +203,9 @@ def revision(revision_id):
             }
             for phid in series
         ]
-        form.landing_path.data = json.dumps(landing_path)
+        landing_path_json = json.dumps(landing_path)
+        form.landing_path.data = landing_path_json
+        uplift_request_form.landing_path.data = landing_path_json
 
         dryrun = api.request(
             "POST",
@@ -270,6 +270,8 @@ def revision(revision_id):
         form=form,
         flags=target_repo["commit_flags"] if target_repo else [],
         existing_flags=existing_flags,
+        # TODO support non-beta uplifts.
+        uplift_repo="beta",
         uplift_request_form=uplift_request_form,
     )
 

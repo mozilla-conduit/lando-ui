@@ -91,7 +91,6 @@ class UpliftRequestForm(FlaskForm):
             LandingPath(message="Landing path must be a JSON array of path objects"),
         ],
     )
-    confirmation_token = HiddenField("confirmation_token")
 
 
 class UserSettingsForm(FlaskForm):
