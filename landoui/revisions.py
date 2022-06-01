@@ -92,14 +92,17 @@ def uplift():
                 errors.extend(field_errors)
         else:
             try:
+                landing_path = json.loads(uplift_request_form.landing_path.data)
+                revision_id = landing_path[-1]["revision_id"]
+
                 response = api.request(
                     "POST",
                     "uplift",
                     require_auth0=True,
                     json={
-                        "landing_path": json.loads(
-                            uplift_request_form.landing_path.data
-                        ),
+                        "revision_id": revision_id,
+                        # TODO don't hard-code m-c here
+                        "repository": "m-c",
                     },
                 )
 
@@ -285,8 +288,8 @@ def revision(revision_id):
         form=form,
         flags=target_repo["commit_flags"] if target_repo else [],
         existing_flags=existing_flags,
-        # TODO support non-beta uplifts.
-        uplift_repo="beta",
+        # TODO don't hard-code m-c here
+        uplift_repo="m-c",
         uplift_request_form=uplift_request_form,
     )
 
