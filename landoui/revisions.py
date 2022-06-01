@@ -93,7 +93,7 @@ def uplift():
         else:
             try:
                 landing_path = json.loads(uplift_request_form.landing_path.data)
-                revision_id = landing_path[-1]["revision_id"]
+                revision_id = int(landing_path[-1]["revision_id"][1:])
 
                 response = api.request(
                     "POST",
