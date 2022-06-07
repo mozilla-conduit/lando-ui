@@ -8,6 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
     HiddenField,
+    SelectField,
     StringField,
     TextAreaField,
     ValidationError,
@@ -89,6 +90,13 @@ class UpliftRequestForm(FlaskForm):
         validators=[
             InputRequired(message="A landing path is required"),
             LandingPath(message="Landing path must be a JSON array of path objects"),
+        ],
+    )
+    repository = SelectField(
+        "repository",
+        coerce=str,
+        validators=[
+            InputRequired("An uplift repository is required."),
         ],
     )
 

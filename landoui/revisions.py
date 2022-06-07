@@ -93,6 +93,7 @@ def uplift():
         else:
             try:
                 landing_path = json.loads(uplift_request_form.landing_path.data)
+                repository = uplift_request_form.repository.data
 
                 response = api.request(
                     "POST",
@@ -100,8 +101,7 @@ def uplift():
                     require_auth0=True,
                     json={
                         "landing_path": landing_path,
-                        # TODO don't hard-code m-c here
-                        "repository": "m-c",
+                        "repository": repository,
                     },
                 )
 
@@ -232,6 +232,10 @@ def revision(revision_id):
         )
         form.confirmation_token.data = dryrun.get("confirmation_token")
 
+        # Get the list of available uplift repos and populate the form with it.
+        uplift_repos = api.request("GET", "uplift", require_auth0=True)
+        uplift_request_form.repository.choices = [(repo, repo) for repo in uplift_repos]
+
         series = list(reversed(series))
         target_repo = repositories.get(revisions[series[0]]["repo_phid"])
 
@@ -287,8 +291,6 @@ def revision(revision_id):
         form=form,
         flags=target_repo["commit_flags"] if target_repo else [],
         existing_flags=existing_flags,
-        # TODO don't hard-code m-c here
-        uplift_repo="m-c",
         uplift_request_form=uplift_request_form,
     )
 
