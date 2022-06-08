@@ -116,7 +116,7 @@ class LandoAPIDouble:
         elif operation == "uplift":
             # Mock response for the "GET /uplift" operation.
             # Return a single repository.
-            return ["m-c"]
+            return {"repos": ["m-c"]}
         else:
             raise RuntimeError(
                 "The API method for {} is not implemented by this stub".format(

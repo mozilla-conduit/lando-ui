@@ -234,7 +234,9 @@ def revision(revision_id):
 
         # Get the list of available uplift repos and populate the form with it.
         uplift_repos = api.request("GET", "uplift", require_auth0=True)
-        uplift_request_form.repository.choices = [(repo, repo) for repo in uplift_repos]
+        uplift_request_form.repository.choices = [
+            (repo, repo) for repo in uplift_repos["repos"]
+        ]
 
         series = list(reversed(series))
         target_repo = repositories.get(revisions[series[0]]["repo_phid"])
