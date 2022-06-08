@@ -113,9 +113,6 @@
     <button class="StackPage-preview-button">
       <div class="StackPage-actions-headline">Preview Landing</div>
     </button>
-    <button class="StackPage-preview-button">
-      <div class="StackPage-actions-headline">Request Uplift</div>
-    </button>
   {% endif %}
 
   </div>
@@ -145,6 +142,17 @@
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
         </form>
+        <form class="StackPage-form" action="{{ url_for('revisions.uplift') }}" method="post">
+          {{ uplift_request_form.csrf_token }}
+          {{ uplift_request_form.landing_path }}
+          {{ uplift_request_form.repository }}
+          <button
+              class="StackPage-landingPreview-land button"
+              disabled>
+            Request uplift
+          </button>
+          <button class="StackPage-landingPreview-close button">Cancel</button>
+        </form>
       </footer>
     </div>
   </div>
@@ -156,18 +164,6 @@
         <button class="StackPage-landingPreview-close delete" aria-label="close"></button>
       </header>
       <footer class="modal-card-foot">
-          <form class="StackPage-form" action="{{ url_for('revisions.uplift') }}" method="post">
-          {{ uplift_request_form.csrf_token }}
-          {{ uplift_request_form.landing_path }}
-          {{ uplift_request_form.repository }}
-          <button
-              class="StackPage-landingPreview-land button"
-              data-target-repo="{{ uplift_request_form.repository.label }}"
-              disabled>
-            Request uplift
-          </button>
-          <button class="StackPage-landingPreview-close button">Cancel</button>
-        </form>
       </footer>
     </div>
   </div>
