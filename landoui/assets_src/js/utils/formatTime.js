@@ -5,7 +5,7 @@ $.fn.formatTime = function() {
     let time = $(this).data('timestamp');
     let date = new Date(time);
 
-    $(this).text(date.toLocaleString(navigator.language, {
+    $(this).text(date.toLocaleString('en', {
       weekday: 'short',
       year: 'numeric',
       month: 'long',
