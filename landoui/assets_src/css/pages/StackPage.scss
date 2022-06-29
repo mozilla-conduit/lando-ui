@@ -49,10 +49,6 @@
     text-align: center;
     width: 1%;
   }
-  &-uplift {
-    text-align: center;
-    width: 1%;
-  }
   &-graph {
     width: 1%;
     text-align: center;
@@ -318,6 +314,14 @@ ul.StackPage-blockers {
       font-weight: bold;
     }
   }
+
+  &-uplift {
+    text-align: center;
+    width: 1%;
+    margin-left: auto;
+    margin-right: 0;
+  }
+
 }
 
 .StackPage-timeline {
