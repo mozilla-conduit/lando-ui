@@ -129,7 +129,7 @@
         {% include "stack/partials/landing-preview.html" %}
       </section>
       <footer class="modal-card-foot">
-        <form class="StackPage-form" action="" method="post">
+        <form class="StackPage-form" action="" method="post" style="flex-grow: 1;">
           {{form.csrf_token}}
           {{form.landing_path}}
           {{form.confirmation_token}}

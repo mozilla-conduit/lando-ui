@@ -306,6 +306,7 @@ ul.StackPage-blockers {
 
     &-foot {
       padding-top: 20px;
+      display: flex;
     }
 
     label {
@@ -318,8 +319,6 @@ ul.StackPage-blockers {
   &-uplift {
     text-align: center;
     width: 1%;
-    margin-left: auto;
-    margin-right: 0;
   }
 
 }
