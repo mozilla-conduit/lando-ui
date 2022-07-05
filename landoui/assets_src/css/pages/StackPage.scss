@@ -317,6 +317,8 @@ ul.StackPage-blockers {
   }
 
   &-uplift {
+    display: flex;
+    margin-left: auto;
     text-align: center;
     width: 1%;
   }
