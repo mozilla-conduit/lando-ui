@@ -122,10 +122,16 @@ def landoapi_exception(e):
     sentry.captureException()
     logger.exception("Uncaught communication exception with Lando API.")
 
+    if e.status_code == 503:
+        # Show a maintenance-mode specific title if we get a 503.
+        title = "Lando is undergoing maintenance and is temporarily unavailable"
+    else:
+        title = "Lando API returned an unexpected error"
+
     return (
         render_template(
             "errorhandlers/default_error.html",
-            title="Lando API returned an unexpected error",
+            title=title,
             message=str(e),
         ),
         500,
