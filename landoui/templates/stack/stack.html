@@ -129,7 +129,7 @@
         {% include "stack/partials/landing-preview.html" %}
       </section>
       <footer class="modal-card-foot">
-        <form class="StackPage-form" action="" method="post" style="flex-grow: 1;">
+        <form class="StackPage-form" action="" method="post">
           {{form.csrf_token}}
           {{form.landing_path}}
           {{form.confirmation_token}}
@@ -142,17 +142,15 @@
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
         </form>
-        <div class="StackPage-landingPreview-uplift">
-            <form class="StackPage-form" action="{{ url_for('revisions.uplift') }}" method="post">
-              {{ uplift_request_form.csrf_token }}
-              {{ uplift_request_form.landing_path }}
-              {{ uplift_request_form.repository }}
-              <button
-                  class="button">
-                Request uplift
-              </button>
-            </form>
-        </div>
+        <form class="StackPage-landingPreview-uplift" action="{{ url_for('revisions.uplift') }}" method="post">
+          {{ uplift_request_form.csrf_token }}
+          {{ uplift_request_form.landing_path }}
+          {{ uplift_request_form.repository }}
+          <button
+              class="button">
+            Request uplift
+          </button>
+        </form>
       </footer>
     </div>
   </div>
