@@ -71,6 +71,13 @@ def annotate_sec_approval_workflow_info(revisions):
             should_use_workflow = False
         revision["should_use_sec_approval_workflow"] = should_use_workflow
 
+def get_uplift_repos(api: LandoAPI) -> list[tuple[str, str]]:
+    """Return the set of uplift repositories as a list of `(name, value)` tuples."""
+    uplift_repos = api.request("GET", "uplift", require_auth0=True)
+    return [
+        (repo, repo) for repo in uplift_repos["repos"]
+    ]
+
 
 @revisions.route("/uplift/", methods=("POST",))
 @oidc_auth_optional
@@ -84,10 +91,7 @@ def uplift():
     uplift_request_form = UpliftRequestForm()
 
     # Get the list of available uplift repos and populate the form with it.
-    uplift_repos = api.request("GET", "uplift", require_auth0=True)
-    uplift_request_form.repository.choices = [
-        (repo, repo) for repo in uplift_repos["repos"]
-    ]
+    uplift_request_form.repository.choices = get_uplift_repos(api)
 
     errors = []
     if uplift_request_form.is_submitted():
@@ -239,10 +243,7 @@ def revision(revision_id):
         form.confirmation_token.data = dryrun.get("confirmation_token")
 
         # Get the list of available uplift repos and populate the form with it.
-        uplift_repos = api.request("GET", "uplift", require_auth0=True)
-        uplift_request_form.repository.choices = [
-            (repo, repo) for repo in uplift_repos["repos"]
-        ]
+        uplift_request_form.repository.choices = get_uplift_repos(api)
 
         series = list(reversed(series))
         target_repo = repositories.get(revisions[series[0]]["repo_phid"])
