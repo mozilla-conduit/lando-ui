@@ -81,7 +81,7 @@ def uplift():
         auth0_access_token=session.get("access_token"),
         phabricator_api_token=get_phabricator_api_token(),
     )
-    uplift_request_form = UpliftRequestForm()
+    uplift_request_form = UpliftRequestForm(validate_choice=False)
 
     errors = []
     if uplift_request_form.is_submitted():
