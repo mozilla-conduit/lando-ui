@@ -81,7 +81,13 @@ def uplift():
         auth0_access_token=session.get("access_token"),
         phabricator_api_token=get_phabricator_api_token(),
     )
-    uplift_request_form = UpliftRequestForm(validate_choice=False)
+    uplift_request_form = UpliftRequestForm()
+
+    # Get the list of available uplift repos and populate the form with it.
+    uplift_repos = api.request("GET", "uplift", require_auth0=True)
+    uplift_request_form.repository.choices = [
+        (repo, repo) for repo in uplift_repos["repos"]
+    ]
 
     errors = []
     if uplift_request_form.is_submitted():
