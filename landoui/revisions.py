@@ -71,12 +71,11 @@ def annotate_sec_approval_workflow_info(revisions):
             should_use_workflow = False
         revision["should_use_sec_approval_workflow"] = should_use_workflow
 
+
 def get_uplift_repos(api: LandoAPI) -> list[tuple[str, str]]:
     """Return the set of uplift repositories as a list of `(name, value)` tuples."""
     uplift_repos = api.request("GET", "uplift", require_auth0=True)
-    return [
-        (repo, repo) for repo in uplift_repos["repos"]
-    ]
+    return [(repo, repo) for repo in uplift_repos["repos"]]
 
 
 @revisions.route("/uplift/", methods=("POST",))
