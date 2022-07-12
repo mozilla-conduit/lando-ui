@@ -140,6 +140,9 @@ def revision(revision_id):
     sec_approval_form = SecApprovalRequestForm()
     uplift_request_form = UpliftRequestForm()
 
+    # Get the list of available uplift repos and populate the form with it.
+    uplift_request_form.repository.choices = get_uplift_repos(api)
+
     errors = []
     if form.is_submitted():
         if not is_user_authenticated():
@@ -240,9 +243,6 @@ def revision(revision_id):
             json={"landing_path": landing_path},
         )
         form.confirmation_token.data = dryrun.get("confirmation_token")
-
-        # Get the list of available uplift repos and populate the form with it.
-        uplift_request_form.repository.choices = get_uplift_repos(api)
 
         series = list(reversed(series))
         target_repo = repositories.get(revisions[series[0]]["repo_phid"])
