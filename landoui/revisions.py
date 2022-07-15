@@ -92,13 +92,19 @@ def uplift():
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
 
+    # If we return an error and we don't hit a block with a specific problem, consider
+    # the error a server-side issue.
+    return_code = 500
+
     errors = []
     if uplift_request_form.is_submitted():
         if not is_user_authenticated():
             errors.append("You must be logged in to request an uplift")
+            return_code = 401
         elif not uplift_request_form.validate():
             for _, field_errors in uplift_request_form.errors.items():
                 errors.extend(field_errors)
+            return_code = 400
         else:
             try:
                 landing_path = json.loads(uplift_request_form.landing_path.data)
@@ -118,13 +124,15 @@ def uplift():
                 # TODO add js for auto-opening the uplift request Phabricator form.
                 tip_differential = response["tip_differential"]["url"]
                 return redirect(tip_differential)
+
             except LandoAPIError as e:
                 if not e.detail:
                     raise e
 
                 errors.append(e.detail)
+                return_code = e.status_code
 
-    return jsonify(errors=errors), 500
+    return jsonify(errors=errors), return_code
 
 
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
