@@ -120,7 +120,7 @@ def uplift():
                     },
                 )
 
-                # Ridirect to the tip revision's URL.
+                # Redirect to the tip revision's URL.
                 # TODO add js for auto-opening the uplift request Phabricator form.
                 tip_differential = response["tip_differential"]["url"]
                 return redirect(tip_differential)
