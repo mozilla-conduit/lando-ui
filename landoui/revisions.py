@@ -28,7 +28,11 @@ from landoui.helpers import (
     is_user_authenticated,
     set_last_local_referrer,
 )
-from landoui.landoapi import LandoAPI, LandoAPIError
+from landoui.landoapi import (
+    LandoAPI,
+    LandoAPICommunicationException,
+    LandoAPIError,
+)
 from landoui.errorhandlers import RevisionNotFound
 from landoui.stacks import draw_stack_graph, Edge, sort_stack_topological
 
@@ -107,8 +111,13 @@ def uplift():
             return_code = 400
         else:
             try:
-                landing_path = json.loads(uplift_request_form.landing_path.data)
-                repository = uplift_request_form.repository.data
+                try:
+                    landing_path = json.loads(uplift_request_form.landing_path.data)
+                    repository = uplift_request_form.repository.data
+                except json.JSONDecodeError as exc:
+                    raise LandoAPICommunicationException(
+                        "Landing path could not be decoded as JSON"
+                    ) from exc
 
                 response = api.request(
                     "POST",
