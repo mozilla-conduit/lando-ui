@@ -96,9 +96,7 @@ def uplift():
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
 
-    # If we return an error and we don't hit a block with a specific problem, consider
-    # the error a server-side issue.
-    return_code = 500
+    return_code = None
 
     errors = []
     if uplift_request_form.is_submitted():
@@ -141,7 +139,9 @@ def uplift():
                 errors.append(e.detail)
                 return_code = e.status_code
 
-    return jsonify(errors=errors), return_code
+    # If we return an error and we don't hit a block with a specific problem, consider
+    # the error a server-side issue.
+    return jsonify(errors=errors), return_code or 500
 
 
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
