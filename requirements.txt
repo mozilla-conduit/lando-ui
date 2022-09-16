@@ -159,9 +159,9 @@ jinja2==2.11.3 \
     --hash=sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419 \
     --hash=sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6
     # via flask
-mako==1.1.4 \
-    --hash=sha256:17831f0b7087c313c0ffae2bcbbd3c1d5ba9eeac9c38f2eb7b50e8c99fe9d5ab \
-    --hash=sha256:aea166356da44b9b830c8023cd9b557fa856bd8b4035d6de771ca027dfc5cc6e
+mako==1.2.2 \
+    --hash=sha256:3724869b363ba630a272a5f89f68c070352137b8fd1757650017b7e06fda163f \
+    --hash=sha256:8efcb8004681b5f71d09c983ad5a9e6f5c40601a6ec469148753292abc0da534
     # via oic
 markupsafe==1.1.1 \
     --hash=sha256:00bc623926325b26bb9605ae9eae8a215691f33cae5df11ca5424f06f2d1f473 \
@@ -425,7 +425,7 @@ requests==2.25.1 \
     #   oic
     #   pyjwkest
     #   requests-mock
-requests_mock==1.7.0 \
+requests-mock==1.7.0 \
     --hash=sha256:510df890afe08d36eca5bb16b4aa6308a6f85e3159ad3013bac8b9de7bd5a010 \
     --hash=sha256:88d3402dd8b3c69a9e4f9d3a73ad11b15920c6efd36bc27bf1f701cf4a8e4646
     # via -r requirements.in
