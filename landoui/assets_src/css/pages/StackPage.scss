@@ -306,7 +306,6 @@ ul.StackPage-blockers {
 
     &-foot {
       padding-top: 20px;
-      display: flex;
     }
 
     label {
@@ -315,13 +314,6 @@ ul.StackPage-blockers {
       font-weight: bold;
     }
   }
-
-  &-uplift {
-    display: flex;
-    margin-left: auto;
-    text-align: center;
-  }
-
 }
 
 .StackPage-timeline {

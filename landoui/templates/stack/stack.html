@@ -114,7 +114,6 @@
       <div class="StackPage-actions-headline">Preview Landing</div>
     </button>
   {% endif %}
-
   </div>
 
   {% if is_user_authenticated() %}
@@ -141,12 +140,6 @@
             Land to {{ target_repo['url']|repo_path }}
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
-        </form>
-        <form class="StackPage-landingPreview-uplift" action="{{ url_for('revisions.uplift') }}" method="post">
-          {{ uplift_request_form.csrf_token }}
-          {{ uplift_request_form.landing_path }}
-          {{ uplift_request_form.repository }}
-          <button class="button">Request uplift</button>
         </form>
       </footer>
     </div>
