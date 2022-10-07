@@ -24,6 +24,11 @@ def is_user_authenticated():
 
 
 @template_helpers.app_template_global()
+def is_api_token_available() -> bool:
+    return helpers.get_phabricator_api_token() is not None
+
+
+@template_helpers.app_template_global()
 def new_settings_form():
     return UserSettingsForm()
 
