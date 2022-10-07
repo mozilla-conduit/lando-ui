@@ -18,13 +18,21 @@ from flask import (
 )
 
 from landoui.app import oidc
-from landoui.forms import SecApprovalRequestForm, TransplantRequestForm
+from landoui.forms import (
+    SecApprovalRequestForm,
+    TransplantRequestForm,
+    UpliftRequestForm,
+)
 from landoui.helpers import (
     get_phabricator_api_token,
     is_user_authenticated,
     set_last_local_referrer,
 )
-from landoui.landoapi import LandoAPI, LandoAPIError
+from landoui.landoapi import (
+    LandoAPI,
+    LandoAPICommunicationException,
+    LandoAPIError,
+)
 from landoui.errorhandlers import RevisionNotFound
 from landoui.stacks import draw_stack_graph, Edge, sort_stack_topological
 
@@ -68,6 +76,74 @@ def annotate_sec_approval_workflow_info(revisions):
         revision["should_use_sec_approval_workflow"] = should_use_workflow
 
 
+def get_uplift_repos(api: LandoAPI) -> list[tuple[str, str]]:
+    """Return the set of uplift repositories as a list of `(name, value)` tuples."""
+    uplift_repos = api.request("GET", "uplift", require_auth0=True)
+    return [(repo, repo) for repo in uplift_repos["repos"]]
+
+
+@revisions.route("/uplift/", methods=("POST",))
+@oidc_auth_optional
+def uplift():
+    """Process the uplift request WTForms submission."""
+    api = LandoAPI(
+        current_app.config["LANDO_API_URL"],
+        auth0_access_token=session.get("access_token"),
+        phabricator_api_token=get_phabricator_api_token(),
+    )
+    uplift_request_form = UpliftRequestForm()
+
+    # Get the list of available uplift repos and populate the form with it.
+    uplift_request_form.repository.choices = get_uplift_repos(api)
+
+    return_code = None
+
+    errors = []
+    if uplift_request_form.is_submitted():
+        if not is_user_authenticated():
+            errors.append("You must be logged in to request an uplift")
+            return_code = 401
+        elif not uplift_request_form.validate():
+            for _, field_errors in uplift_request_form.errors.items():
+                errors.extend(field_errors)
+            return_code = 400
+        else:
+            try:
+                try:
+                    landing_path = json.loads(uplift_request_form.landing_path.data)
+                    repository = uplift_request_form.repository.data
+                except json.JSONDecodeError as exc:
+                    raise LandoAPICommunicationException(
+                        "Landing path could not be decoded as JSON"
+                    ) from exc
+
+                response = api.request(
+                    "POST",
+                    "uplift",
+                    require_auth0=True,
+                    json={
+                        "landing_path": landing_path,
+                        "repository": repository,
+                    },
+                )
+
+                # Redirect to the tip revision's URL.
+                # TODO add js for auto-opening the uplift request Phabricator form.
+                tip_differential = response["tip_differential"]["url"]
+                return redirect(tip_differential)
+
+            except LandoAPIError as e:
+                if not e.detail:
+                    raise e
+
+                errors.append(e.detail)
+                return_code = e.status_code
+
+    # If we return an error and we don't hit a block with a specific problem, consider
+    # the error a server-side issue.
+    return jsonify(errors=errors), return_code or 500
+
+
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
 @oidc_auth_optional
 def revision(revision_id):
@@ -79,6 +155,10 @@ def revision(revision_id):
 
     form = TransplantRequestForm()
     sec_approval_form = SecApprovalRequestForm()
+    uplift_request_form = UpliftRequestForm()
+
+    # Get the list of available uplift repos and populate the form with it.
+    uplift_request_form.repository.choices = get_uplift_repos(api)
 
     errors = []
     if form.is_submitted():
@@ -169,7 +249,9 @@ def revision(revision_id):
             }
             for phid in series
         ]
-        form.landing_path.data = json.dumps(landing_path)
+        landing_path_json = json.dumps(landing_path)
+        form.landing_path.data = landing_path_json
+        uplift_request_form.landing_path.data = landing_path_json
 
         dryrun = api.request(
             "POST",
@@ -234,6 +316,7 @@ def revision(revision_id):
         form=form,
         flags=target_repo["commit_flags"] if target_repo else [],
         existing_flags=existing_flags,
+        uplift_request_form=uplift_request_form,
     )
 
 
