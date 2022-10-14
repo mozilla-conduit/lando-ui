@@ -24,7 +24,7 @@ def is_user_authenticated():
 
 
 @template_helpers.app_template_global()
-def is_api_token_available() -> bool:
+def user_has_phabricator_token() -> bool:
     return helpers.get_phabricator_api_token() is not None
 
 

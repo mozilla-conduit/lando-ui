@@ -142,7 +142,7 @@
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
         </form>
-        {% if is_api_token_available() %}
+        {% if user_has_phabricator_token() %}
             <form class="StackPage-landingPreview-uplift" action="{{ url_for('revisions.uplift') }}" method="post">
               {{ uplift_request_form.csrf_token }}
               {{ uplift_request_form.landing_path }}
