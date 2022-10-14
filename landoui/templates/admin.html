@@ -1,0 +1,88 @@
+{% extends "partials/layout.html" %}
+{% block page_title %}Lando Administration{% endblock %}
+{% block main %}
+<main class="container">
+<h1>Repo Notices</h1>
+<p>User repo notices to make announcements on landing pages, or to add a warning before landing. You can schedule notices ahead of time by specifying a start date and/or end date. For example, you can announce a tree closure window, a soft freeze window, etc...
+</p>
+<form id="newRepoNoticeForm">
+    {{ form.csrf_token }}
+    <table class="table">
+        <tr>
+            <th>Repo</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Message</th>
+            <th>Is Warning</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                <div class="field">
+                    <div class="control">
+                        <div class="select">
+                            <select name="repo_identifier">
+                                {% for repo in repos %}
+                                    <option>{{ repo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <p class="help is-info">Select a repository to post a new notice in.</p>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="control">
+                        <input name="start_date" placeholder="yyyy-mm-dd hh:mm:ss" type="text" class="input">
+                    </div>
+                    <p class="help is-info">Enter a date for when this notice should be posted. The date and time should be in this format: yyyy-mm-dd hh:mm:ss.</p>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="control">
+                        <input name="end_date" placeholder="yyyy-mm-dd hh:mm:ss" type="text" class="input">
+                    </div>
+                    <p class="help is-info">Enter a date after which this notice will be removed. The date and time should be in this format: yyyy-mm-dd hh:mm:ss.</p>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="control">
+                        <textarea name="message" class="textarea"></textarea>
+                    </div>
+                    <p class="help is-info">Enter a message. The message will be shown on the revision page, as well as in a landing warning if this is set to be a warning.</p>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="control">
+                        <div class="select">
+                            <select name="is_warning">
+                                <option value="false">Not a warning</option>
+                                <option value="true">A warning</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="help is-info">If this is set to be a warning, a landing warning will be shown to the user when attempting to land.</p>
+                </div>
+            </td>
+            <td><button class="button is-primary" type="submit">Add</button></td>
+        </tr>
+        {% for notice in notices %}
+        <tr>
+            <td>{{ notice.repo_identifier }}</td>
+            <td>{{ notice.start_date }}</td>
+            <td>{{ notice.end_date }}</td>
+            <td>{{ notice.message }}</td>
+            <td>{{ notice.is_warning }}</td>
+            <td>
+                <button class="button archive-notice" type="button" data-noticeid="{{ notice.id }}">Archive</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</form>
+</main>
+{% endblock %}

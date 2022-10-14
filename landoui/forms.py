@@ -12,6 +12,7 @@ from wtforms import (
     StringField,
     TextAreaField,
     ValidationError,
+    DateTimeField,
 )
 from wtforms.validators import InputRequired, optional, Regexp
 
@@ -112,3 +113,15 @@ class UserSettingsForm(FlaskForm):
         ],
     )
     reset_phab_api_token = BooleanField("Delete", default="")
+
+
+class RepoNoticeForm(FlaskForm):
+    repo_identifier = StringField(
+        validators=[InputRequired(message="A repo identifier must be provided."),],
+    )
+    message = TextAreaField(
+        "message", validators=[InputRequired(message="A message must be provided."),],
+    )
+    start_date = DateTimeField(validators=(optional(),), default="")
+    end_date = DateTimeField(validators=(optional(),), default="")
+    is_warning = BooleanField()
