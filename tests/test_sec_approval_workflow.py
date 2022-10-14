@@ -113,6 +113,10 @@ class LandoAPIDouble:
             # Mock response for the "POST /requestSecApproval" operation.
             # Pretend there were no problems.
             return {}
+        elif operation == "uplift":
+            # Mock response for the "GET /uplift" operation.
+            # Return a single repository.
+            return {"repos": ["m-c"]}
         else:
             raise RuntimeError(
                 "The API method for {} is not implemented by this stub".format(
