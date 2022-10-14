@@ -4,6 +4,14 @@
 
 version: '2'
 services:
+  build-requirements:
+    build:
+        context: ./
+        dockerfile: ./docker/Dockerfile-prod
+        target: assets
+    volumes:
+      - ./:/app
+    command: sh -c "cd /app && pip install pip --upgrade && pip install pip-tools && python -m piptools compile requirements.in --generate-hashes --allow-unsafe"
   lando-ui:
     build:
       context: ./
