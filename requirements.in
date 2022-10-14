@@ -12,6 +12,8 @@ cryptography==3.3.2
 flake8==3.7.9
 flask-assets==0.12
 flask-pyoidc==3.7.0
+# Required by flask-pyoidc, can be removed when flask-pyoidc is updated.
+mako>=1.2.2
 flask-talisman==0.6.0
 flask-wtf==0.14.3
 flask==1.1.1
