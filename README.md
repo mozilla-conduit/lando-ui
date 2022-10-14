@@ -80,6 +80,17 @@ $ invoke test
 Subsets of the tests, e.g. linters, and other commands are also available.  Run
 `invoke -l` to see all tasks.
 
+### Updating Requirements
+
+Requirements are tracked using `pip-compile`'s input format as `requirements.in`,
+which generates a `requirements.txt`. You can re-compile the requirements file
+using the same Python version as in the `Dockerfile` using the `build-requirements`
+recipe in `docker-compose`:
+
+```shell
+docker-compose run build-requirements
+```
+
 ### Setting up Auth0
 
 We use [Auth0][] to authenticate application users.  You will need to sign up
