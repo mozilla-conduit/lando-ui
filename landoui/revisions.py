@@ -78,7 +78,7 @@ def annotate_sec_approval_workflow_info(revisions):
 
 def get_uplift_repos(api: LandoAPI) -> list[tuple[str, str]]:
     """Return the set of uplift repositories as a list of `(name, value)` tuples."""
-    uplift_repos = api.request("GET", "uplift", require_auth0=True)
+    uplift_repos = api.request("GET", "uplift")
     return [(repo, repo) for repo in uplift_repos["repos"]]
 
 
