@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import logging
 
+import sentry_sdk
 from flask import render_template
 
-from landoui.sentry import sentry
 from landoui.landoapi import (
     LandoAPICommunicationException,
     LandoAPIError,
@@ -86,7 +86,7 @@ def unexpected_error(e):
     """Handler for all uncaught Exceptions."""
 
     logger.exception("unexpected error")
-    sentry.captureException()
+    sentry_sdk.capture_exception()
 
     return (
         render_template(
@@ -102,7 +102,7 @@ def unexpected_error(e):
 
 
 def landoapi_communication(e):
-    sentry.captureException()
+    sentry_sdk.capture_exception()
     logger.exception("Uncaught communication exception with Lando API.")
 
     return (
@@ -119,7 +119,7 @@ def landoapi_communication(e):
 
 
 def landoapi_exception(e):
-    sentry.captureException()
+    sentry_sdk.capture_exception()
     logger.exception("Uncaught communication exception with Lando API.")
 
     if e.status_code == 503:
