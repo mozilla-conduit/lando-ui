@@ -81,7 +81,7 @@ def create_app(
     # Set configuration
     version_info = get_app_version(version_path)
     logger.info("application version", extra=version_info)
-    initialize_sentry(app, version_info["version"])
+    initialize_sentry(version_info["version"])
 
     set_config_param(app, "LANDO_API_URL", lando_api_url)
     set_config_param(

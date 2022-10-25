@@ -3,21 +3,30 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import os
 
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from landoui.logging import log_config_change
 
-sentry = Sentry()
+
+def sanitize_headers(headers):
+    sensitive_keys = ("X-PHABRICATOR-API-KEY",)
+    for key in headers:
+        if key.upper() in sensitive_keys:
+            headers[key] = 10 * "*"
 
 
-def initialize_sentry(app, release):
+def before_send(event, *args):
+    """Sentry callback to filter event data before sending."""
+    if "request" in event and "headers" in event["request"]:
+        sanitize_headers(event["request"]["headers"])
+    return event
+
+
+def initialize_sentry(release: str):
     """Initialize Sentry application monitoring.
 
-    See https://docs.sentry.io/clients/python/advanced/#client-arguments for
-    details about what this function's arguments mean to Sentry.
-
     Args:
-        app: A Flask() instance.
         release: A string representing this application release number (such as
             a git sha).  Will be used as the Sentry "release" identifier. See
             the Sentry client configuration docs for details.
@@ -28,22 +37,18 @@ def initialize_sentry(app, release):
     else:
         log_config_change("SENTRY_DSN", "none (sentry disabled)")
 
-    # Do this after logging the DSN so if there is a DSN URL parsing error
-    # the logs will record the configured value before the Sentry client
-    # kills the app.
-    global sentry
-    sentry.init_app(app, dsn=sentry_dsn)
-
-    # Set these attributes directly because their keyword arguments can't be
-    # passed into Sentry.__init__() or make_client().
-    sentry.client.release = release
+    # Log release.
     log_config_change("SENTRY_LOG_RELEASE_AS", release)
 
+    # Log environment.
     environment = os.environ.get("ENV", None)
-    sentry.client.environment = environment
     log_config_change("SENTRY_LOG_ENVIRONMENT_AS", environment)
 
-    sentry.client.processors = (
-        "raven.processors.SanitizePasswordsProcessor",
-        "raven.processors.RemoveStackLocalsProcessor",
+    sentry_sdk.init(
+        before_send=before_send,
+        dsn=sentry_dsn,
+        environment=environment,
+        integrations=[FlaskIntegration()],
+        release=release,
+        traces_sample_rate=1.0,
     )
