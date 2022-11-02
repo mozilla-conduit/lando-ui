@@ -87,6 +87,9 @@ jobs:
               elif [[ ${CIRCLE_BRANCH} == develop ]]; then
                 docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:develop-latest"
                 docker push "${DOCKERHUB_REPO}:develop-latest"
+              elif [[ ${CIRCLE_BRANCH} == staging ]]; then
+                docker tag "mozilla/landoui" "${DOCKERHUB_REPO}:staging-latest"
+                docker push "${DOCKERHUB_REPO}:staging-latest"
               fi
             fi
 
