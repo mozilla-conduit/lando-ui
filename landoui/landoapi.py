@@ -69,12 +69,16 @@ class LandoAPI:
                 },
             )
 
-            data = response.json()
         except requests.RequestException as exc:
             raise LandoAPICommunicationException(
                 "An error occurred when communicating with Lando API"
             ) from exc
+
+        try:
+            data = response.json()
         except JSONDecodeError as exc:
+            response.raise_for_status()
+
             raise LandoAPICommunicationException(
                 "Lando API response could not be decoded as JSON"
             ) from exc
