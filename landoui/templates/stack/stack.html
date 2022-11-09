@@ -2,7 +2,12 @@
 {% block page_title %}{{revision_id}} - Lando - Mozilla{% endblock %}
 
 {% block main %}
-<main class="StackPage container fullhd">
+  {% if "lando_revision" in revisions[revision_phid] and revisions[revision_phid]["lando_revision"] %}
+  {% set lando_revision = revisions[revision_phid]["lando_revision"] %}
+  <main class="StackPage container fullhd" data-revision="{{ lando_revision.id }}" data-hashes="{{ lando_revision.stack_hashes or {} }}">
+  {% else %}
+  <main class="StackPage container fullhd">
+  {% endif %}
   {% if errors %}
   <div class="StackPage-errors">
     <span>Landing Failed</span>
@@ -14,7 +19,9 @@
   </div>
   {% endif %}
 
-  <h1>Landings for Stack Containing {{revisions[revision_phid]['id']}}</h1>
+  <button class="button refresh-button is-info">This page is out of date, refresh now.</button>
+
+  <h1>Landings</h1>
   {% include "stack/partials/timeline.html" %}
 
   <h1>Stack containing revision {{revisions[revision_phid]['id']}}</h1>
@@ -24,15 +31,18 @@
         <tr>
           <th>Land</th>
           <th></th>
+          <th>Merge State</th>
           <th>Bug</th>
-          <th>Status</th>
           <th>Revision</th>
+          <th></th>
           <th>Reviewers</th>
+          <th>Modules Affected</th>
         </tr>
       </thead>
       <tbody>
       {% for phid, drawing in rows %}
         {% set revision = revisions[phid] %}
+        {% set lando_revision = revision["lando_revision"] if "lando_revision" in revision else None %}
         <tr
           class="StackPage-revision{%
             if series and phid in series %} StackPage-revision-in-series{% endif
@@ -57,25 +67,36 @@
             {% include "stack/partials/graph-drawing.html" %}
             </div>
           </td>
+          <td>
+              {% if lando_revision %}
+              <span title="{{ lando_revision.status }}" class="{{ lando_revision.status|revision_status_to_badge_class }}">{{ lando_revision.status }}</span>
+              <span>{{ "[" + lando_revision.id.__str__() + "]" if lando_revision else "" }}<span>
+              {% endif %}
+          </td>
           <td class="StackPage-revision-bug">
             {% if revision['bug_id'] is not none %}
             <a href="{{revision['bug_id']|bug_url}}">{{revision['bug_id']}}</a>
             {% else %}
-            -
+            no bug
             {% endif %}
-          </td>
-          <td class="StackPage-revision-status">
-            {% include "stack/partials/revision-status.html" %}
           </td>
           <td class="StackPage-revision-title">
             <div class="StackPage-revision-title-text">
               <a href="{{revision['url']}}">{{revision['id']}}</a>: {{revision['title']}}
             </div>
           </td>
+          <td class="StackPage-revision-status">{% include "stack/partials/revision-status.html" %}</td>
           <td class="StackPage-revision-reviewers">
             {% with reviewers=revision['reviewers'] %}
             {% include "stack/partials/revision-reviewers.html" %}
             {% endwith %}
+          </td>
+          <td>
+              {% if lando_revision and lando_revision.data and lando_revision.data.mots %}
+                  {% for m in lando_revision.data.mots.modules %}
+                  <span title="{{ m.machine_name }}" class="Badge Badge--neutral">{{ m.name }}</span>
+                  {% endfor %}
+              {% endif %}
           </td>
         </tr>
       {% endfor %}

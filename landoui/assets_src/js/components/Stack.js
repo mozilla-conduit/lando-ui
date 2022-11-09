@@ -11,3 +11,41 @@ $.fn.stack = function() {
     });
   });
 };
+
+var revisionId = $("main")[0].dataset.revision;
+var rawHashData = $("main")[0].dataset.hashes;
+var hashes = {};
+if (rawHashData) {
+    hashes = JSON.parse(rawHashData);
+}
+var new_hashes = {};
+var stopCheck = false;
+
+console.log(hashes);
+
+function checkHashes() {
+    // Get stack hashes, compare them with stored hashes.
+    console.log(stopCheck);
+    if (!stopCheck) {
+        new_hashes = fetch("/stack_hashes/" + revisionId)
+            .then(response => response.json())
+            .then(new_hashes => {
+                if (new_hashes.timestamps != hashes.timestamps) {
+                    hashes = new_hashes;
+                    console.log(new_hashes);
+                    // $(".StackPage-preview-button").attr("disabled", true);
+                    $(".refresh-button").show();
+                    stopCheck = true;
+                }
+            });
+    }
+}
+
+
+var sleep = duration => new Promise(resolve => setTimeout(resolve, duration));
+var poll = (promiseFn, duration) => promiseFn().then(
+                 sleep(duration).then(() => poll(promiseFn, duration)));
+poll(() => new Promise(() => checkHashes()), 10000);
+$("button.refresh-button").on("click", function(e) {
+    window.location.reload();
+});
