@@ -110,7 +110,7 @@ def uplift():
         else:
             try:
                 try:
-                    landing_path = json.loads(uplift_request_form.landing_path.data)
+                    revision_id = uplift_request_form.revision_id.data
                     repository = uplift_request_form.repository.data
                 except json.JSONDecodeError as exc:
                     raise LandoAPICommunicationException(
@@ -122,7 +122,7 @@ def uplift():
                     "uplift",
                     require_auth0=True,
                     json={
-                        "landing_path": landing_path,
+                        "revision_id": revision_id,
                         "repository": repository,
                     },
                 )
@@ -159,6 +159,7 @@ def revision(revision_id):
 
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
+    uplift_request_form.revision_id.data = revision_id
 
     errors = []
     if form.is_submitted():
@@ -251,7 +252,6 @@ def revision(revision_id):
         ]
         landing_path_json = json.dumps(landing_path)
         form.landing_path.data = landing_path_json
-        uplift_request_form.landing_path.data = landing_path_json
 
         dryrun = api.request(
             "POST",

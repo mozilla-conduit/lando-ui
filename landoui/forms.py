@@ -85,11 +85,11 @@ class SecApprovalRequestForm(FlaskForm):
 class UpliftRequestForm(FlaskForm):
     """Form used to request uplift of a stack."""
 
-    landing_path = HiddenField(
-        "landing_path",
+    revision_id = StringField(
+        "revision_id",
         validators=[
-            InputRequired(message="A landing path is required"),
-            LandingPath(message="Landing path must be a JSON array of path objects"),
+            InputRequired(message="A valid Revision monogram must be provided"),
+            Regexp("^D[0-9]+$"),
         ],
     )
     repository = SelectField(
