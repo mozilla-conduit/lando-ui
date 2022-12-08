@@ -104,7 +104,7 @@
       <div class="StackPage-actions-headline">Preview Landing</div>
       <div class="StackPage-actions-subtitle">You must log in first</div>
     </button>
-  {% elif not series or dryrun is none %}
+  {% elif not user_has_phabricator_token() and (not series or dryrun is none) %}
     <button disabled>
       <div class="StackPage-actions-headline">Landing Blocked</div>
       <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
