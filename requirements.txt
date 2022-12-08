@@ -34,9 +34,9 @@ black==21.11b1 \
 blinker==1.4 \
     --hash=sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6
     # via -r requirements.in
-certifi==2018.10.15 \
-    --hash=sha256:339dc09518b07e2fa7eda5450740925974815557727d6bd35d319c1524a04a4c \
-    --hash=sha256:6d58c986d22b038c8c0df30d639f23a3e6d172a05c3583e766f4c0b785c0986a
+certifi==2022.12.7 \
+    --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
+    --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
     # via
     #   -r requirements.in
     #   requests

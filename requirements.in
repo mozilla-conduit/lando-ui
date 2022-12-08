@@ -5,7 +5,7 @@ attrs==18.2.0
 beaker==1.10.0
 black==21.11b1
 blinker==1.4
-certifi==2018.10.15
+certifi==2022.12.7
 cffi==1.14.0
 chardet==3.0.4
 cryptography==3.3.2
