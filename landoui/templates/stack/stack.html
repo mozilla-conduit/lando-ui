@@ -153,7 +153,11 @@
               {{ uplift_request_form.csrf_token }}
               <input type="hidden" name="revision_id" value="{{ revision_id }}" />
               {{ uplift_request_form.repository }}
-              <button class="button">Request uplift</button>
+              <button
+                class="button"
+                title="Create Phabricator review requests for the selected patch stack to land in the specified uplift train." >
+                Request uplift
+              </button>
             </form>
         {% endif %}
       </footer>
