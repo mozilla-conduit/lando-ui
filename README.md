@@ -1,7 +1,7 @@
 # Lando-UI
 
 lando-ui is a Flask-based web application that serves as a graphical
-user interface to [Lando-API](https://github.com/mozilla-conduit/lando-api).
+user interface to [Lando API](https://github.com/mozilla-conduit/lando-api).
 It is separate from the latter to isolate the logic of automatic landings
 from its interface(s).
 
