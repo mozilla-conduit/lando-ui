@@ -1,10 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+from __future__ import annotations
+
 import datetime
 import logging
 import re
 import urllib.parse
+
+from typing import Optional
 
 from flask import Blueprint, current_app, escape
 from landoui.forms import UserSettingsForm
@@ -19,7 +24,7 @@ template_helpers = Blueprint("template_helpers", __name__)
 
 
 @template_helpers.app_template_global()
-def is_user_authenticated():
+def is_user_authenticated() -> bool:
     return helpers.is_user_authenticated()
 
 
@@ -29,17 +34,17 @@ def user_has_phabricator_token() -> bool:
 
 
 @template_helpers.app_template_global()
-def new_settings_form():
+def new_settings_form() -> UserSettingsForm:
     return UserSettingsForm()
 
 
 @template_helpers.app_template_filter()
-def escape_html(text):
+def escape_html(text: str) -> str:
     return escape(text)
 
 
 @template_helpers.app_template_global()
-def calculate_duration(start, end=None):
+def calculate_duration(start: str, end: Optional[str] = None) -> dict[str, int]:
     """Calculates the duration between the two iso8061 timestamps.
 
     If end is None then the current time in UTC will be used.
@@ -62,7 +67,7 @@ def calculate_duration(start, end=None):
 
 
 @template_helpers.app_template_filter()
-def tostatusbadgeclass(status):
+def tostatusbadgeclass(status: dict) -> str:
     mapping = {
         "aborted": "Badge Badge--negative",
         "submitted": "Badge Badge--warning",
@@ -74,7 +79,7 @@ def tostatusbadgeclass(status):
 
 
 @template_helpers.app_template_filter()
-def reviewer_to_status_badge_class(reviewer):
+def reviewer_to_status_badge_class(reviewer: dict) -> str:
     return {
         # status: (current_diff, for_other_diff),
         "accepted": ("Badge Badge--positive", "Badge Badge--neutral"),
@@ -88,7 +93,7 @@ def reviewer_to_status_badge_class(reviewer):
 
 
 @template_helpers.app_template_filter()
-def reviewer_to_action_text(reviewer):
+def reviewer_to_action_text(reviewer: dict) -> str:
     options = {
         # status: (current_diff, for_other_diff),
         "accepted": ("accepted", "accepted a prior diff"),
@@ -101,7 +106,7 @@ def reviewer_to_action_text(reviewer):
 
 
 @template_helpers.app_template_filter()
-def revision_status_to_badge_class(status):
+def revision_status_to_badge_class(status: str) -> str:
     return {
         "abandoned": "Badge",
         "accepted": "Badge Badge--positive",
@@ -114,7 +119,7 @@ def revision_status_to_badge_class(status):
 
 
 @template_helpers.app_template_filter()
-def tostatusbadgename(status):
+def tostatusbadgename(status: dict) -> str:
     mapping = {
         "aborted": "Aborted",
         "submitted": "Landing queued",
@@ -126,7 +131,7 @@ def tostatusbadgename(status):
 
 
 @template_helpers.app_template_filter()
-def avatar_url(url):
+def avatar_url(url: str) -> str:
     # If a user doesn't have a gravatar image for their auth0 email address,
     # gravatar uses auth0's provided default which redirects to
     # *.wp.com/cdn.auth0.com/. Instead of whitelisting this in our CSP,
@@ -152,7 +157,7 @@ def avatar_url(url):
 
 
 @template_helpers.app_template_filter()
-def linkify_bug_numbers(text):
+def linkify_bug_numbers(text: str) -> str:
     search = r"(?=\b)(Bug (\d+))(?=\b)"
     replace = r'<a href="{bmo_url}/show_bug.cgi?id=\g<2>">\g<1></a>'.format(
         bmo_url=current_app.config["BUGZILLA_URL"]
@@ -161,7 +166,7 @@ def linkify_bug_numbers(text):
 
 
 @template_helpers.app_template_filter()
-def linkify_revision_urls(text):
+def linkify_revision_urls(text: str) -> str:
     search = (
         r"(?=\b)(" + re.escape(current_app.config["PHABRICATOR_URL"]) + r"/D\d+)(?=\b)"
     )
@@ -170,7 +175,7 @@ def linkify_revision_urls(text):
 
 
 @template_helpers.app_template_filter()
-def linkify_transplant_details(text, transplant):
+def linkify_transplant_details(text: str, transplant: dict) -> str:
     # The transplant result is not always guaranteed to be a commit id. It
     # can be a message saying that the landing was queued and will land later.
     if transplant["status"].lower() != "landed":
@@ -185,28 +190,28 @@ def linkify_transplant_details(text, transplant):
 
 
 @template_helpers.app_template_filter()
-def linkify_faq(text):
+def linkify_faq(text: str) -> str:
     search = r"\b(FAQ)\b"
     replace = r'<a href="{faq_url}">\g<1></a>'.format(faq_url=FAQ_URL)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
 @template_helpers.app_template_filter()
-def linkify_sec_bug_docs(text):
+def linkify_sec_bug_docs(text: str) -> str:
     search = r"\b(Security Bug Approval Process)\b"
     replace = r'<a href="{docs_url}">\g<1></a>'.format(docs_url=SEC_BUG_DOCS)
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
 @template_helpers.app_template_filter()
-def bug_url(text):
+def bug_url(text: str) -> str:
     return "{bmo_url}/show_bug.cgi?id={bug_number}".format(
         bmo_url=current_app.config["BUGZILLA_URL"], bug_number=text
     )
 
 
 @template_helpers.app_template_filter()
-def revision_url(revision_id, diff_id=None):
+def revision_url(revision_id: int | str, diff_id: Optional[str] = None) -> str:
     if isinstance(revision_id, int):
         path = f"D{revision_id}"
     elif isinstance(revision_id, str) and not revision_id.startswith("D"):
@@ -224,7 +229,7 @@ def revision_url(revision_id, diff_id=None):
 
 
 @template_helpers.app_template_filter()
-def repo_path(repo_url):
+def repo_path(repo_url: str) -> str:
     """Returns the path of a repository url without the leading slash.
 
     If the result would be empty, the full URL is returned.
@@ -250,27 +255,27 @@ GRAPH_DRAWING_COLORS = [
 
 
 @template_helpers.app_template_filter()
-def graph_width(cols):
+def graph_width(cols: int) -> int:
     return GRAPH_DRAWING_COL_WIDTH * cols
 
 
 @template_helpers.app_template_global()
-def graph_height():
+def graph_height() -> int:
     return GRAPH_DRAWING_HEIGHT
 
 
 @template_helpers.app_template_filter()
-def graph_x_pos(col):
+def graph_x_pos(col: int) -> int | float:
     return (GRAPH_DRAWING_COL_WIDTH * col) + (GRAPH_DRAWING_COL_WIDTH / 2)
 
 
 @template_helpers.app_template_filter()
-def graph_color(col):
+def graph_color(col: int) -> str:
     return GRAPH_DRAWING_COLORS[col % len(GRAPH_DRAWING_COLORS)]
 
 
 @template_helpers.app_template_filter()
-def graph_above_path(col, above):
+def graph_above_path(col: int, above: int) -> str:
     commands = [
         "M {x} {y}".format(x=graph_x_pos(above), y=0),
         "C {x1} {y1}, {x2} {y2}, {x} {y}".format(
@@ -286,7 +291,7 @@ def graph_above_path(col, above):
 
 
 @template_helpers.app_template_filter()
-def graph_below_path(col, below):
+def graph_below_path(col: int, below: int) -> str:
     commands = [
         "M {x} {y}".format(x=graph_x_pos(col), y=GRAPH_DRAWING_HEIGHT / 2),
         "C {x1} {y1}, {x2} {y2}, {x} {y}".format(
@@ -302,7 +307,7 @@ def graph_below_path(col, below):
 
 
 @template_helpers.app_template_filter()
-def message_type_to_notification_class(flash_message_category):
+def message_type_to_notification_class(flash_message_category: str) -> str:
     """Map a Flask flash message category to a Bulma notification CSS class.
 
     See https://bulma.io/documentation/elements/notification/ for the list of
