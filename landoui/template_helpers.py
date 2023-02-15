@@ -265,8 +265,8 @@ def graph_height() -> int:
 
 
 @template_helpers.app_template_filter()
-def graph_x_pos(col: int) -> int | float:
-    return (GRAPH_DRAWING_COL_WIDTH * col) + (GRAPH_DRAWING_COL_WIDTH / 2)
+def graph_x_pos(col: int) -> int:
+    return (GRAPH_DRAWING_COL_WIDTH * col) + (GRAPH_DRAWING_COL_WIDTH // 2)
 
 
 @template_helpers.app_template_filter()
