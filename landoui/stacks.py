@@ -116,7 +116,7 @@ def draw_stack_graph(nodes, edges, order):
         return next_node.index(None)
 
     # Iterate over the order and build the drawing.
-    for i, node in enumerate(order):
+    for node in order:
         # What column should this node go in?
         col = next_node.index(node) if next_node.count(node) else empty_column_or_new()
 
