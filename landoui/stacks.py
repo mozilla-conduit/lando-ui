@@ -3,13 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from collections import namedtuple
+from typing import (
+    Any,
+    Callable,
+)
 from types import SimpleNamespace
 
 Edge = namedtuple("Edge", ("child", "parent"))
 Node = namedtuple("Node", ("id", "children", "parents"))
 
 
-def graph(nodes, edges):
+def graph(nodes: set[str], edges: set[Edge]) -> dict[str, Node]:
     """Construct a graph dictionary from nodes and edges.
 
     Args:
@@ -32,7 +36,9 @@ def graph(nodes, edges):
     return g
 
 
-def sort_stack_topological(nodes, edges, *, key=lambda x: x):
+def sort_stack_topological(
+    nodes: set[str], edges: set[Edge], *, key: Callable = lambda x: x
+) -> list[str]:
     """Return a topological sort of the stack revisions.
 
     Args:
@@ -77,7 +83,9 @@ def sort_stack_topological(nodes, edges, *, key=lambda x: x):
     return order
 
 
-def draw_stack_graph(nodes, edges, order):
+def draw_stack_graph(
+    nodes: set[str], edges: set[Edge], order: list[str]
+) -> tuple[int, list[dict[str, Any]]]:
     """Return metadata useful for representing a stack visually.
 
     Args:
