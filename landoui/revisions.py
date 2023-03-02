@@ -5,6 +5,11 @@ import functools
 import json
 import logging
 
+from typing import (
+    Callable,
+    Optional,
+)
+
 from flask import (
     abort,
     Blueprint,
@@ -42,7 +47,7 @@ revisions = Blueprint("revisions", __name__)
 revisions.before_request(set_last_local_referrer)
 
 
-def oidc_auth_optional(f):
+def oidc_auth_optional(f) -> Callable:
     """Decorator that runs auth only if the user is logged in."""
     no_auth_f = f
     auth_f = oidc.oidc_auth("AUTH0")(f)
@@ -59,7 +64,7 @@ def oidc_auth_optional(f):
     return wrapped
 
 
-def annotate_sec_approval_workflow_info(revisions):
+def annotate_sec_approval_workflow_info(revisions: dict[str, dict]):
     """Annotate a dict of revisions with sec-approval workflow information.
 
     See https://firefox-source-docs.mozilla.org/bug-mgmt/processes/security-approval.html # noqa: E501
@@ -146,7 +151,7 @@ def uplift():
 
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
 @oidc_auth_optional
-def revision(revision_id):
+def revision(revision_id: int):
     api = LandoAPI(
         current_app.config["LANDO_API_URL"],
         auth0_access_token=session.get("access_token"),
@@ -322,7 +327,7 @@ def revision(revision_id):
 
 @revisions.route("/revisions/D<int:revision_id>/<diff_id>/", methods=("GET", "POST"))
 @revisions.route("/revisions/D<int:revision_id>/")
-def revisions_handler(revision_id, diff_id=None):
+def revisions_handler(revision_id: int, diff_id: Optional[str] = None):
     # Redirect old revision page URL to stack page.
     return redirect(url_for("revisions.revision", revision_id=revision_id), code=301)
 
@@ -378,7 +383,7 @@ def sec_approval_request_handler():
 
 
 @revisions.route("/landing_jobs/<int:landing_job_id>", methods=("PUT",))
-def update_landing_job(landing_job_id):
+def update_landing_job(landing_job_id: int):
     if not is_user_authenticated():
         errors = make_form_error("You must be logged in to update a landing job.")
         return jsonify(errors=errors), 401
@@ -402,7 +407,7 @@ def update_landing_job(landing_job_id):
     return data
 
 
-def make_form_error(message):
+def make_form_error(message: str) -> dict[str, list[str]]:
     """Turn a string into an error that looks like a WTForm validation error.
 
     This can be used to generate one-off errors, like auth errors, that need

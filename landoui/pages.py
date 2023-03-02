@@ -4,6 +4,10 @@
 import logging
 import os
 
+from typing import (
+    Optional,
+)
+
 from flask import (
     Blueprint,
     current_app,
@@ -91,7 +95,7 @@ def settings():
 
 
 @oidc.error_view
-def oidc_error(error=None, error_description=None):
+def oidc_error(error: Optional[str] = None, error_description: Optional[str] = None):
     """Handles authentication errors returned by Auth0.
 
     When something goes wrong with authentication, Auth0 redirects to our
