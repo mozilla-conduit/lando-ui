@@ -9,14 +9,18 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from landoui.logging import log_config_change
 
 
-def sanitize_headers(headers):
+def sanitize_headers(headers: dict[str, str]):
+    """Filter security sensitive values from headers.
+
+    Note that this updates the values from `headers` in-place.
+    """
     sensitive_keys = ("X-PHABRICATOR-API-KEY",)
     for key in headers:
         if key.upper() in sensitive_keys:
             headers[key] = 10 * "*"
 
 
-def before_send(event, *args):
+def before_send(event: dict, *args) -> dict:
     """Sentry callback to filter event data before sending."""
     if "request" in event and "headers" in event["request"]:
         sanitize_headers(event["request"]["headers"])
