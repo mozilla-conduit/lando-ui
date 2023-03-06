@@ -2,11 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+
 from json.decoder import JSONDecodeError
+from typing import (
+    Optional,
+    Type,
+)
 
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
+    Field,
     HiddenField,
     SelectField,
     StringField,
@@ -17,11 +23,13 @@ from wtforms.validators import InputRequired, optional, Regexp
 
 
 class JSONDecodable:
-    def __init__(self, decode_type=None, message=None):
+    def __init__(
+        self, decode_type: Optional[Type] = None, message: Optional[str] = None
+    ):
         self.decode_type = decode_type
         self.message = message or "Field must be JSON decodable"
 
-    def __call__(self, form, field):
+    def __call__(self, form: FlaskForm, field: Field):
         try:
             decoded = json.loads(field.data)
         except JSONDecodeError:
@@ -34,10 +42,10 @@ class JSONDecodable:
 
 
 class LandingPath(JSONDecodable):
-    def __init__(self, message=None):
+    def __init__(self, message: Optional[str] = None):
         super().__init__(decode_type=list, message=message)
 
-    def __call__(self, form, field):
+    def __call__(self, form: FlaskForm, field: Field):
         decoded = super().__call__(form, field)
 
         if len(decoded) < 1:

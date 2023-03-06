@@ -2,9 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from __future__ import annotations
+
 import logging
 import requests
+
 from json.decoder import JSONDecodeError
+from typing import (
+    Optional,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +19,12 @@ class LandoAPI:
     """Client for Lando API."""
 
     def __init__(
-        self, url, *, phabricator_api_token=None, auth0_access_token=None, session=None
+        self,
+        url: str,
+        *,
+        phabricator_api_token: Optional[str] = None,
+        auth0_access_token: Optional[str] = None,
+        session: Optional[requests.Session] = None
     ):
         self.url = url + "/" if url[-1] == "/" else url + "/"
         self.phabricator_api_token = phabricator_api_token
@@ -21,10 +32,12 @@ class LandoAPI:
         self.session = session or self.create_session()
 
     @staticmethod
-    def create_session():
+    def create_session() -> requests.Session:
         return requests.Session()
 
-    def request(self, method, url_path, *, require_auth0=False, **kwargs):
+    def request(
+        self, method: str, url_path: str, *, require_auth0: bool = False, **kwargs
+    ) -> dict | list:
         """Return the response of a request to Lando API.
 
         Args:
@@ -98,7 +111,7 @@ class LandoAPICommunicationException(LandoAPIException):
 class LandoAPIError(LandoAPIException):
     """Exception when Lando API responds with an error."""
 
-    def __init__(self, status_code, data):
+    def __init__(self, status_code: int, data: dict):
         self.status_code = status_code
 
         # Error responses should have the RFC 7807 fields at minimum
