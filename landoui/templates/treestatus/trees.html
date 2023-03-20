@@ -1,0 +1,67 @@
+{#
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "partials/layout.html" %}
+{% block page_title %}Treestatus{% endblock %}
+
+{% block main %}
+<main class="Treestatus container fullhd">
+    <h1>Treestatus</h1>
+    <p>Current status of Mozilla's version-control repositories.</p>
+
+    {% include "treestatus/recent_changes.html" %}
+
+    <h1>Trees</h1>
+    {#
+        The main Treestatus page is a table that presents the trees.
+        Trees can be selected here for updating, or for deletion.
+    #}
+    <form action="{{ url_for("treestatus.update_treestatus_form") }}" method="post">
+        {{ treestatus_select_trees_form.csrf_token }}
+
+        {% if is_user_authenticated() %}
+        <div class="block">
+            <a href="{{ url_for("treestatus.new_tree") }}">
+                <button class="button" title="New Tree" type="button">New Tree</button>
+            </a>
+            <button class="button select-all-trees" type="button">Select all trees</button>
+            <button class="button is-primary" title="Update Tree">Update trees</button>
+        </div>
+        {% endif %}
+        <div class="block">
+            {% for tree_option in treestatus_select_trees_form.trees %}
+            {% set tree = trees[tree_option.data] %}
+                <div class="box">
+                    <div class="columns">
+                        {% if is_user_authenticated() %}
+                            <div class="column is-1">
+                                <input class="tree-select-checkbox" type="checkbox" name="{{ tree_option.id }}" value="{{ tree_option.data }}">
+                            </div>
+                        {% endif %}
+                        <div class="column is-2">
+                            <span class="{{ tree.status | treestatus_to_status_badge_class }}">{{ tree.status }}</span>
+                        </div>
+                        <div class="column">
+                            <a href="{{ tree_option.data }}"><h2 class="subtitle is-4">{{ tree_option.data }}</h2></a>
+                        </div>
+                        <div class="column">
+                            {% if tree.reason %}
+                                <p>Reason: <b>{{ tree.reason }}</b></p>
+                                <p>Reason category: <b>{{ tree.tags[0] }}</b></p>
+                            {% endif %}
+                        </div>
+                        <div class="column">
+                            {% if tree.message_of_the_day %}
+                                {{ tree.message_of_the_day }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+</main>
+{% endblock %}

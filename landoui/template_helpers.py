@@ -93,6 +93,16 @@ def reviewer_to_status_badge_class(reviewer: dict) -> str:
 
 
 @template_helpers.app_template_filter()
+def treestatus_to_status_badge_class(tree_status: str) -> str:
+    """Convert Tree statuses into status badges."""
+    return {
+        "open": "Badge Badge--positive",
+        "closed": "Badge Badge--negative",
+        "approval required": "Badge Badge--warning",
+    }.get(tree_status, "Badge Badge--warning")
+
+
+@template_helpers.app_template_filter()
 def reviewer_to_action_text(reviewer: dict) -> str:
     options = {
         # status: (current_diff, for_other_diff),
@@ -324,6 +334,9 @@ def message_type_to_notification_class(flash_message_category: str) -> str:
     See https://bulma.io/documentation/elements/notification/ for the list of
     Bulma notification states.
     """
-    return {"info": "is-info", "success": "is-success", "warning": "is-warning"}.get(
-        flash_message_category, "is-info"
-    )
+    return {
+        "error": "is-danger",
+        "info": "is-info",
+        "success": "is-success",
+        "warning": "is-warning",
+    }.get(flash_message_category, "is-info")

@@ -1,0 +1,64 @@
+{#
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "partials/layout.html" %}
+{% block page_title %}Treestatus{% endblock %}
+
+{% block main %}
+<main class="Treestatus container fullhd">
+
+    {% include "treestatus/recent_changes.html" %}
+
+    <h1>Treestatus: Update trees</h1>
+    <form action="{{ url_for("treestatus.update_treestatus") }}" method="post">
+        <div class="box">
+            {{ treestatus_update_trees_form.csrf_token }}
+            <div class="block content">
+                <div>You are about to update the following trees:</div>
+                <ul>
+                    {% for tree in treestatus_update_trees_form.trees %}
+                    <li>{{ tree.data }} {{ tree }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.status.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_update_trees_form.status() }}</div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.reason_category.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_update_trees_form.reason_category() }}</div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.reason.label }}</label>
+                <div class="control">{{ treestatus_update_trees_form.reason(class="input") }}</div>
+            </div>
+            <div class="field">
+                <label class="checkbox label">
+                    {{ treestatus_update_trees_form.remember_this_change.label }}
+                </label>
+                <div class="control">
+                    {{ treestatus_update_trees_form.remember_this_change(input="class") }}
+                    Remember this change to undo later.
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.message_of_the_day.label }}</label>
+                <div class="control">{{ treestatus_update_trees_form.message_of_the_day(class="input") }}</div>
+                <p class="help">Optional</p>
+            </div>
+            <div class="field">
+                <button class="button is-primary" title="Update Tree">Update trees</button>
+            </div>
+        </div>
+    </form>
+
+</main>
+{% endblock %}

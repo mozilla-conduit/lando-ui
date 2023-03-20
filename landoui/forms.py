@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import enum
 import json
 
 from json.decoder import JSONDecodeError
@@ -13,13 +15,20 @@ from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
     Field,
+    FieldList,
     HiddenField,
     SelectField,
     StringField,
+    SubmitField,
     TextAreaField,
     ValidationError,
+    widgets,
 )
-from wtforms.validators import InputRequired, optional, Regexp
+from wtforms.validators import (
+    InputRequired,
+    Regexp,
+    optional,
+)
 
 
 class JSONDecodable:
@@ -120,3 +129,159 @@ class UserSettingsForm(FlaskForm):
         ],
     )
     reset_phab_api_token = BooleanField("Delete", default="")
+
+
+class Status(enum.Enum):
+    """Allowable statuses of a tree."""
+
+    OPEN = "Open"
+    CLOSED = "Closed"
+    APPROVAL_REQUIRED = "Approval required"
+
+    @classmethod
+    def to_choices(cls) -> list[tuple[str, str]]:
+        """Return a list of choices for display."""
+        return [(choice.value.lower(), choice.value) for choice in list(cls)]
+
+
+class ReasonCategory(enum.Enum):
+    """Allowable reasons for a Tree closure."""
+
+    NO_CATEGORY = "No Category"
+    JOB_BACKLOG = "Job Backlog"
+    CHECKIN_COMPILE_FAILURE = "Check-in compilation failure"
+    CHECKIN_TEST_FAILURE = "Check-in test failure"
+    PLANNED_CLOSURE = "Planned closure"
+    MERGES = "Merges"
+    WAITING_FOR_COVERAGE = "Waiting for coverage"
+    INFRASTRUCTURE_RELATED = "Infrastructure related"
+    OTHER = "Other"
+
+    @classmethod
+    def to_choices(cls) -> list[tuple[str, str]]:
+        """Return a list of choices for display."""
+        return [(choice.value, choice.value) for choice in list(cls)]
+
+    @classmethod
+    def is_valid_reason_category(cls, value: str) -> bool:
+        """Return `True` if `value` is a valid `ReasonCategory`.
+
+        Once we are using Python 3.12+, we can switch to `value in ReasonCategory`.
+        """
+        try:
+            cls(value)
+        except ValueError:
+            return False
+
+        return True
+
+
+class TreeStatusSelectTreesForm(FlaskForm):
+    """Form used to select trees for updating."""
+
+    trees = FieldList(
+        StringField(
+            "Trees",
+            widget=widgets.HiddenInput(),
+        ),
+    )
+
+    def validate_trees(self, field):
+        """Validate that at least 1 tree was selected."""
+        if not field.entries:
+            raise ValidationError(
+                "A selection of trees is required to update statuses."
+            )
+
+
+class TreeStatusUpdateTreesForm(FlaskForm):
+    """Form used to update the state of a selection of trees."""
+
+    trees = FieldList(
+        StringField(
+            "Trees",
+            validators=[
+                InputRequired("A selection of trees is required to update statuses.")
+            ],
+            widget=widgets.HiddenInput(),
+        )
+    )
+
+    status = SelectField(
+        "Status",
+        choices=Status.to_choices(),
+        validators=[InputRequired("A status is required.")],
+    )
+
+    reason = StringField("Reason")
+
+    reason_category = SelectField(
+        "Reason Category",
+        choices=ReasonCategory.to_choices(),
+    )
+
+    remember_this_change = BooleanField(
+        "Remember this change",
+        default=True,
+    )
+
+    message_of_the_day = StringField("Message of the day")
+
+    def validate_reason(self, field):
+        """Validate that the reason field is required for non-open statuses."""
+        reason_is_empty = not field.data
+        if self.status.data != "open" and reason_is_empty:
+            raise ValidationError(
+                "Reason description is required for non-open status changes."
+            )
+
+    def validate_reason_category(self, field):
+        """Validate that the reason category field is required for non-open statuses."""
+        category_is_empty = (
+            not field.data or ReasonCategory(field.data) == ReasonCategory.NO_CATEGORY
+        )
+        if self.status.data != "open" and category_is_empty:
+            raise ValidationError(
+                "Reason category is required for non-open status changes."
+            )
+
+
+class TreeStatusNewTreeForm(FlaskForm):
+    """Add a new tree to Treestatus."""
+
+    tree = StringField(
+        "Tree",
+        validators=[InputRequired("A tree name is required.")],
+    )
+
+
+class TreeStatusRecentChangesForm(FlaskForm):
+    """Modify a recent status change."""
+
+    id = HiddenField("Id")
+
+    reason = StringField("Reason")
+
+    reason_category = SelectField(
+        "Reason Category",
+        choices=ReasonCategory.to_choices(),
+    )
+
+    restore = SubmitField("Restore")
+
+    update = SubmitField("Update")
+
+    discard = SubmitField("Discard")
+
+
+class TreeStatusLogUpdateForm(FlaskForm):
+    """Modify a log entry."""
+
+    id = HiddenField("Id")
+
+    reason = StringField("Reason")
+
+    reason_category = SelectField(
+        "Reason Category",
+        choices=ReasonCategory.to_choices(),
+    )
