@@ -23,6 +23,7 @@ WORKDIR /app
 ENV FLASK_APP=landoui.dev_app:app
 ENV FLASK_RUN_PORT=9000
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_DEBUG=1
 
 RUN pip install -e .
 
