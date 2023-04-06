@@ -17,8 +17,7 @@ services:
       context: ./
       dockerfile: ./docker/Dockerfile-dev
     volumes:
-      - ./landoui/:/app/landoui
-      - ./tests/:/app/tests
+      - ./:/app
     ports:
       - "7777:7777"
     environment:
