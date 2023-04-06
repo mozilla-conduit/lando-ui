@@ -49,7 +49,7 @@ class RevisionNotFound(Exception):
 
     def __init__(self, revision_id, diff_id="not specified"):
         message = (
-            "Revision {revision_id} or Diff {diff_id} not found"
+            "Revision {revision_id} or Diff {diff_id} not found "
             "or permission denied.".format(revision_id=revision_id, diff_id=diff_id)
         )
         Exception.__init__(self, message)
@@ -61,7 +61,7 @@ def page_not_found(e):
         render_template(
             "errorhandlers/default_error.html",
             title="Page Not Found",
-            message="The page you request could not be found.",
+            message="The page you requested could not be found.",
         ),
         404,
     )
