@@ -225,7 +225,7 @@ def test_submit_alt_commit_message(app, client, authenticated_session, apidouble
     # Disable CSRF protection so we can submit forms without tokens.
     app.config["WTF_CSRF_ENABLED"] = False
 
-    client.set_cookie("localhost", "phabricator-api-token", "api-123abc")
+    client.set_cookie("lando-ui.test", "phabricator-api-token", "api-123abc")
 
     formdata = {
         "revision_id": "D1",
