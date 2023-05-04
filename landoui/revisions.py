@@ -101,52 +101,46 @@ def uplift():
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
 
-    return_code = None
+    if not uplift_request_form.is_submitted():
+        return jsonify(errors=["Uplift request form not submitted."]), 401
 
-    errors = []
-    if uplift_request_form.is_submitted():
-        if not is_user_authenticated():
-            errors.append("You must be logged in to request an uplift")
-            return_code = 401
-        elif not uplift_request_form.validate():
-            for _, field_errors in uplift_request_form.errors.items():
-                errors.extend(field_errors)
-            return_code = 400
-        else:
-            try:
-                try:
-                    revision_id = uplift_request_form.revision_id.data
-                    repository = uplift_request_form.repository.data
-                except json.JSONDecodeError as exc:
-                    raise LandoAPICommunicationException(
-                        "Landing path could not be decoded as JSON"
-                    ) from exc
+    if not is_user_authenticated():
+        return jsonify(errors=["You must be logged in to request an uplift"]), 401
 
-                response = api.request(
-                    "POST",
-                    "uplift",
-                    require_auth0=True,
-                    json={
-                        "revision_id": revision_id,
-                        "repository": repository,
-                    },
-                )
+    if not uplift_request_form.validate():
+        errors = []
+        for field_errors in uplift_request_form.errors.values():
+            errors.extend(field_errors)
+        return jsonify(errors=errors), 400
 
-                # Redirect to the tip revision's URL.
-                # TODO add js for auto-opening the uplift request Phabricator form.
-                tip_differential = response["tip_differential"]["url"]
-                return redirect(tip_differential)
+    try:
+        revision_id = uplift_request_form.revision_id.data
+        repository = uplift_request_form.repository.data
+    except json.JSONDecodeError as exc:
+        raise LandoAPICommunicationException(
+            "Landing path could not be decoded as JSON"
+        ) from exc
 
-            except LandoAPIError as e:
-                if not e.detail:
-                    raise e
+    try:
+        response = api.request(
+            "POST",
+            "uplift",
+            require_auth0=True,
+            json={
+                "revision_id": revision_id,
+                "repository": repository,
+            },
+        )
+    except LandoAPIError as e:
+        if not e.detail:
+            raise e
 
-                errors.append(e.detail)
-                return_code = e.status_code
+        return jsonify(errors=[e.detail]), e.status_code
 
-    # If we return an error and we don't hit a block with a specific problem, consider
-    # the error a server-side issue.
-    return jsonify(errors=errors), return_code or 500
+    # Redirect to the tip revision's URL.
+    # TODO add js for auto-opening the uplift request Phabricator form.
+    tip_differential = response["tip_differential"]["url"]
+    return redirect(tip_differential)
 
 
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
