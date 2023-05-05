@@ -114,13 +114,8 @@ def uplift():
         errors = list(chain(*uplift_request_form.errors.values()))
         return jsonify(errors=errors), 400
 
-    try:
-        revision_id = uplift_request_form.revision_id.data
-        repository = uplift_request_form.repository.data
-    except json.JSONDecodeError as exc:
-        raise LandoAPICommunicationException(
-            "Landing path could not be decoded as JSON"
-        ) from exc
+    revision_id = uplift_request_form.revision_id.data
+    repository = uplift_request_form.repository.data
 
     try:
         response = api.request(
