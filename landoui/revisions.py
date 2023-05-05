@@ -104,9 +104,6 @@ def uplift():
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
 
-    if not uplift_request_form.is_submitted():
-        return jsonify(errors=["Uplift request form not submitted."]), 401
-
     if not is_user_authenticated():
         return jsonify(errors=["You must be logged in to request an uplift"]), 401
 
