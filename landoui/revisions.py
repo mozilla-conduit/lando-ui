@@ -5,6 +5,9 @@ import functools
 import json
 import logging
 
+from itertools import (
+    chain,
+)
 from typing import (
     Callable,
     Optional,
@@ -108,9 +111,7 @@ def uplift():
         return jsonify(errors=["You must be logged in to request an uplift"]), 401
 
     if not uplift_request_form.validate():
-        errors = []
-        for field_errors in uplift_request_form.errors.values():
-            errors.extend(field_errors)
+        errors = list(chain(*uplift_request_form.errors.values()))
         return jsonify(errors=errors), 400
 
     try:
