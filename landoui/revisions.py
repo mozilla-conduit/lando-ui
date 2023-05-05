@@ -38,7 +38,6 @@ from landoui.helpers import (
 )
 from landoui.landoapi import (
     LandoAPI,
-    LandoAPICommunicationException,
     LandoAPIError,
 )
 from landoui.errorhandlers import RevisionNotFound
