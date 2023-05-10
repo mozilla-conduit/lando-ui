@@ -5,6 +5,9 @@ import functools
 import json
 import logging
 
+from itertools import (
+    chain,
+)
 from typing import (
     Callable,
     Optional,
@@ -35,7 +38,6 @@ from landoui.helpers import (
 )
 from landoui.landoapi import (
     LandoAPI,
-    LandoAPICommunicationException,
     LandoAPIError,
 )
 from landoui.errorhandlers import RevisionNotFound
@@ -101,52 +103,37 @@ def uplift():
     # Get the list of available uplift repos and populate the form with it.
     uplift_request_form.repository.choices = get_uplift_repos(api)
 
-    return_code = None
+    if not is_user_authenticated():
+        return jsonify(errors=["You must be logged in to request an uplift"]), 401
 
-    errors = []
-    if uplift_request_form.is_submitted():
-        if not is_user_authenticated():
-            errors.append("You must be logged in to request an uplift")
-            return_code = 401
-        elif not uplift_request_form.validate():
-            for _, field_errors in uplift_request_form.errors.items():
-                errors.extend(field_errors)
-            return_code = 400
-        else:
-            try:
-                try:
-                    revision_id = uplift_request_form.revision_id.data
-                    repository = uplift_request_form.repository.data
-                except json.JSONDecodeError as exc:
-                    raise LandoAPICommunicationException(
-                        "Landing path could not be decoded as JSON"
-                    ) from exc
+    if not uplift_request_form.validate():
+        errors = list(chain(*uplift_request_form.errors.values()))
+        return jsonify(errors=errors), 400
 
-                response = api.request(
-                    "POST",
-                    "uplift",
-                    require_auth0=True,
-                    json={
-                        "revision_id": revision_id,
-                        "repository": repository,
-                    },
-                )
+    revision_id = uplift_request_form.revision_id.data
+    repository = uplift_request_form.repository.data
 
-                # Redirect to the tip revision's URL.
-                # TODO add js for auto-opening the uplift request Phabricator form.
-                tip_differential = response["tip_differential"]["url"]
-                return redirect(tip_differential)
+    try:
+        response = api.request(
+            "POST",
+            "uplift",
+            require_auth0=True,
+            json={
+                "revision_id": revision_id,
+                "repository": repository,
+            },
+        )
+    except LandoAPIError as e:
+        if not e.detail:
+            raise e
 
-            except LandoAPIError as e:
-                if not e.detail:
-                    raise e
+        return jsonify(errors=[e.detail]), e.status_code
 
-                errors.append(e.detail)
-                return_code = e.status_code
-
-    # If we return an error and we don't hit a block with a specific problem, consider
-    # the error a server-side issue.
-    return jsonify(errors=errors), return_code or 500
+    # Redirect to the tip revision's URL.
+    # TODO add js for auto-opening the uplift request Phabricator form.
+    # See https://bugzilla.mozilla.org/show_bug.cgi?id=1810257.
+    tip_differential = response["tip_differential"]["url"]
+    return redirect(tip_differential)
 
 
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
