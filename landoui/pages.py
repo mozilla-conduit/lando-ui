@@ -32,13 +32,7 @@ pages.before_request(set_last_local_referrer)
 
 @pages.route("/")
 def home():
-    enable_transplant_ui = current_app.config.get("ENABLE_EMBEDDED_TRANSPLANT_UI")
-    if not (enable_transplant_ui and is_user_authenticated()):
-        # Return a static HTML page for users that are not logged in.
-        return render_template("home.html")
-
-    # Render the landing queue.
-    return render_template("queue/queue.html")
+    return render_template("home.html")
 
 
 @pages.route("/signin")

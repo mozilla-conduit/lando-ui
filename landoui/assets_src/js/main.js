@@ -12,7 +12,6 @@ $(document).ready(function() {
   let $stack = $('.StackPage-stack');
   let $secRequestSubmitted = $('.StackPage-secRequestSubmitted');
   let $flashMessages = $('.FlashMessages');
-  let $queue = $('.QueuePage');
 
   // Initialize components
   $('.Navbar').landoNavbar();
@@ -21,5 +20,4 @@ $(document).ready(function() {
   $stack.stack();
   $secRequestSubmitted.secRequestSubmitted();
   $flashMessages.flashMessages();
-  $queue.queue();
 });
