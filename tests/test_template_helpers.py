@@ -8,6 +8,7 @@ import pytest
 from landoui.template_helpers import (
     avatar_url,
     linkify_bug_numbers,
+    linkify_revision_ids,
     linkify_revision_urls,
     linkify_faq,
     linkify_sec_bug_docs,
@@ -123,6 +124,22 @@ def test_linkify_bug_numbers(app, input_text, output_text):
 )
 def test_linkify_revision_urls(app, input_text, output_text):
     assert output_text == linkify_revision_urls(input_text)
+
+
+@pytest.mark.parametrize(
+    "input_text,output_text",
+    [
+        ("D1234", '<a href="http://phabricator.test/D1234">D1234</a>'),
+        ("blah D1234", 'blah <a href="http://phabricator.test/D1234">D1234</a>'),
+        (
+            "blah in D1234.",
+            'blah in <a href="http://phabricator.test/D1234">D1234</a>.',
+        ),
+        ("(see D1234).", '(see <a href="http://phabricator.test/D1234">D1234</a>).'),
+    ],
+)
+def test_linkify_revision_ids(app, input_text, output_text):
+    assert output_text == linkify_revision_ids(input_text)
 
 
 @pytest.mark.parametrize(
