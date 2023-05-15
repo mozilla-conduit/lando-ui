@@ -136,7 +136,8 @@ def test_linkify_revision_urls(app, input_text, output_text):
         ),
         (
             "blah in D1234.",
-            'blah in <a href="http://phabricator.test/D1234" target="_blank">D1234</a>.',
+            'blah in <a href="http://phabricator.test/D1234" '
+            'target="_blank">D1234</a>.',
         ),
         (
             "(see D1234).",
