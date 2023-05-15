@@ -129,13 +129,24 @@ def test_linkify_revision_urls(app, input_text, output_text):
 @pytest.mark.parametrize(
     "input_text,output_text",
     [
-        ("D1234", '<a href="http://phabricator.test/D1234">D1234</a>'),
-        ("blah D1234", 'blah <a href="http://phabricator.test/D1234">D1234</a>'),
+        ("D1234", '<a href="http://phabricator.test/D1234" target="_blank">D1234</a>'),
+        (
+            "blah D1234",
+            'blah <a href="http://phabricator.test/D1234" target="_blank">D1234</a>',
+        ),
         (
             "blah in D1234.",
-            'blah in <a href="http://phabricator.test/D1234">D1234</a>.',
+            'blah in <a href="http://phabricator.test/D1234" target="_blank">D1234</a>.',
         ),
-        ("(see D1234).", '(see <a href="http://phabricator.test/D1234">D1234</a>).'),
+        (
+            "(see D1234).",
+            '(see <a href="http://phabricator.test/D1234" target="_blank">D1234</a>).',
+        ),
+        (
+            "(see D1234, D12345).",
+            '(see <a href="http://phabricator.test/D1234" target="_blank">D1234</a>, '
+            '<a href="http://phabricator.test/D12345" target="_blank">D12345</a>).',
+        ),
     ],
 )
 def test_linkify_revision_ids(app, input_text, output_text):

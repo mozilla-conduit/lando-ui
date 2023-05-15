@@ -178,7 +178,10 @@ def linkify_revision_urls(text: str) -> str:
 def linkify_revision_ids(text: str) -> str:
     """Linkify `D1234` to a proper Phabricator URL."""
     search = r"\b(D\d+)\b"
-    replace = rf'<a href="{current_app.config["PHABRICATOR_URL"]}/\g<1>">\g<1></a>'
+    replace = (
+        rf'<a href="{current_app.config["PHABRICATOR_URL"]}/\g<1>" '
+        r'target="_blank">\g<1></a>'
+    )
     return re.sub(search, replace, str(text), flags=re.IGNORECASE)
 
 
