@@ -126,7 +126,7 @@
               <label>
                 <input type="checkbox" name="warnings[]" value="1" />
                 {{ dw.message|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_docs|safe }}
-                [{{w.revision_id}}]
+                [{{ w.revision_id | linkify_revision_ids | safe }}]
               </label>
             </li>
             {% endfor %}
@@ -138,8 +138,7 @@
             {{ warning['display']|escape_html|linkify_bug_numbers|linkify_revision_urls|linkify_faq|linkify_sec_bug_docs|safe}}
             [{% for instance in warning['instances'] %}{{
               ", " if not loop.first else ""
-            }}{{instance['revision_id']
-            }}{% endfor %}]
+            }}{{ instance['revision_id'] | linkify_revision_ids | safe }}{% endfor %}]
           </label>
         </li>
         {% endif %}

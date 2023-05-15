@@ -175,6 +175,17 @@ def linkify_revision_urls(text: str) -> str:
 
 
 @template_helpers.app_template_filter()
+def linkify_revision_ids(text: str) -> str:
+    """Linkify revision IDs to proper Phabricator URLs."""
+    search = r"\b(D\d+)\b"
+    replace = (
+        rf'<a href="{current_app.config["PHABRICATOR_URL"]}/\g<1>" '
+        r'target="_blank">\g<1></a>'
+    )
+    return re.sub(search, replace, str(text), flags=re.IGNORECASE)
+
+
+@template_helpers.app_template_filter()
 def linkify_transplant_details(text: str, transplant: dict) -> str:
     # The transplant result is not always guaranteed to be a commit id. It
     # can be a message saying that the landing was queued and will land later.
