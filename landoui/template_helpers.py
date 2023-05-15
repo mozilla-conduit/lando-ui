@@ -176,7 +176,7 @@ def linkify_revision_urls(text: str) -> str:
 
 @template_helpers.app_template_filter()
 def linkify_revision_ids(text: str) -> str:
-    """Linkify `D1234` to a proper Phabricator URL."""
+    """Linkify revision IDs to proper Phabricator URLs."""
     search = r"\b(D\d+)\b"
     replace = (
         rf'<a href="{current_app.config["PHABRICATOR_URL"]}/\g<1>" '
