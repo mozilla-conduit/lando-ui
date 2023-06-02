@@ -8,7 +8,7 @@ blinker==1.4
 certifi==2018.10.15
 cffi==1.14.0
 chardet==3.0.4
-cryptography==3.3.2
+cryptography==41.0.0
 flake8==3.7.9
 flask-assets==0.12
 flask-pyoidc==3.7.0
