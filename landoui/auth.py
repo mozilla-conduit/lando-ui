@@ -6,6 +6,7 @@ A set of classes to facilitate Auth0 login using OIDC methodology
 """
 import os
 
+from flask import Flask
 from flask_pyoidc.flask_pyoidc import OIDCAuthentication
 from flask_pyoidc.provider_configuration import (
     ClientMetadata,
@@ -31,22 +32,22 @@ class OIDCConfig:
             DOMAIN=self.OIDC_DOMAIN, CLIENT_ID=self.OIDC_CLIENT_ID
         )
 
-    def auth_endpoint(self):
+    def auth_endpoint(self) -> str:
         return "https://{DOMAIN}/authorize".format(DOMAIN=self.OIDC_DOMAIN)
 
-    def token_endpoint(self):
+    def token_endpoint(self) -> str:
         return "https://{DOMAIN}/oauth/token".format(DOMAIN=self.OIDC_DOMAIN)
 
-    def userinfo_endpoint(self):
+    def userinfo_endpoint(self) -> str:
         return "https://{DOMAIN}/userinfo".format(DOMAIN=self.OIDC_DOMAIN)
 
-    def client_id(self):
+    def client_id(self) -> str:
         return self.OIDC_CLIENT_ID
 
-    def client_secret(self):
+    def client_secret(self) -> str:
         return self.OIDC_CLIENT_SECRET
 
-    def lando_api_oidc_id(self):
+    def lando_api_oidc_id(self) -> str:
         return self.LANDO_API_OIDC_IDENTIFIER
 
 
@@ -57,14 +58,14 @@ class OpenIDConnect:
         self.oidc_config = configuration
 
     @property
-    def client_metadata(self):
+    def client_metadata(self) -> ClientMetadata:
         return ClientMetadata(
             client_id=self.oidc_config.client_id(),
             client_secret=self.oidc_config.client_secret(),
         )
 
     @property
-    def provider_metadata(self):
+    def provider_metadata(self) -> ProviderMetadata:
         return ProviderMetadata(
             issuer="https://{DOMAIN}/".format(
                 DOMAIN=self.oidc_config.OIDC_DOMAIN,
@@ -75,7 +76,7 @@ class OpenIDConnect:
         )
 
     @property
-    def provider_configuration(self):
+    def provider_configuration(self) -> ProviderConfiguration:
         return ProviderConfiguration(
             client_metadata=self.client_metadata,
             provider_metadata=self.provider_metadata,
@@ -86,7 +87,7 @@ class OpenIDConnect:
             },
         )
 
-    def auth(self, app):
+    def auth(self, app: Flask) -> OIDCAuthentication:
         """Creates the OIDCAuthentication object to be used to protect routes.
 
         Authentication is requested with the following audiences:
