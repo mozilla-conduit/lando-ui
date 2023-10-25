@@ -28,6 +28,6 @@ requests_mock==1.7.0
 sentry-sdk==1.14.0
 uwsgi==2.0.18
 webassets==0.12.1
-werkzeug==1.0.0
+werkzeug==3.0.1
 webassets==0.12.1
 wtforms==2.2.1
