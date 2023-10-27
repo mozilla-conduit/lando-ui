@@ -23,7 +23,8 @@
             </p>
             {% if transplant.error_breakdown %}
             {% set reject_paths = transplant.error_breakdown.reject_paths %}
-            <p>The following files have a conflict with <a href="{{ transplant.error_breakdown.revision_id|revision_url() }}">revision D{{ transplant.error_breakdown.revision_id }}</a>:</p>
+            <p>While applying <a href="{{ transplant.error_breakdown.revision_id|revision_url() }}">revision D{{ transplant.error_breakdown.revision_id }}</a> to {{ transplant.tree }}, the following files had conflicts:</p>
+            <p>(Hint: try rebasing your changes on the latest commits from {{ transplant.tree }} and re-submitting.)</p>
             <div class="content">
                 <ul>
                     {% for path in transplant.error_breakdown.failed_paths if path.path in reject_paths %}
