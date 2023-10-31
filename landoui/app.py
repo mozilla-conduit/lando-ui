@@ -6,6 +6,7 @@ import logging
 import logging.config
 import os
 from urllib.parse import urlparse
+from typing import Any
 
 from flask import Flask
 from flask_assets import Environment
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 oidc = None
 
 
-def get_app_version(path):
+def get_app_version(path: str) -> dict[str, str]:
     try:
         with open(path) as f:
             version = json.load(f)
@@ -39,22 +40,22 @@ def get_app_version(path):
     return version
 
 
-def set_config_param(app, key, value, logger=logger, obfuscate=False):
+def set_config_param(app: Flask, key: str, value: Any, obfuscate: bool = False):
     app.config[key] = value
     log_config_change(key, value if not obfuscate else "*" * 10)
 
 
 def create_app(
-    version_path,
-    secret_key,
-    session_cookie_name,
-    session_cookie_domain,
-    session_cookie_secure,
-    use_https,
-    enable_asset_pipeline,
-    lando_api_url,
-    debug=False,
-):
+    version_path: str,
+    secret_key: str,
+    session_cookie_name: str,
+    session_cookie_domain: str,
+    session_cookie_secure: bool,
+    use_https: bool,
+    enable_asset_pipeline: bool,
+    lando_api_url: str,
+    debug: bool = False,
+) -> Flask:
     """
     Create an app instance.
     """
@@ -191,7 +192,7 @@ def initialize_logging():
     logger.info("logging configured", extra={"LOG_LEVEL": level})
 
 
-def _lookup_service_url(lando_api_url, service_name):
+def _lookup_service_url(lando_api_url: str, service_name: str) -> str:
     # TODO: Restructure things to pull this information from lando-api
     # itself / lookup like other environment variables. Sticking this here
     # is a temporary hack to unblock GCP migration.

@@ -49,7 +49,7 @@ def app(versionfile, docker_env_vars, api_url):
         session_cookie_name="lando-ui",
         session_cookie_domain="lando-ui.test:7777",
         session_cookie_secure=False,
-        use_https=0,
+        use_https=False,
         enable_asset_pipeline=False,
         lando_api_url=api_url,
         debug=True,
