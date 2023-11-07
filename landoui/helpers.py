@@ -14,6 +14,10 @@ def is_user_authenticated() -> bool:
     return "id_token" in session and "access_token" in session
 
 
+def is_user_authenticated_TODO() -> bool:
+    return True
+
+
 def set_last_local_referrer():
     """
     Sets the url of the last route that the user visited on this server.

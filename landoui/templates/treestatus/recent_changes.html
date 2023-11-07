@@ -5,7 +5,7 @@
 #}
 
 {# Only render the recent changes header if there are any changes available. #}
-{% if recent_changes_stack and is_user_authenticated() %}
+{% if recent_changes_stack and is_user_authenticated_TODO() %}
 <h1>Recent changes</h1>
 <div class="container">
     {% for status_change_form, status_change_data in recent_changes_stack %}
