@@ -22,7 +22,7 @@
     <form action="{{ url_for("treestatus.update_treestatus_form") }}" method="post">
         {{ treestatus_select_trees_form.csrf_token }}
 
-        {% if is_user_authenticated_TODO() %}
+        {% if is_user_authenticated() %}
         <div class="block">
             <a href="{{ url_for("treestatus.new_tree") }}">
                 <button class="button" title="New Tree" type="button">New Tree</button>
@@ -46,7 +46,7 @@
 
             <div class="select-trees-box box">
                 <div class="columns">
-                    {% if is_user_authenticated_TODO() %}
+                    {% if is_user_authenticated() %}
                         <div class="column is-1">
                             <input class="tree-select-checkbox" type="checkbox" name="{{ tree_option.id }}" value="{{ tree_option.data }}">
                         </div>
