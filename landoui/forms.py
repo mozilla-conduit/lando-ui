@@ -177,14 +177,18 @@ class ReasonCategory(enum.Enum):
         }[self]
 
     @classmethod
-    def is_valid_reason_category(cls, value: str) -> bool:
-        """Return `True` if `value` is a valid `ReasonCategory`.
+    def is_valid_for_backend(cls, value) -> bool:
+        """Return `True` if `value` is a valid `ReasonCategory` to be submitted.
 
-        Once we are using Python 3.12+, we can switch to `value in ReasonCategory`.
+        All `ReasonCategory` members are valid except for `NO_CATEGORY` as that is
+        implied by an empty `tags` key in the backend.
         """
         try:
-            cls(value)
+            category = cls(value)
         except ValueError:
+            return False
+
+        if category == ReasonCategory.NO_CATEGORY:
             return False
 
         return True

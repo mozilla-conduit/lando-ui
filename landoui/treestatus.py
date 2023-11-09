@@ -60,7 +60,11 @@ def build_recent_changes_stack(
             TreeStatusRecentChangesForm(
                 id=change["id"],
                 reason=change["reason"],
-                reason_category=change["trees"][0]["last_state"]["current_tags"][0],
+                reason_category=(
+                    change["trees"][0]["last_state"]["current_tags"][0]
+                    if change["trees"][0]["last_state"]["current_tags"]
+                    else ReasonCategory.NO_CATEGORY.value
+                ),
                 who=change["who"],
                 when=change["when"],
             ),
@@ -158,6 +162,13 @@ def update_treestatus():
     reason_category = treestatus_update_trees_form.reason_category.data
     remember = treestatus_update_trees_form.remember_this_change.data
 
+    # Avoid setting tags for invalid values.
+    tags = (
+        [reason_category]
+        if ReasonCategory.is_valid_for_backend(reason_category)
+        else []
+    )
+
     try:
         api.request(
             "PATCH",
@@ -169,7 +180,7 @@ def update_treestatus():
                 "status": status,
                 "reason": reason,
                 "message_of_the_day": message_of_the_day,
-                "tags": [reason_category],
+                "tags": tags,
                 "remember": remember,
             },
         )
@@ -294,7 +305,7 @@ def build_update_json_body(
 
     json_body["reason"] = reason
 
-    if reason_category and ReasonCategory.is_valid_reason_category(reason_category):
+    if reason_category and ReasonCategory.is_valid_for_backend(reason_category):
         json_body["tags"] = [reason_category]
 
     return json_body
