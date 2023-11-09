@@ -151,13 +151,20 @@ def tostatusbadgename(status: dict) -> str:
 
 
 @template_helpers.app_template_filter()
-def reason_category_to_display(tree_category_str: str) -> str:
-    return ReasonCategory(tree_category_str).to_display()
+def reason_category_to_display(reason_category_str: str) -> str:
+    try:
+        return ReasonCategory(reason_category_str).to_display()
+    except ValueError:
+        # Return the bare string, in case of older data.
+        return reason_category_str
 
 
 @template_helpers.app_template_filter()
 def tree_category_to_display(tree_category_str: str) -> str:
-    return TreeCategory(tree_category_str).to_display()
+    try:
+        return TreeCategory(tree_category_str).to_display()
+    except ValueError:
+        return tree_category_str
 
 
 @template_helpers.app_template_filter()
