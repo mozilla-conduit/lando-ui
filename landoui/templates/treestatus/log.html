@@ -34,7 +34,7 @@
                                 {% if log.reason %}
                                     <div class="log-update-visible">
                                         <p>{{ log_update_form.reason.label }}: <b>{{ log.reason }}</b></p>
-                                        <p>{{ log_update_form.reason_category.label }}: <b>{{ log_update_form.reason_category.data }}</b></p>
+                                        <p>{{ log_update_form.reason_category.label }}: <b>{{ log_update_form.reason_category.data | reason_category_to_display }}</b></p>
                                     </div>
                                 {% endif %}
                                 <div class="log-update-hidden">

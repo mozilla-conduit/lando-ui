@@ -147,20 +147,34 @@ class Status(enum.Enum):
 class ReasonCategory(enum.Enum):
     """Allowable reasons for a Tree closure."""
 
-    NO_CATEGORY = "No Category"
-    JOB_BACKLOG = "Job Backlog"
-    CHECKIN_COMPILE_FAILURE = "Check-in compilation failure"
-    CHECKIN_TEST_FAILURE = "Check-in test failure"
-    PLANNED_CLOSURE = "Planned closure"
-    MERGES = "Merges"
-    WAITING_FOR_COVERAGE = "Waiting for coverage"
-    INFRASTRUCTURE_RELATED = "Infrastructure related"
-    OTHER = "Other"
+    NO_CATEGORY = ""
+    JOB_BACKLOG = "backlog"
+    CHECKIN_COMPILE_FAILURE = "checkin_compilation"
+    CHECKIN_TEST_FAILURE = "checkin_test"
+    PLANNED_CLOSURE = "planned"
+    MERGES = "merges"
+    WAITING_FOR_COVERAGE = "waiting_for_coverage"
+    INFRASTRUCTURE_RELATED = "infra"
+    OTHER = "other"
 
     @classmethod
     def to_choices(cls) -> list[tuple[str, str]]:
         """Return a list of choices for display."""
-        return [(choice.value, choice.value) for choice in list(cls)]
+        return [(choice.value, choice.to_display()) for choice in list(cls)]
+
+    def to_display(self) -> str:
+        """Return a human-readable version of the category."""
+        return {
+            ReasonCategory.NO_CATEGORY: "No Category",
+            ReasonCategory.JOB_BACKLOG: "Job Backlog",
+            ReasonCategory.CHECKIN_COMPILE_FAILURE: "Check-in compilation failure",
+            ReasonCategory.CHECKIN_TEST_FAILURE: "Check-in test failure",
+            ReasonCategory.PLANNED_CLOSURE: "Planned closure",
+            ReasonCategory.MERGES: "Merges",
+            ReasonCategory.WAITING_FOR_COVERAGE: "Waiting for coverage",
+            ReasonCategory.INFRASTRUCTURE_RELATED: "Infrastructure related",
+            ReasonCategory.OTHER: "Other",
+        }[self]
 
     @classmethod
     def is_valid_reason_category(cls, value: str) -> bool:
