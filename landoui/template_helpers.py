@@ -12,7 +12,7 @@ import urllib.parse
 from typing import Optional
 
 from flask import Blueprint, current_app, escape
-from landoui.forms import UserSettingsForm
+from landoui.forms import TreeCategory, UserSettingsForm
 
 from landoui import helpers
 
@@ -144,6 +144,11 @@ def tostatusbadgename(status: dict) -> str:
         "failed": "Failed to land",
     }
     return mapping.get(status["status"].lower(), status["status"].capitalize())
+
+
+@template_helpers.app_template_filter()
+def tree_category_to_display(tree_category_str: str) -> str:
+    return TreeCategory(tree_category_str).to_display()
 
 
 @template_helpers.app_template_filter()

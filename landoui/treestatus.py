@@ -27,6 +27,7 @@ from landoui.landoapi import (
 )
 from landoui.forms import (
     ReasonCategory,
+    TreeCategory,
     TreeStatusLogUpdateForm,
     TreeStatusNewTreeForm,
     TreeStatusRecentChangesForm,
@@ -84,8 +85,10 @@ def treestatus():
     trees_response = api.request("GET", "treestatus/trees")
     trees = trees_response.get("result")
 
-    for tree in trees:
-        treestatus_select_trees_form.trees.append_entry(tree)
+    ordered_tree_choices = sorted(trees.values(), key=TreeCategory.sort_trees)
+
+    for tree in ordered_tree_choices:
+        treestatus_select_trees_form.trees.append_entry(tree["tree"])
 
     recent_changes_stack = build_recent_changes_stack(api)
 
@@ -208,6 +211,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
     """Handler for the new tree form."""
     # Retrieve data from the form.
     tree = form.tree.data
+    tree_category = form.category.data
 
     try:
         api.request(
@@ -217,6 +221,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
             # require_auth0=True,
             json={
                 "tree": tree,
+                "category": tree_category,
                 # Trees are open on creation.
                 "status": "open",
                 "reason": "",

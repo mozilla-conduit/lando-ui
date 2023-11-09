@@ -244,12 +244,46 @@ class TreeStatusUpdateTreesForm(FlaskForm):
             raise ValidationError("Reason category is required to close trees.")
 
 
+class TreeCategory(enum.Enum):
+    """Categories of the various trees.
+
+    Note: the definition order is in order of importance for display in the UI.
+    Note: this class also exists in Lando-UI, and should be updated in both places.
+    """
+
+    DEVELOPMENT = "development"
+    RELEASE_STABILIZATION = "release_stabilization"
+    TRY = "try"
+    COMM_REPOS = "comm_repos"
+    OTHER = "other"
+
+    @classmethod
+    def sort_trees(cls, item: dict) -> int:
+        """Key function for sorting tree `dict`s according to category order."""
+        return [choice.value for choice in list(cls)].index(item["category"])
+
+    @classmethod
+    def to_choices(cls) -> list[tuple[str, str]]:
+        """Return a list of choices for display."""
+        return [(choice.value, choice.to_display()) for choice in list(cls)]
+
+    def to_display(self) -> str:
+        """Return a human readable version of the category."""
+        return " ".join(word.capitalize() for word in self.value.split("_"))
+
+
 class TreeStatusNewTreeForm(FlaskForm):
     """Add a new tree to Treestatus."""
 
     tree = StringField(
         "Tree",
         validators=[InputRequired("A tree name is required.")],
+    )
+
+    category = SelectField(
+        "Tree category",
+        choices=TreeCategory.to_choices(),
+        default=TreeCategory.OTHER.value,
     )
 
 

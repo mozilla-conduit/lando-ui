@@ -22,6 +22,12 @@
                 </div>
                 <p class="help">The status will be "open" by default.</p>
             </div>
+            <div class="field">
+                <label class="label">{{ treestatus_new_tree_form.category.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_new_tree_form.category() }}</div>
+                </div>
+            </div>
             <button class="button is-primary">Add tree</button>
         </div>
     </form>
