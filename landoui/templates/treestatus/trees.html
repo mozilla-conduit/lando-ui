@@ -41,7 +41,7 @@
             {# Check if the category has changed and display a header for new category. #}
             {% if tree.category != ns.current_category %}
                 {% set ns.current_category = tree.category %}
-                <h1>{{ ns.current_category | tree_category_to_display }}</h1>
+                <h4 class="subtitle is-4 tree-category-header">{{ ns.current_category | tree_category_to_display }}</h1>
             {% endif %}
 
             <div class="select-trees-box box">
