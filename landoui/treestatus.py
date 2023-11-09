@@ -173,8 +173,7 @@ def update_treestatus():
         api.request(
             "PATCH",
             "treestatus/trees",
-            # TODO re-add auth0 requirement.
-            # require_auth0=True,
+            require_auth0=True,
             json={
                 "trees": trees,
                 "status": status,
@@ -228,8 +227,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
         api.request(
             "PUT",
             f"treestatus/trees/{tree}",
-            # TODO re-enable auth0 requirement.
-            # require_auth0=True,
+            require_auth0=True,
             json={
                 "tree": tree,
                 "category": tree_category,
@@ -356,8 +354,7 @@ def update_change(id: int):
         api.request(
             method,
             f"treestatus/stack/{id}",
-            # TODO re-enable auth0 requirement.
-            # require_auth0=True,
+            require_auth0=True,
             **request_args,
         )
     except LandoAPIError as exc:
