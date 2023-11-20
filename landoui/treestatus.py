@@ -193,7 +193,7 @@ def update_treestatus():
             raise exc
 
         flash(f"Could not update trees: {exc.detail}. Please try again later.", "error")
-        return redirect(request.referrer), 500
+        return redirect(request.referrer), 303
 
     # Redirect to the main Treestatus page.
     flash("Tree statuses updated successfully.")
