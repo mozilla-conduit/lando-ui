@@ -136,7 +136,13 @@ def update_treestatus_form():
 
 @treestatus_blueprint.route("/treestatus/update_handler", methods=["POST"])
 def update_treestatus():
-    """Handler for the tree status updating form."""
+    """Handler for the tree status updating form.
+
+    This function handles form submission for the status updating form. Validate
+    the form submission and submit a request to LandoAPI, redirecting to the main
+    Treestatus page on success. Display an error message and return to the form if
+    the status updating rules were broken or the API returned an error.
+    """
     api = LandoAPI.from_environment()
     treestatus_update_trees_form = TreeStatusUpdateTreesForm()
 
