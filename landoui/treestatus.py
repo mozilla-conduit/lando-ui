@@ -104,7 +104,12 @@ def treestatus():
 
 @treestatus_blueprint.route("/treestatus/update", methods=["POST"])
 def update_treestatus_form():
-    """Web UI for the tree status updating form."""
+    """Web UI for the tree status updating form.
+
+    This form is rendered when the "Update trees" button is clicked on the main Treestatus
+    page. The Trees that were selected on the main page are forwarded to this form, where
+    we validate that at least 1 tree was selected for updating.
+    """
     api = LandoAPI.from_environment()
 
     treestatus_select_trees_form = TreeStatusSelectTreesForm()
