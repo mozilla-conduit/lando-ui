@@ -112,7 +112,7 @@ class LandoAPI:
         if not token:
             token = get_phabricator_api_token()
 
-        return LandoAPI(
+        return cls(
             current_app.config["LANDO_API_URL"],
             auth0_access_token=session.get("access_token"),
             phabricator_api_token=token,
