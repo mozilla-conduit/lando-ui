@@ -12,6 +12,13 @@ from typing import (
     Optional,
 )
 
+from flask import (
+    current_app,
+    session,
+)
+
+from landoui.helpers import get_phabricator_api_token
+
 logger = logging.getLogger(__name__)
 
 
@@ -98,6 +105,18 @@ class LandoAPI:
 
         LandoAPIError.raise_if_error(response, data)
         return data
+
+    @classmethod
+    def from_environment(cls, token: Optional[str] = None) -> LandoAPI:
+        """Build a `LandoAPI` object from the environment."""
+        if not token:
+            token = get_phabricator_api_token()
+
+        return cls(
+            current_app.config["LANDO_API_URL"],
+            auth0_access_token=session.get("access_token"),
+            phabricator_api_token=token,
+        )
 
 
 class LandoAPIException(Exception):
