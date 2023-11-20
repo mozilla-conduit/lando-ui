@@ -8,17 +8,14 @@ from typing import (
 
 from flask import (
     Blueprint,
-    current_app,
     flash,
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
 
 from landoui.helpers import (
-    get_phabricator_api_token,
     set_last_local_referrer,
 )
 from landoui.landoapi import (
@@ -82,12 +79,7 @@ def build_recent_changes_stack(
 @treestatus_blueprint.route("/treestatus/", methods=["GET"])
 def treestatus():
     """Display the status of all the current trees."""
-    token = get_phabricator_api_token()
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=token,
-    )
+    api = LandoAPI.from_environment()
 
     treestatus_select_trees_form = TreeStatusSelectTreesForm()
 
@@ -113,12 +105,7 @@ def treestatus():
 @treestatus_blueprint.route("/treestatus/update", methods=["POST"])
 def update_treestatus_form():
     """Web UI for the tree status updating form."""
-    token = get_phabricator_api_token()
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=token,
-    )
+    api = LandoAPI.from_environment()
 
     treestatus_select_trees_form = TreeStatusSelectTreesForm()
     if not treestatus_select_trees_form.validate_on_submit():
@@ -145,11 +132,7 @@ def update_treestatus_form():
 @treestatus_blueprint.route("/treestatus/update_handler", methods=["POST"])
 def update_treestatus():
     """Handler for the tree status updating form."""
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
     treestatus_update_trees_form = TreeStatusUpdateTreesForm()
 
     if not treestatus_update_trees_form.validate_on_submit():
@@ -205,11 +188,7 @@ def update_treestatus():
 @treestatus_blueprint.route("/treestatus/new_tree/", methods=["GET", "POST"])
 def new_tree():
     """View for the new tree form."""
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
     treestatus_new_tree_form = TreeStatusNewTreeForm()
 
     if treestatus_new_tree_form.validate_on_submit():
@@ -261,12 +240,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
 @treestatus_blueprint.route("/treestatus/<tree>/", methods=["GET"])
 def treestatus_tree(tree: str):
     """Display the log of statuses for a given tree."""
-    token = get_phabricator_api_token()
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=token,
-    )
+    api = LandoAPI.from_environment()
 
     logs_response = api.request("GET", f"treestatus/trees/{tree}/logs")
     logs = logs_response.get("result")
@@ -321,11 +295,7 @@ def build_update_json_body(
 @treestatus_blueprint.route("/treestatus/stack/<int:id>", methods=["POST"])
 def update_change(id: int):
     """Handler for stack updates."""
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
 
     restore = recent_changes_form.restore.data
@@ -383,11 +353,7 @@ def update_change(id: int):
 @treestatus_blueprint.route("/treestatus/log/<int:id>", methods=["POST"])
 def update_log(id: int):
     """Handler for log updates."""
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
 
     log_update_form = TreeStatusLogUpdateForm()
 
