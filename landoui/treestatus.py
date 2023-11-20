@@ -150,7 +150,7 @@ def update_treestatus():
     reason = treestatus_update_trees_form.reason.data
     message_of_the_day = treestatus_update_trees_form.message_of_the_day.data
     reason_category = treestatus_update_trees_form.reason_category.data
-    remember = treestatus_update_trees_form.remember_this_change.data
+    remember = treestatus_update_trees_form.remember.data
 
     # Avoid setting tags for invalid values.
     tags = (

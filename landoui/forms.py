@@ -238,7 +238,7 @@ class TreeStatusUpdateTreesForm(FlaskForm):
         choices=ReasonCategory.to_choices(),
     )
 
-    remember_this_change = BooleanField(
+    remember = BooleanField(
         "Remember this change",
         default=True,
     )
