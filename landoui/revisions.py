@@ -21,7 +21,6 @@ from flask import (
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
 
@@ -93,11 +92,7 @@ def get_uplift_repos(api: LandoAPI) -> list[tuple[str, str]]:
 @oidc_auth_optional
 def uplift():
     """Process the uplift request WTForms submission."""
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
     uplift_request_form = UpliftRequestForm()
 
     # Get the list of available uplift repos and populate the form with it.
@@ -139,11 +134,7 @@ def uplift():
 @revisions.route("/D<int:revision_id>/", methods=("GET", "POST"))
 @oidc_auth_optional
 def revision(revision_id: int):
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=get_phabricator_api_token(),
-    )
+    api = LandoAPI.from_environment()
 
     form = TransplantRequestForm()
     sec_approval_form = SecApprovalRequestForm()
@@ -338,11 +329,7 @@ def sec_approval_request_handler():
         )
         return jsonify(errors=errors), 400
 
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=token,
-    )
+    api = LandoAPI.from_environment(token=token)
 
     form = SecApprovalRequestForm()
 
@@ -375,12 +362,7 @@ def update_landing_job(landing_job_id: int):
         errors = make_form_error("You must be logged in to update a landing job.")
         return jsonify(errors=errors), 401
 
-    token = get_phabricator_api_token()
-    api = LandoAPI(
-        current_app.config["LANDO_API_URL"],
-        auth0_access_token=session.get("access_token"),
-        phabricator_api_token=token,
-    )
+    api = LandoAPI.from_environment()
 
     try:
         data = api.request(
