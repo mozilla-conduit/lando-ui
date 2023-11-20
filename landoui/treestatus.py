@@ -228,7 +228,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
 
 @treestatus_blueprint.route("/treestatus/<tree>/", methods=["GET"])
 def treestatus_tree(tree: str):
-    """Display the log of statuses for a given tree."""
+    """Display the log of statuses for an individual tree."""
     api = LandoAPI.from_environment()
 
     logs_response = api.request("GET", f"treestatus/trees/{tree}/logs")
