@@ -56,7 +56,9 @@ def get_recent_changes_stack(api: LandoAPI) -> list[dict]:
     return response["result"]
 
 
-def build_recent_changes_stack(recent_changes_data: list[dict]) -> list[tuple[TreeStatusRecentChangesForm, dict]]:
+def build_recent_changes_stack(
+    recent_changes_data: list[dict],
+) -> list[tuple[TreeStatusRecentChangesForm, dict]]:
     """Build the recent changes stack object."""
     return [
         (
