@@ -272,7 +272,12 @@ def build_update_json_body(
 
 @treestatus_blueprint.route("/treestatus/stack/<int:id>", methods=["POST"])
 def update_change(id: int):
-    """Handler for stack updates."""
+    """Handler for stack updates.
+
+    This function handles form submissions for updates to entries in the recent changes
+    stack. This includes pressing the "restore" or "discard" buttons, as well as updates
+    to the reason and reason category after pressing "edit" and "update".
+    """
     api = LandoAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
 
