@@ -39,10 +39,8 @@ treestatus_blueprint = Blueprint("treestatus", __name__)
 treestatus_blueprint.before_request(set_last_local_referrer)
 
 
-def build_recent_changes_stack(
-    api: LandoAPI,
-) -> list[tuple[TreeStatusRecentChangesForm, dict]]:
-    """Build the recent changes stack object."""
+def get_recent_changes_stack(api: LandoAPI) -> list[dict]:
+    """Retrieve recent changes stack data with error handling."""
     try:
         response = api.request(
             "GET",
@@ -55,6 +53,11 @@ def build_recent_changes_stack(
         flash(f"Could not retrieve recent changes stack: {exc.detail}.", "error")
         return []
 
+    return response["result"]
+
+
+def build_recent_changes_stack(recent_changes_data: list[dict]) -> list[tuple[TreeStatusRecentChangesForm, dict]]:
+    """Build the recent changes stack object."""
     return [
         (
             TreeStatusRecentChangesForm(
@@ -70,7 +73,7 @@ def build_recent_changes_stack(
             ),
             change,
         )
-        for change in response["result"]
+        for change in recent_changes_data
     ]
 
 
@@ -94,7 +97,8 @@ def treestatus():
     for tree in ordered_tree_choices:
         treestatus_select_trees_form.trees.append_entry(tree["tree"])
 
-    recent_changes_stack = build_recent_changes_stack(api)
+    recent_changes_data = get_recent_changes_stack(api)
+    recent_changes_stack = build_recent_changes_stack(recent_changes_data)
 
     return render_template(
         "treestatus/trees.html",
@@ -126,7 +130,8 @@ def update_treestatus_form():
 
     treestatus_update_trees_form = TreeStatusUpdateTreesForm()
 
-    recent_changes_stack = build_recent_changes_stack(api)
+    recent_changes_data = get_recent_changes_stack(api)
+    recent_changes_stack = build_recent_changes_stack(recent_changes_data)
 
     return render_template(
         "treestatus/update_trees.html",
@@ -208,7 +213,8 @@ def new_tree():
     if treestatus_new_tree_form.validate_on_submit():
         return new_tree_handler(api, treestatus_new_tree_form)
 
-    recent_changes_stack = build_recent_changes_stack(api)
+    recent_changes_data = get_recent_changes_stack(api)
+    recent_changes_stack = build_recent_changes_stack(recent_changes_data)
 
     return render_template(
         "treestatus/new_tree.html",
@@ -284,7 +290,8 @@ def treestatus_tree(tree: str):
         for log in logs
     ]
 
-    recent_changes_stack = build_recent_changes_stack(api)
+    recent_changes_data = get_recent_changes_stack(api)
+    recent_changes_stack = build_recent_changes_stack(recent_changes_data)
 
     return render_template(
         "treestatus/log.html",
