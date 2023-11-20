@@ -144,34 +144,12 @@ def update_treestatus():
         # the form is preserved.
         return update_treestatus_form()
 
-    # Retrieve data from the form.
-    trees = treestatus_update_trees_form.trees.data
-    status = treestatus_update_trees_form.status.data
-    reason = treestatus_update_trees_form.reason.data
-    message_of_the_day = treestatus_update_trees_form.message_of_the_day.data
-    reason_category = treestatus_update_trees_form.reason_category.data
-    remember = treestatus_update_trees_form.remember.data
-
-    # Avoid setting tags for invalid values.
-    tags = (
-        [reason_category]
-        if ReasonCategory.is_valid_for_backend(reason_category)
-        else []
-    )
-
     try:
         api.request(
             "PATCH",
             "treestatus/trees",
             require_auth0=True,
-            json={
-                "trees": trees,
-                "status": status,
-                "reason": reason,
-                "message_of_the_day": message_of_the_day,
-                "tags": tags,
-                "remember": remember,
-            },
+            json=treestatus_update_trees_form.to_submitted_json(),
         )
     except LandoAPIError as exc:
         if not exc.detail:

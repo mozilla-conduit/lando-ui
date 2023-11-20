@@ -261,6 +261,24 @@ class TreeStatusUpdateTreesForm(FlaskForm):
         if Status(self.status.data) == Status.CLOSED and category_is_empty:
             raise ValidationError("Reason category is required to close trees.")
 
+    def to_submitted_json(self) -> dict:
+        """Convert a validated form to JSON for submission to LandoAPI."""
+        # Avoid setting tags for invalid values.
+        tags = (
+            [self.reason_category.data]
+            if ReasonCategory.is_valid_for_backend(self.reason_category.data)
+            else []
+        )
+
+        return {
+            "trees": self.trees.data,
+            "status": self.status.data,
+            "reason": self.reason.data,
+            "message_of_the_day": self.message_of_the_day.data,
+            "tags": tags,
+            "remember": self.remember.data,
+        }
+
 
 class TreeCategory(enum.Enum):
     """Categories of the various trees.
