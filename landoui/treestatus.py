@@ -330,7 +330,11 @@ def update_change(id: int):
 
 @treestatus_blueprint.route("/treestatus/log/<int:id>", methods=["POST"])
 def update_log(id: int):
-    """Handler for log updates."""
+    """Handler for log updates.
+
+    This function handles form submissions for updates to individual log entries
+    in the per-tree log view.
+    """
     api = LandoAPI.from_environment()
 
     log_update_form = TreeStatusLogUpdateForm()
