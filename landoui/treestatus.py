@@ -306,7 +306,7 @@ def update_change(id: int):
         method = "DELETE"
         request_args = {"params": {"revert": 1}}
 
-        flash_message = "Statuses change restored."
+        flash_message = "Status change restored."
     elif discard:
         # Discard is a DELETE without a status revert.
         method = "DELETE"
