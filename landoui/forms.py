@@ -22,7 +22,6 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     ValidationError,
-    widgets,
 )
 from wtforms.validators import (
     InputRequired,
