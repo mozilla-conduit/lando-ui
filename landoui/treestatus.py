@@ -90,6 +90,15 @@ def treestatus():
         # Submit the form.
         return update_treestatus(api, treestatus_update_trees_form)
 
+    if (
+        treestatus_update_trees_form.is_submitted()
+        and not treestatus_update_trees_form.validate()
+    ):
+        # Flash form submission errors.
+        for errors in treestatus_update_trees_form.errors.values():
+            for error in errors:
+                flash(error, "warning")
+
     trees_response = api.request("GET", "treestatus/trees")
     trees = trees_response.get("result")
 
