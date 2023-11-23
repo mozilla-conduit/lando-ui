@@ -4,25 +4,18 @@
     file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #}
 
-{% extends "partials/layout.html" %}
-{% block page_title %}Treestatus{% endblock %}
-
 {% block main %}
-<main class="Treestatus container fullhd">
-
-    {% include "treestatus/recent_changes.html" %}
-
-    <h1>Treestatus: Update trees</h1>
-    <form action="{{ url_for("treestatus.update_treestatus") }}" method="post">
-        <div class="box">
+<div class="modal update-trees-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Update trees</p>
+        </header>
+        <section class="modal-card-body">
             {{ treestatus_update_trees_form.csrf_token }}
             <div class="block content">
                 <div>You are about to update the following trees:</div>
-                <ul>
-                    {% for tree in treestatus_update_trees_form.trees %}
-                    <li>{{ tree.data }} {{ tree }}</li>
-                    {% endfor %}
-                </ul>
+                <ul class="update-trees-list"></ul>
             </div>
             <div class="field">
                 <label class="label">{{ treestatus_update_trees_form.status.label }}</label>
@@ -54,11 +47,11 @@
                 <div class="control">{{ treestatus_update_trees_form.message_of_the_day(class="input") }}</div>
                 <p class="help">Optional</p>
             </div>
-            <div class="field">
-                <button class="button is-primary" title="Update Tree">Update trees</button>
-            </div>
-        </div>
-    </form>
-
-</main>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-primary" title="Update Tree">Update trees</button>
+        </footer>
+    </div>
+    <button class="modal-close is-large update-trees-modal-close" aria-label="close" type="button"></button>
+</div>
 {% endblock %}

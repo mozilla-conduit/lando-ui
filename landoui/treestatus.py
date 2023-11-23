@@ -28,7 +28,6 @@ from landoui.forms import (
     TreeStatusLogUpdateForm,
     TreeStatusNewTreeForm,
     TreeStatusRecentChangesForm,
-    TreeStatusSelectTreesForm,
     TreeStatusUpdateTreesForm,
 )
 
@@ -76,7 +75,7 @@ def build_recent_changes_stack(
     ]
 
 
-@treestatus_blueprint.route("/treestatus/", methods=["GET"])
+@treestatus_blueprint.route("/treestatus/", methods=["GET", "POST"])
 def treestatus():
     """Display the status of all the current trees.
 
@@ -86,15 +85,18 @@ def treestatus():
     """
     api = LandoAPI.from_environment()
 
-    treestatus_select_trees_form = TreeStatusSelectTreesForm()
+    treestatus_update_trees_form = TreeStatusUpdateTreesForm()
+    if treestatus_update_trees_form.validate_on_submit():
+        # Submit the form.
+        return update_treestatus(api, treestatus_update_trees_form)
 
     trees_response = api.request("GET", "treestatus/trees")
     trees = trees_response.get("result")
 
-    ordered_tree_choices = sorted(trees.values(), key=TreeCategory.sort_trees)
-
-    for tree in ordered_tree_choices:
-        treestatus_select_trees_form.trees.append_entry(tree["tree"])
+    if not treestatus_update_trees_form.trees.entries:
+        ordered_tree_choices = sorted(trees.values(), key=TreeCategory.sort_trees)
+        for tree in ordered_tree_choices:
+            treestatus_update_trees_form.trees.append_entry(tree["tree"])
 
     recent_changes_data = get_recent_changes_stack(api)
     recent_changes_stack = build_recent_changes_stack(recent_changes_data)
@@ -103,44 +105,11 @@ def treestatus():
         "treestatus/trees.html",
         recent_changes_stack=recent_changes_stack,
         trees=trees,
-        treestatus_select_trees_form=treestatus_select_trees_form,
-    )
-
-
-@treestatus_blueprint.route("/treestatus/update", methods=["POST"])
-def update_treestatus_form():
-    """Web UI for the tree status updating form.
-
-    This form is rendered when the "Update trees" button is clicked on the main Treestatus
-    page. The Trees that were selected on the main page are forwarded to this form, where
-    we validate that at least 1 tree was selected for updating.
-    """
-    api = LandoAPI.from_environment()
-
-    treestatus_select_trees_form = TreeStatusSelectTreesForm()
-    if not treestatus_select_trees_form.validate_on_submit():
-        # Validate the tree selection form was submitted with at least one
-        # tree selected.
-        for errors in treestatus_select_trees_form.errors.values():
-            for error in errors:
-                flash(error, "warning")
-
-        return redirect(request.referrer)
-
-    treestatus_update_trees_form = TreeStatusUpdateTreesForm()
-
-    recent_changes_data = get_recent_changes_stack(api)
-    recent_changes_stack = build_recent_changes_stack(recent_changes_data)
-
-    return render_template(
-        "treestatus/update_trees.html",
-        recent_changes_stack=recent_changes_stack,
         treestatus_update_trees_form=treestatus_update_trees_form,
     )
 
 
-@treestatus_blueprint.route("/treestatus/update_handler", methods=["POST"])
-def update_treestatus():
+def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesForm):
     """Handler for the tree status updating form.
 
     This function handles form submission for the status updating form. Validate
@@ -148,24 +117,12 @@ def update_treestatus():
     Treestatus page on success. Display an error message and return to the form if
     the status updating rules were broken or the API returned an error.
     """
-    api = LandoAPI.from_environment()
-    treestatus_update_trees_form = TreeStatusUpdateTreesForm()
-
-    if not treestatus_update_trees_form.validate_on_submit():
-        for errors in treestatus_update_trees_form.errors.values():
-            for error in errors:
-                flash(error, "warning")
-
-        # Return the result of re-rendering the form, so the current state of
-        # the form is preserved.
-        return update_treestatus_form()
-
     try:
         api.request(
             "PATCH",
             "treestatus/trees",
             require_auth0=True,
-            json=treestatus_update_trees_form.to_submitted_json(),
+            json=update_trees_form.to_submitted_json(),
         )
     except LandoAPIError as exc:
         if not exc.detail:

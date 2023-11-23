@@ -19,8 +19,8 @@
         The main Treestatus page is a table that presents the trees.
         Trees can be selected here for updating, or for deletion.
     #}
-    <form action="{{ url_for("treestatus.update_treestatus_form") }}" method="post">
-        {{ treestatus_select_trees_form.csrf_token }}
+    <form method="post">
+        {{ treestatus_update_trees_form.csrf_token }}
 
         {% if is_user_authenticated() %}
         <div class="block">
@@ -28,14 +28,14 @@
                 <button class="button" title="New Tree" type="button">New Tree</button>
             </a>
             <button class="button select-all-trees" type="button">Select all trees</button>
-            <button class="button is-primary" title="Update Tree">Update trees</button>
+            <button class="button is-primary update-trees-button" title="Update Tree" type="button">Update trees</button>
         </div>
         {% endif %}
 
         {# Create a namespace to track the current category across the loop iterations. #}
         {% set ns = namespace(current_category="") %}
 
-        {% for tree_option in treestatus_select_trees_form.trees %}
+        {% for tree_option in treestatus_update_trees_form.trees %}
             {% set tree = trees[tree_option.data] %}
 
             {# Check if the category has changed and display a header for new category. #}
@@ -71,6 +71,8 @@
                 </div>
             </div>
         {% endfor %}
+
+        {% include "treestatus/update_trees.html" %}
     </form>
 </main>
 {% endblock %}

@@ -194,24 +194,6 @@ class ReasonCategory(enum.Enum):
         return True
 
 
-class TreeStatusSelectTreesForm(FlaskForm):
-    """Form used to select trees for updating."""
-
-    trees = FieldList(
-        StringField(
-            "Trees",
-            widget=widgets.HiddenInput(),
-        ),
-    )
-
-    def validate_trees(self, field):
-        """Validate that at least 1 tree was selected."""
-        if not field.entries:
-            raise ValidationError(
-                "A selection of trees is required to update statuses."
-            )
-
-
 class TreeStatusUpdateTreesForm(FlaskForm):
     """Form used to update the state of a selection of trees."""
 
@@ -221,7 +203,6 @@ class TreeStatusUpdateTreesForm(FlaskForm):
             validators=[
                 InputRequired("A selection of trees is required to update statuses.")
             ],
-            widget=widgets.HiddenInput(),
         )
     )
 
@@ -244,6 +225,13 @@ class TreeStatusUpdateTreesForm(FlaskForm):
     )
 
     message_of_the_day = StringField("Message of the day")
+
+    def validate_trees(self, field):
+        """Validate that at least 1 tree was selected."""
+        if not field.entries:
+            raise ValidationError(
+                "A selection of trees is required to update statuses."
+            )
 
     def validate_reason(self, field):
         """Validate that the reason field is required for non-open statuses."""
