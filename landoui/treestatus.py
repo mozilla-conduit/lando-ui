@@ -191,7 +191,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
         flash(
             f"Could not create new tree: {exc.detail}. Please try again later.", "error"
         )
-        return redirect(request.referrer), 500
+        return redirect(request.referrer), 303
 
     flash(f"New tree {tree} created successfully.")
     return redirect(url_for("treestatus.treestatus"))
@@ -309,7 +309,7 @@ def update_change(id: int):
             f"Could not modify recent change: {exc.detail}. Please try again later.",
             "error",
         )
-        return redirect(request.referrer), 500
+        return redirect(request.referrer), 303
 
     flash(flash_message)
     return redirect(request.referrer)
@@ -345,7 +345,7 @@ def update_log(id: int):
             f"Could not modify log entry: {exc.detail}. Please try again later.",
             "error",
         )
-        return redirect(request.referrer), 500
+        return redirect(request.referrer), 303
 
     flash("Log entry updated.")
     return redirect(request.referrer)
