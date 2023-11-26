@@ -93,8 +93,35 @@ def test_update_form_validate_trees(app):
     ), "Form with a tree entry should be valid."
 
 
-def test_update_form_validate_reason():
-    pass
+def test_update_form_validate_reason(app):
+    form = TreeStatusUpdateTreesForm(
+        status="open",
+    )
+    assert (
+        form.validate_reason(form.reason) is None
+    ), "No validation required for `open` status."
+
+    form = TreeStatusUpdateTreesForm(
+        status="approval required",
+    )
+    assert (
+        form.validate_reason(form.reason) is None
+    ), "No validation required for `approval required` status."
+
+    # `closed` status requires a reason.
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+    )
+    with pytest.raises(ValidationError):
+        form.validate_reason(form.reason)
+
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+        reason="some reason",
+    )
+    assert (
+        form.validate_reason(form.reason) is None
+    ), "`closed` status with a reason is valid."
 
 
 def test_update_form_validate_reason_category():
