@@ -2,6 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pytest
+
+from wtforms.validators import ValidationError
+
+from landoui.forms import (
+    TreeStatusUpdateTreesForm,
+)
 from landoui.treestatus import (
     build_recent_changes_stack,
     build_update_json_body,
@@ -73,8 +80,17 @@ def test_build_update_json_body():
     }, "`tags` should be set for valid reason category."
 
 
-def test_update_form_validate_trees():
-    pass
+def test_update_form_validate_trees(app):
+    form = TreeStatusUpdateTreesForm()
+
+    # At least one tree is required.
+    with pytest.raises(ValidationError):
+        form.validate_trees(form.trees)
+
+    form.trees.append_entry("autoland")
+    assert (
+        form.validate_trees(form.trees) is None
+    ), "Form with a tree entry should be valid."
 
 
 def test_update_form_validate_reason():
