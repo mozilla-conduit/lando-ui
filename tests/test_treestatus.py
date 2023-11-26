@@ -124,8 +124,51 @@ def test_update_form_validate_reason(app):
     ), "`closed` status with a reason is valid."
 
 
-def test_update_form_validate_reason_category():
-    pass
+def test_update_form_validate_reason_category(app):
+    form = TreeStatusUpdateTreesForm(
+        status="open",
+    )
+    assert (
+        form.validate_reason_category(form.reason_category) is None
+    ), "No validation required for `open` status."
+
+    form = TreeStatusUpdateTreesForm(
+        status="approval required",
+    )
+    assert (
+        form.validate_reason_category(form.reason_category) is None
+    ), "No validation required for `approval required` status."
+
+    # `closed` status requires a reason category.
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+    )
+    with pytest.raises(ValidationError):
+        form.validate_reason_category(form.reason_category)
+
+    # `closed` status requires a non-empty reason category.
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+        reason_category="",
+    )
+    with pytest.raises(ValidationError):
+        form.validate_reason_category(form.reason_category)
+
+    # `closed` status requires a valid reason category.
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+        reason_category="blah",
+    )
+    with pytest.raises(ValidationError):
+        form.validate_reason_category(form.reason_category)
+
+    form = TreeStatusUpdateTreesForm(
+        status="closed",
+        reason_category="backlog",
+    )
+    assert (
+        form.validate_reason_category(form.reason_category) is None
+    ), "`closed` status with valid reason category is valid."
 
 
 def test_update_form_to_submitted_json():

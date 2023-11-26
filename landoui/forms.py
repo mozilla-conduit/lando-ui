@@ -216,6 +216,7 @@ class TreeStatusUpdateTreesForm(FlaskForm):
     reason_category = SelectField(
         "Reason Category",
         choices=ReasonCategory.to_choices(),
+        default=ReasonCategory.NO_CATEGORY.value,
     )
 
     remember = BooleanField(
@@ -241,9 +242,12 @@ class TreeStatusUpdateTreesForm(FlaskForm):
 
     def validate_reason_category(self, field):
         """Validate that the reason category field is required for non-open statuses."""
-        category_is_empty = (
-            not field.data or ReasonCategory(field.data) == ReasonCategory.NO_CATEGORY
-        )
+        try:
+            category_is_empty = (
+                not field.data or ReasonCategory(field.data) == ReasonCategory.NO_CATEGORY
+            )
+        except ValueError:
+            raise ValidationError("Reason category is an invalid value.")
 
         if Status(self.status.data) == Status.CLOSED and category_is_empty:
             raise ValidationError("Reason category is required to close trees.")
