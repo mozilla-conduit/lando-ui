@@ -4,6 +4,7 @@
 
 from landoui.treestatus import (
     build_recent_changes_stack,
+    build_update_json_body,
 )
 
 
@@ -50,7 +51,26 @@ def test_build_recent_changes_stack(app):
 
 
 def test_build_update_json_body():
-    pass
+    assert build_update_json_body(None, None) == {
+        "reason": None,
+    }
+
+    assert build_update_json_body("blah", None) == {
+        "reason": "blah",
+    }
+
+    assert build_update_json_body("blah", "") == {
+        "reason": "blah",
+    }, "`tags` should not be set for empty reason category."
+
+    assert build_update_json_body("blah", "asdf") == {
+        "reason": "blah",
+    }, "`tags` should not be set for invalid reason category."
+
+    assert build_update_json_body("blah", "backlog") == {
+        "reason": "blah",
+        "tags": ["backlog"],
+    }, "`tags` should be set for valid reason category."
 
 
 def test_update_form_validate_trees():
