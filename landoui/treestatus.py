@@ -66,8 +66,6 @@ def build_recent_changes_stack(
                     if change["trees"][0]["last_state"]["current_tags"]
                     else ReasonCategory.NO_CATEGORY.value
                 ),
-                who=change["who"],
-                when=change["when"],
             ),
             change,
         )
