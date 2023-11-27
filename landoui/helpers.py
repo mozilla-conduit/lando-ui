@@ -8,8 +8,6 @@ from typing import (
 
 from flask import request, session
 
-from landoui.forms import ReasonCategory
-
 
 def is_user_authenticated() -> bool:
     """Returns whether the user is logged in or not."""

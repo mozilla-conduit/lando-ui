@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import (
-    Optional,
-)
-
 from flask import (
     Blueprint,
     flash,
@@ -235,20 +231,6 @@ def treestatus_tree(tree: str):
         recent_changes_stack=recent_changes_stack,
         tree=tree,
     )
-
-
-def build_update_json_body(
-    reason: Optional[str], reason_category: Optional[str]
-) -> dict:
-    """Return a `dict` for use as a JSON body in a log/change update."""
-    json_body = {}
-
-    json_body["reason"] = reason
-
-    if reason_category and ReasonCategory.is_valid_for_backend(reason_category):
-        json_body["tags"] = [reason_category]
-
-    return json_body
 
 
 @treestatus_blueprint.route("/treestatus/stack/<int:id>", methods=["POST"])
