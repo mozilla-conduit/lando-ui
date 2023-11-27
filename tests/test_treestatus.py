@@ -171,8 +171,26 @@ def test_update_form_validate_reason_category(app):
     ), "`closed` status with valid reason category is valid."
 
 
-def test_update_form_to_submitted_json():
-    pass
+def test_update_form_to_submitted_json(app):
+    form = TreeStatusUpdateTreesForm(
+        status="open",
+        reason="reason",
+        message_of_the_day="",
+        remember=True,
+        reason_category="backlog",
+    )
+
+    form.trees.append_entry("autoland")
+    form.trees.append_entry("mozilla-central")
+
+    assert form.to_submitted_json() == {
+        "status": "open",
+        "reason": "reason",
+        "message_of_the_day": "",
+        "remember": True,
+        "tags": ["backlog"],
+        "trees": ["autoland", "mozilla-central"],
+    }, "JSON format should match expected."
 
 
 def test_recent_changes_action():
