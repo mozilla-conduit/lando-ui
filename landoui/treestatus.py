@@ -29,6 +29,7 @@ from landoui.forms import (
     TreeStatusNewTreeForm,
     TreeStatusRecentChangesForm,
     TreeStatusUpdateTreesForm,
+    build_update_json_body,
 )
 
 treestatus_blueprint = Blueprint("treestatus", __name__)
@@ -261,43 +262,14 @@ def update_change(id: int):
     api = LandoAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
 
-    restore = recent_changes_form.restore.data
-    update = recent_changes_form.update.data
-    discard = recent_changes_form.discard.data
-
-    if restore:
-        # Restore is a DELETE with a status revert.
-        method = "DELETE"
-        request_args = {"params": {"revert": 1}}
-
-        flash_message = "Status change restored."
-    elif discard:
-        # Discard is a DELETE without a status revert.
-        method = "DELETE"
-        request_args = {"params": {"revert": 0}}
-
-        flash_message = "Status change discarded."
-    elif update:
-        # Update is a PATCH with any changed attributes passed in the body.
-        method = "PATCH"
-
-        reason = recent_changes_form.reason.data
-        reason_category = recent_changes_form.reason_category.data
-
-        request_args = {"json": build_update_json_body(reason, reason_category)}
-
-        flash_message = "Status change updated."
-    else:
-        # This should not happen, but just in case.
-        flash("Invalid submit input on change update form.", "error")
-        return redirect(request.referrer)
+    action = recent_changes_form.to_action()
 
     try:
         api.request(
-            method,
+            action.method,
             f"treestatus/stack/{id}",
             require_auth0=True,
-            **request_args,
+            **action.request_args,
         )
     except LandoAPIError as exc:
         if not exc.detail:
@@ -309,7 +281,7 @@ def update_change(id: int):
         )
         return redirect(request.referrer), 303
 
-    flash(flash_message)
+    flash(action.message)
     return redirect(request.referrer)
 
 

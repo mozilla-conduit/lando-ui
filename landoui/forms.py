@@ -5,6 +5,7 @@
 import enum
 import json
 
+from dataclasses import dataclass
 from json.decoder import JSONDecodeError
 from typing import (
     Optional,
@@ -193,6 +194,20 @@ class ReasonCategory(enum.Enum):
         return True
 
 
+def build_update_json_body(
+    reason: Optional[str], reason_category: Optional[str]
+) -> dict:
+    """Return a `dict` for use as a JSON body in a log/change update."""
+    json_body = {}
+
+    json_body["reason"] = reason
+
+    if reason_category and ReasonCategory.is_valid_for_backend(reason_category):
+        json_body["tags"] = [reason_category]
+
+    return json_body
+
+
 class TreeStatusUpdateTreesForm(FlaskForm):
     """Form used to update the state of a selection of trees."""
 
@@ -244,7 +259,8 @@ class TreeStatusUpdateTreesForm(FlaskForm):
         """Validate that the reason category field is required for non-open statuses."""
         try:
             category_is_empty = (
-                not field.data or ReasonCategory(field.data) == ReasonCategory.NO_CATEGORY
+                not field.data
+                or ReasonCategory(field.data) == ReasonCategory.NO_CATEGORY
             )
         except ValueError:
             raise ValidationError("Reason category is an invalid value.")
@@ -314,6 +330,13 @@ class TreeStatusNewTreeForm(FlaskForm):
     )
 
 
+@dataclass
+class RecentChangesAction:
+    method: str
+    request_args: dict
+    message: str
+
+
 class TreeStatusRecentChangesForm(FlaskForm):
     """Modify a recent status change."""
 
@@ -331,6 +354,29 @@ class TreeStatusRecentChangesForm(FlaskForm):
     update = SubmitField("Update")
 
     discard = SubmitField("Discard")
+
+    def to_action(self) -> RecentChangesAction:
+        """Return a `RecentChangesAction` describing interaction with Lando-API."""
+        if self.update.data:
+            # Update is a PATCH with any changed attributes passed in the body.
+            return RecentChangesAction(
+                method="PATCH",
+                request_args={
+                    "json": build_update_json_body(
+                        self.reason.data, self.reason_category.data
+                    )
+                },
+                message="Status change updated.",
+            )
+
+        revert = 1 if self.restore.data else 0
+        message = f"Status change {'restored' if self.restore.data else 'discarded'}."
+
+        return RecentChangesAction(
+            method="DELETE",
+            request_args={"params": {"revert": revert}},
+            message=message,
+        )
 
 
 class TreeStatusLogUpdateForm(FlaskForm):

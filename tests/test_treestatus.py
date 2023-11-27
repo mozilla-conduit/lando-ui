@@ -7,6 +7,8 @@ import pytest
 from wtforms.validators import ValidationError
 
 from landoui.forms import (
+    RecentChangesAction,
+    TreeStatusRecentChangesForm,
     TreeStatusUpdateTreesForm,
 )
 from landoui.treestatus import (
@@ -193,5 +195,35 @@ def test_update_form_to_submitted_json(app):
     }, "JSON format should match expected."
 
 
-def test_recent_changes_action():
-    pass
+def test_recent_changes_action(app):
+    form = TreeStatusRecentChangesForm(
+        reason="reason",
+        category="backlog",
+    )
+
+    form.update.data = True
+    action = form.to_action()
+
+    assert action.method == "PATCH", "Updates should use HTTP `PATCH`."
+    assert "json" in action.request_args, "Updates should send content in JSON body."
+    assert action.message == "Status change updated."
+
+    form.update.data = False
+    form.restore.data = True
+    action = form.to_action()
+
+    assert action.method == "DELETE", "Restores should use HTTP `DELETE`."
+    assert (
+        "params" in action.request_args
+    ), "Restores should send content in query string."
+    assert action.message == "Status change restored."
+
+    form.restore.data = False
+    form.discard.data = True
+    action = form.to_action()
+
+    assert action.method == "DELETE", "Discards should use HTTP `DELETE`."
+    assert (
+        "params" in action.request_args
+    ), "Discards should send content in query string."
+    assert action.message == "Status change discarded."
