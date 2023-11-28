@@ -76,7 +76,8 @@ def treestatus():
 
     This view is the main landing page for Treestatus. The view is a list of all trees
     and their current statuses. The view of all trees is a form where each tree can be
-    selected, and "Update trees" passes the selection along to the tree updating form.
+    selected, and clicking "Update trees" opens a modal which presents the tree updating
+    form.
     """
     api = LandoAPI.from_environment()
 
