@@ -97,16 +97,18 @@ def test_update_form_validate_reason(app):
     form = TreeStatusUpdateTreesForm(
         status="open",
     )
-    assert (
-        form.validate_reason(form.reason) is None
-    ), "No validation required for `open` status."
+    try:
+        form.validate_reason(form.reason)
+    except ValidationError as exc:
+        assert False, f"No validation required for `open` status: {exc}."
 
     form = TreeStatusUpdateTreesForm(
         status="approval required",
     )
-    assert (
-        form.validate_reason(form.reason) is None
-    ), "No validation required for `approval required` status."
+    try:
+        form.validate_reason(form.reason)
+    except ValidationError as exc:
+        assert False, f"No validation required for `approval required` status: {exc}."
 
     # `closed` status requires a reason.
     form = TreeStatusUpdateTreesForm(
@@ -119,25 +121,28 @@ def test_update_form_validate_reason(app):
         status="closed",
         reason="some reason",
     )
-    assert (
-        form.validate_reason(form.reason) is None
-    ), "`closed` status with a reason is valid."
+    try:
+        form.validate_reason(form.reason)
+    except ValidationError as exc:
+        assert False, f"`closed` status with a reason should be valid: {exc}"
 
 
 def test_update_form_validate_reason_category(app):
     form = TreeStatusUpdateTreesForm(
         status="open",
     )
-    assert (
-        form.validate_reason_category(form.reason_category) is None
-    ), "No validation required for `open` status."
+    try:
+        form.validate_reason_category(form.reason_category)
+    except ValidationError as exc:
+        assert False, f"No validation required for `open` status: {exc}."
 
     form = TreeStatusUpdateTreesForm(
         status="approval required",
     )
-    assert (
-        form.validate_reason_category(form.reason_category) is None
-    ), "No validation required for `approval required` status."
+    try:
+        form.validate_reason_category(form.reason_category)
+    except ValidationError as exc:
+        assert False, f"No validation required for `approval required` status: {exc}."
 
     # `closed` status requires a reason category.
     form = TreeStatusUpdateTreesForm(
@@ -166,9 +171,10 @@ def test_update_form_validate_reason_category(app):
         status="closed",
         reason_category="backlog",
     )
-    assert (
-        form.validate_reason_category(form.reason_category) is None
-    ), "`closed` status with valid reason category is valid."
+    try:
+        form.validate_reason_category(form.reason_category)
+    except ValidationError as exc:
+        assert False, f"`closed` status with valid reason category is valid: {exc}."
 
 
 def test_update_form_to_submitted_json(app):
