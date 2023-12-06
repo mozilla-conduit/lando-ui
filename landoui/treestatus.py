@@ -288,6 +288,7 @@ def update_log(id: int):
         api.request(
             "PATCH",
             f"treestatus/log/{id}",
+            require_auth0=True,
             json=json_body,
         )
     except LandoAPIError as exc:
