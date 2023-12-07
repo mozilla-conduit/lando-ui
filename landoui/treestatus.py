@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import logging
+
 from flask import (
     Blueprint,
     flash,
@@ -27,6 +29,8 @@ from landoui.forms import (
     TreeStatusUpdateTreesForm,
     build_update_json_body,
 )
+
+logger = logging.getLogger(__name__)
 
 treestatus_blueprint = Blueprint("treestatus", __name__)
 treestatus_blueprint.before_request(set_last_local_referrer)
@@ -122,6 +126,8 @@ def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesFor
     Treestatus page on success. Display an error message and return to the form if
     the status updating rules were broken or the API returned an error.
     """
+    logger.info(f"Requesting tree status update.")
+
     try:
         api.request(
             "PATCH",
@@ -130,6 +136,7 @@ def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesFor
             json=update_trees_form.to_submitted_json(),
         )
     except LandoAPIError as exc:
+        logger.exception("Request to update trees status failed.")
         if not exc.detail:
             raise exc
 
@@ -137,6 +144,7 @@ def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesFor
         return redirect(request.referrer), 303
 
     # Redirect to the main Treestatus page.
+    logger.info("Tree statuses updated successfully.")
     flash("Tree statuses updated successfully.")
     return redirect(url_for("treestatus.treestatus"))
 
@@ -166,6 +174,8 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
     tree = form.tree.data
     tree_category = form.category.data
 
+    logger.info(f"Requesting new tree {tree}.")
+
     try:
         api.request(
             "PUT",
@@ -181,6 +191,8 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
             },
         )
     except LandoAPIError as exc:
+        logger.exception(f"Could not create new tree {tree}.")
+
         if not exc.detail:
             raise exc
 
@@ -189,6 +201,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
         )
         return redirect(request.referrer), 303
 
+    logger.info(f"New tree {tree} created successfully.")
     flash(f"New tree {tree} created successfully.")
     return redirect(url_for("treestatus.treestatus"))
 
@@ -201,6 +214,7 @@ def treestatus_tree(tree: str):
     logs_response = api.request("GET", f"treestatus/trees/{tree}/logs")
     logs = logs_response.get("result")
     if not logs:
+        logger.error(f"Could not retrieve logs for tree {tree}.")
         flash(
             f"Could not retrieve status logs for {tree} from Lando, try again later.",
             "error",
@@ -247,6 +261,8 @@ def update_change(id: int):
 
     action = recent_changes_form.to_action()
 
+    logger.info(f"Requesting stack update for stack id {id}.")
+
     try:
         api.request(
             action.method,
@@ -255,6 +271,8 @@ def update_change(id: int):
             **action.request_args,
         )
     except LandoAPIError as exc:
+        logger.exception(f"Stack entry {id} failed to update.")
+
         if not exc.detail:
             raise exc
 
@@ -264,6 +282,7 @@ def update_change(id: int):
         )
         return redirect(request.referrer), 303
 
+    logger.info(f"Stack entry {id} updated.")
     flash(action.message)
     return redirect(request.referrer)
 
@@ -284,6 +303,8 @@ def update_log(id: int):
 
     json_body = build_update_json_body(reason, reason_category)
 
+    logger.info(f"Requesting log update for log id {id}.")
+
     try:
         api.request(
             "PATCH",
@@ -292,6 +313,8 @@ def update_log(id: int):
             json=json_body,
         )
     except LandoAPIError as exc:
+        logger.exception(f"Log entry {id} failed to update.")
+
         if not exc.detail:
             raise exc
 
@@ -301,5 +324,6 @@ def update_log(id: int):
         )
         return redirect(request.referrer), 303
 
+    logger.info(f"Log entry {id} updated.")
     flash("Log entry updated.")
     return redirect(request.referrer)
