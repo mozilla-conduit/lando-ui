@@ -105,22 +105,27 @@
   </div>
 
   <div class="StackPage-actions">
-  {% if not is_user_authenticated() %}
-    <button disabled>
-      <div class="StackPage-actions-headline">Preview Landing</div>
-      <div class="StackPage-actions-subtitle">You must log in first</div>
-    </button>
-  {% elif not user_has_phabricator_token() and (not series or dryrun is none) %}
-    <button disabled>
-      <div class="StackPage-actions-headline">Landing Blocked</div>
-      <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
-    </button>
-  {% else %}
-    <button class="StackPage-preview-button">
-      <div class="StackPage-actions-headline">Preview Landing</div>
-    </button>
-  {% endif %}
-
+      {% if not is_user_authenticated() %}
+        <button disabled>
+          <div class="StackPage-actions-headline">Preview Landing</div>
+          <div class="StackPage-actions-subtitle">You must log in first</div>
+        </button>
+      {% elif not series or dryrun is none %}
+        <button disabled>
+          <div class="StackPage-actions-headline">Landing Blocked</div>
+          <div class="StackPage-actions-subtitle">This revision is blocked from landing</div>
+        </button>
+      {% else %}
+        <button class="StackPage-preview-button">
+          <div class="StackPage-actions-headline">Preview Landing</div>
+        </button>
+      {% endif %}
+      {% if is_user_authenticated() and user_has_phabricator_token() %}
+        <button class="button uplift-request-open is-normal">
+            <span class="icon"><i class="fa fa-arrow-circle-up"></i></span>
+            <div class="StackPage-actions-headline">Request Uplift</span>
+        </button>
+      {% endif %}
   </div>
 
   {% if is_user_authenticated() %}
@@ -148,23 +153,6 @@
           </button>
           <button class="StackPage-landingPreview-close button">Cancel</button>
         </form>
-        {% if user_has_phabricator_token() %}
-            <form class="StackPage-landingPreview-uplift" action="{{ url_for('revisions.uplift') }}" method="post">
-              {{ uplift_request_form.csrf_token }}
-              <input type="hidden" name="revision_id" value="{{ revision_id }}" />
-              {{ uplift_request_form.repository }}
-              <button
-                class="button"
-                title="Create Phabricator review requests for the selected patch stack to land in the specified uplift train." >
-                Request uplift
-              </button>
-            </form>
-            <a class="button" target="_blank" href="https://wiki.mozilla.org/index.php?title=Release_Management/Requesting_an_Uplift">
-              <span class="icon">
-                <i class="fa fa-question-circle"></i>
-              </span>
-            </a>
-        {% endif %}
       </footer>
     </div>
   </div>
@@ -186,6 +174,61 @@
       </footer>
     </div>
   </div>
+
+  {% if is_user_authenticated() %}
+  <div class="uplift-request-modal modal">
+    <form action="{{ url_for('revisions.uplift') }}" method="post">
+
+    <div class="modal-background"></div>
+
+    <div class="modal-card">
+        {{ uplift_request_form.csrf_token }}
+
+        <header class="modal-card-head">
+            <p class="modal-card-title">Request uplift</p>
+            <button class="uplift-request-close delete" aria-label="close" type="button"></button>
+        </header>
+
+        <section class="modal-card-body">
+          <input type="hidden" name="revision_id" value="{{ revision_id }}" />
+
+          <p class="block">
+            Select the repository you wish to uplift this revision to.
+            Once you submit the request, you will be redirected to the new uplift revision on Phabricator.
+            Scroll to the bottom of the page, select "Change uplift request form" and complete the form.
+            Your revision will be reviewed and landed by a release manager.
+          </p>
+
+          <div class="block">
+              <a class="button" target="_blank" type="button" href="https://wiki.mozilla.org/index.php?title=Release_Management/Requesting_an_Uplift">
+                <span class="icon">
+                  <i class="fa fa-question-circle"></i>
+                </span>
+                <span>Uplift request documentation</span>
+              </a>
+          </div>
+
+          <div class="field">
+              <label class="label">Uplift repository</label>
+              <div class="control">
+                  <div class="select">
+                      {{ uplift_request_form.repository }}
+                  </div>
+              </div>
+          </div>
+        </section>
+
+        <footer class="modal-card-foot">
+          <button
+            class="button is-success"
+            title="Create Phabricator review requests for the selected patch stack to land in the specified uplift train." >
+            Create uplift request
+          </button>
+        </footer>
+
+        </form>
+    </div>
+  {% endif %}
 
 </main>
 {% endblock %}
