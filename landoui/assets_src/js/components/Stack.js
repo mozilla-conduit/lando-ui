@@ -15,5 +15,13 @@ $.fn.stack = function() {
       window.location.href = '/' + e.target.id;
       $radio.attr({'disabled': true});
     });
+
+    // Show the uplift request form modal when the "Request Uplift" button is clicked.
+    $('.uplift-request-open').on("click", function () {
+        $('.uplift-request-modal').addClass("is-active");
+    });
+    $('.uplift-request-close').on("click", function () {
+        $('.uplift-request-modal').removeClass("is-active");
+    });
   });
 };
