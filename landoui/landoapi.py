@@ -31,7 +31,7 @@ class LandoAPI:
         *,
         phabricator_api_token: Optional[str] = None,
         auth0_access_token: Optional[str] = None,
-        session: Optional[requests.Session] = None
+        session: Optional[requests.Session] = None,
     ):
         self.url = url + "/" if url[-1] == "/" else url + "/"
         self.phabricator_api_token = phabricator_api_token
