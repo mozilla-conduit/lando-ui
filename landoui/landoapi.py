@@ -22,8 +22,8 @@ from landoui.helpers import get_phabricator_api_token
 logger = logging.getLogger(__name__)
 
 
-class LandoAPI:
-    """Client for Lando API."""
+class API:
+    """Common components of a Lando-based API."""
 
     def __init__(
         self,
@@ -31,12 +31,16 @@ class LandoAPI:
         *,
         phabricator_api_token: Optional[str] = None,
         auth0_access_token: Optional[str] = None,
-        session: Optional[requests.Session] = None
+        session: Optional[requests.Session] = None,
     ):
         self.url = url + "/" if url[-1] == "/" else url + "/"
         self.phabricator_api_token = phabricator_api_token
         self.auth0_access_token = auth0_access_token
         self.session = session or self.create_session()
+
+    @property
+    def service_name(self):
+        raise NotImplemented
 
     @staticmethod
     def create_session() -> requests.Session:
@@ -82,7 +86,7 @@ class LandoAPI:
             response = self.session.request(method, self.url + url_path, **kwargs)
 
             logger.debug(
-                "lando-api response",
+                f"{self.service_name} response",
                 extra={
                     "status_code": response.status_code,
                     "content_type": response.headers.get("Content-Type"),
@@ -106,8 +110,16 @@ class LandoAPI:
         LandoAPIError.raise_if_error(response, data)
         return data
 
+
+class LandoAPI(API):
+    """Client for LandoAPI."""
+
+    @property
+    def service_name(self) -> str:
+        return "LandoAPI"
+
     @classmethod
-    def from_environment(cls, token: Optional[str] = None) -> LandoAPI:
+    def from_environment(cls, token: Optional[str] = None) -> API:
         """Build a `LandoAPI` object from the environment."""
         if not token:
             token = get_phabricator_api_token()
@@ -116,6 +128,22 @@ class LandoAPI:
             current_app.config["LANDO_API_URL"],
             auth0_access_token=session.get("access_token"),
             phabricator_api_token=token,
+        )
+
+
+class TreestatusAPI(API):
+    """Client for Treestatus."""
+
+    @property
+    def service_name(self) -> str:
+        return "Treestatus"
+
+    @classmethod
+    def from_environment(cls) -> API:
+        """Build a `TreestatusAPI` object from the environment."""
+        return cls(
+            current_app.config["TREESTATUS_URL"],
+            auth0_access_token=session.get("access_token"),
         )
 
 
