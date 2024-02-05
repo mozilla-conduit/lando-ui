@@ -40,7 +40,7 @@ class API:
 
     @property
     def service_name(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @staticmethod
     def create_session() -> requests.Session:
