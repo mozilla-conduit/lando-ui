@@ -44,7 +44,13 @@ def api_url():
 
 
 @pytest.fixture
-def app(versionfile, docker_env_vars, api_url):
+def treestatus_url():
+    """A string holding the Treestatus API base URL. Useful for request mocking."""
+    return "http://treestatus.test"
+
+
+@pytest.fixture
+def app(versionfile, docker_env_vars, api_url, treestatus_url):
     app = create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
@@ -54,6 +60,7 @@ def app(versionfile, docker_env_vars, api_url):
         use_https=False,
         enable_asset_pipeline=False,
         lando_api_url=api_url,
+        treestatus_url=treestatus_url,
         debug=True,
     )
 
