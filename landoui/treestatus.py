@@ -17,7 +17,7 @@ from landoui.helpers import (
     set_last_local_referrer,
 )
 from landoui.landoapi import (
-    LandoAPI,
+    TreestatusAPI,
     LandoAPIError,
 )
 from landoui.forms import (
@@ -36,12 +36,12 @@ treestatus_blueprint = Blueprint("treestatus", __name__)
 treestatus_blueprint.before_request(set_last_local_referrer)
 
 
-def get_recent_changes_stack(api: LandoAPI) -> list[dict]:
+def get_recent_changes_stack(api: TreestatusAPI) -> list[dict]:
     """Retrieve recent changes stack data with error handling."""
     try:
         response = api.request(
             "GET",
-            "treestatus/stack",
+            "stack",
         )
     except LandoAPIError as exc:
         if not exc.detail:
@@ -83,7 +83,7 @@ def treestatus():
     selected, and clicking "Update trees" opens a modal which presents the tree updating
     form.
     """
-    api = LandoAPI.from_environment()
+    api = TreestatusAPI.from_environment()
 
     treestatus_update_trees_form = TreeStatusUpdateTreesForm()
     if treestatus_update_trees_form.validate_on_submit():
@@ -99,7 +99,7 @@ def treestatus():
             for error in errors:
                 flash(error, "warning")
 
-    trees_response = api.request("GET", "treestatus/trees")
+    trees_response = api.request("GET", "trees")
     trees = trees_response.get("result")
 
     if not treestatus_update_trees_form.trees.entries:
@@ -118,7 +118,7 @@ def treestatus():
     )
 
 
-def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesForm):
+def update_treestatus(api: TreestatusAPI, update_trees_form: TreeStatusUpdateTreesForm):
     """Handler for the tree status updating form.
 
     This function handles form submission for the status updating form. Validate
@@ -131,7 +131,7 @@ def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesFor
     try:
         api.request(
             "PATCH",
-            "treestatus/trees",
+            "trees",
             require_auth0=True,
             json=update_trees_form.to_submitted_json(),
         )
@@ -152,7 +152,7 @@ def update_treestatus(api: LandoAPI, update_trees_form: TreeStatusUpdateTreesFor
 @treestatus_blueprint.route("/treestatus/new_tree/", methods=["GET", "POST"])
 def new_tree():
     """View for the new tree form."""
-    api = LandoAPI.from_environment()
+    api = TreestatusAPI.from_environment()
     treestatus_new_tree_form = TreeStatusNewTreeForm()
 
     if treestatus_new_tree_form.validate_on_submit():
@@ -168,7 +168,7 @@ def new_tree():
     )
 
 
-def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
+def new_tree_handler(api: TreestatusAPI, form: TreeStatusNewTreeForm):
     """Handler for the new tree form."""
     # Retrieve data from the form.
     tree = form.tree.data
@@ -179,7 +179,7 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
     try:
         api.request(
             "PUT",
-            f"treestatus/trees/{tree}",
+            f"trees/{tree}",
             require_auth0=True,
             json={
                 "tree": tree,
@@ -209,9 +209,9 @@ def new_tree_handler(api: LandoAPI, form: TreeStatusNewTreeForm):
 @treestatus_blueprint.route("/treestatus/<tree>/", methods=["GET"])
 def treestatus_tree(tree: str):
     """Display the log of statuses for an individual tree."""
-    api = LandoAPI.from_environment()
+    api = TreestatusAPI.from_environment()
 
-    logs_response = api.request("GET", f"treestatus/trees/{tree}/logs")
+    logs_response = api.request("GET", f"trees/{tree}/logs")
     logs = logs_response.get("result")
     if not logs:
         logger.error(f"Could not retrieve logs for tree {tree}.")
@@ -256,7 +256,7 @@ def update_change(id: int):
     stack. This includes pressing the "restore" or "discard" buttons, as well as updates
     to the reason and reason category after pressing "edit" and "update".
     """
-    api = LandoAPI.from_environment()
+    api = TreestatusAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
 
     action = recent_changes_form.to_action()
@@ -266,7 +266,7 @@ def update_change(id: int):
     try:
         api.request(
             action.method,
-            f"treestatus/stack/{id}",
+            f"stack/{id}",
             require_auth0=True,
             **action.request_args,
         )
@@ -294,7 +294,7 @@ def update_log(id: int):
     This function handles form submissions for updates to individual log entries
     in the per-tree log view.
     """
-    api = LandoAPI.from_environment()
+    api = TreestatusAPI.from_environment()
 
     log_update_form = TreeStatusLogUpdateForm()
 
@@ -308,7 +308,7 @@ def update_log(id: int):
     try:
         api.request(
             "PATCH",
-            f"treestatus/log/{id}",
+            f"log/{id}",
             require_auth0=True,
             json=json_body,
         )
