@@ -1,0 +1,57 @@
+{#
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% block main %}
+<div class="modal update-trees-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Update trees</p>
+        </header>
+        <section class="modal-card-body">
+            {{ treestatus_update_trees_form.csrf_token }}
+            <div class="block content">
+                <div>You are about to update the following trees:</div>
+                <ul class="update-trees-list"></ul>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.status.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_update_trees_form.status() }}</div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.reason_category.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_update_trees_form.reason_category() }}</div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.reason.label }}</label>
+                <div class="control">{{ treestatus_update_trees_form.reason(class="input") }}</div>
+            </div>
+            <div class="field">
+                <label class="checkbox label">
+                    {{ treestatus_update_trees_form.remember.label }}
+                </label>
+                <div class="control">
+                    {{ treestatus_update_trees_form.remember(input="class", checked=True) }}
+                    Remember this change to undo later.
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_update_trees_form.message_of_the_day.label }}</label>
+                <div class="control">{{ treestatus_update_trees_form.message_of_the_day(class="input") }}</div>
+                <p class="help">Optional</p>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-primary" title="Update Tree">Update trees</button>
+        </footer>
+    </div>
+    <button class="modal-close is-large update-trees-modal-close" aria-label="close" type="button"></button>
+</div>
+{% endblock %}

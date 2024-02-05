@@ -12,6 +12,7 @@ $(document).ready(function() {
   let $stack = $('.StackPage-stack');
   let $secRequestSubmitted = $('.StackPage-secRequestSubmitted');
   let $flashMessages = $('.FlashMessages');
+  let $treestatus = $('.Treestatus');
 
   // Initialize components
   $('.Navbar').landoNavbar();
@@ -20,4 +21,5 @@ $(document).ready(function() {
   $stack.stack();
   $secRequestSubmitted.secRequestSubmitted();
   $flashMessages.flashMessages();
+  $treestatus.treestatus();
 });

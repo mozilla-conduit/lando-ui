@@ -26,6 +26,12 @@
       <div class="navbar-item">
         <div class="field is-grouped">
           <p class="control">
+            <a class="button" href="{{ url_for("treestatus.treestatus") }}">
+              <span class="icon"><i class="fa fa-tree"></i></span>
+              <span>Treestatus</span>
+            </a>
+          </p>
+          <p class="control">
             <a class="button" href="{{ config['PHABRICATOR_URL'] }}">
               <span class="icon">
                 <i class="fa fa-cog"></i>

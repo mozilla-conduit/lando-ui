@@ -54,6 +54,7 @@ def create_app(
     use_https: bool,
     enable_asset_pipeline: bool,
     lando_api_url: str,
+    treestatus_url: str,
     debug: bool = False,
 ) -> Flask:
     """
@@ -85,6 +86,7 @@ def create_app(
     initialize_sentry(version_info["version"])
 
     set_config_param(app, "LANDO_API_URL", lando_api_url)
+    set_config_param(app, "TREESTATUS_URL", treestatus_url)
     set_config_param(
         app, "BUGZILLA_URL", _lookup_service_url(lando_api_url, "bugzilla")
     )
@@ -121,10 +123,12 @@ def create_app(
     from landoui.pages import pages
     from landoui.revisions import revisions
     from landoui.dockerflow import dockerflow
+    from landoui.treestatus import treestatus_blueprint
 
     app.register_blueprint(pages)
     app.register_blueprint(revisions)
     app.register_blueprint(dockerflow)
+    app.register_blueprint(treestatus_blueprint)
 
     # Register template helpers
     from landoui.template_helpers import template_helpers

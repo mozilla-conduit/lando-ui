@@ -1,0 +1,35 @@
+{#
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "partials/layout.html" %}
+{% block page_title %}Treestatus{% endblock %}
+
+{% block main %}
+<main class="Treestatus container fullhd">
+    {% include "treestatus/recent_changes.html" %}
+
+    <h1>Treestatus: New tree</h1>
+    <form action="{{ url_for("treestatus.new_tree") }}" method="post">
+        {{ treestatus_new_tree_form.csrf_token }}
+        <div class="box">
+            <div class="field">
+                <label class="label">{{ treestatus_new_tree_form.tree.label }}</label>
+                <div class="control is-expanded">
+                    {{ treestatus_new_tree_form.tree(class="input", placeholder="New tree name") }}
+                </div>
+                <p class="help">The status will be "open" by default.</p>
+            </div>
+            <div class="field">
+                <label class="label">{{ treestatus_new_tree_form.category.label }}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">{{ treestatus_new_tree_form.category() }}</div>
+                </div>
+            </div>
+            <button class="button is-primary">Add tree</button>
+        </div>
+    </form>
+</main>
+{% endblock %}
