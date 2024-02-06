@@ -22,6 +22,7 @@ def create_dev_app(**kwargs):
         "use_https": True,
         "enable_asset_pipeline": True,
         "lando_api_url": None,
+        "treestatus_url": None,
     }
 
     # These are parameters that should be converted to a boolean value.
