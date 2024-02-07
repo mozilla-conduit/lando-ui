@@ -31,8 +31,7 @@ def docker_env_vars(monkeypatch):
     monkeypatch.setenv("SESSION_COOKIE_SECURE", "0")
     monkeypatch.setenv("USE_HTTPS", "0")
     monkeypatch.setenv("LANDO_API_URL", "http://lando-api.test:8888")
-    # TODO correct?
-    monkeypatch.setenv("LANDO_API_URL", "http://treestatus.test:8888")
+    monkeypatch.setenv("TREESTATUS_URL", "http://treestatus.test:8888")
     monkeypatch.setenv("SENTRY_DSN", "")
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
 
