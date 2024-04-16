@@ -70,6 +70,11 @@ $.fn.treestatus = function() {
         // Add a tree to the list of trees on the update form when checkbox set.
         $('.tree-select-checkbox').on("change", function () {
             set_update_trees_list();
+
+            var checked_trees = $('.tree-select-checkbox:checked');
+            // Disaable the "Update trees" button when no trees are selected.
+            var is_tree_select_disabled = checked_trees.length > 0 ? false : true;
+            $('.update-trees-button').prop('disabled', is_tree_select_disabled);
         });
     });
 };
