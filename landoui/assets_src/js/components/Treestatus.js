@@ -33,6 +33,13 @@ $.fn.treestatus = function() {
             checkboxes.trigger('change');
         });
 
+        // Toggle un-selected on all trees.
+        $('.unselect-all-trees').on("click", function () {
+            var checkboxes = $('.tree-select-checkbox');
+            checkboxes.prop('checked', false);
+            checkboxes.trigger('change');
+        });
+
         // Update the select trees list after update.
         var set_update_trees_list = function () {
             // Clear the current state of the update form tree list.
