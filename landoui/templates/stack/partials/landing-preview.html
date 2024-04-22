@@ -14,6 +14,11 @@
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
     {{ dryrun['blocker']|escape_html|linkify_faq|safe }}
   </div>
+{% elif dryrun['blockers'] %}
+  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h3>
+  <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
+    {{ dryrun['blockers'][0]|escape_html|linkify_faq|safe }}
+  </div>
 {% elif series %}
   <h3 class="StackPage-landingPreview-sectionLabel">
     Landing To: &nbsp;

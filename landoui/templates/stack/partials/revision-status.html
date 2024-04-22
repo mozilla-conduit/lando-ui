@@ -16,6 +16,18 @@
     {{revision['blocked_reason']|escape_html|linkify_faq|safe}}
   </div>
 </div>
+{% elif revision['blocked_reasons'] %}
+<div class="StackPage-blockerReason">
+  <div class="Badge Badge--negative">
+    Blocked
+    <span class="icon is-small">
+      <i class="fa fa-info-circle"></i>
+    </span>
+  </div>
+  <div class="StackPage-blockerReason-tooltip">
+    {{revision['blocked_reasons'][0]|escape_html|linkify_faq|safe}}
+  </div>
+</div>
 {% endif %}
 {% set status = revision['status'] %}
 <div class="{{ status['value']|revision_status_to_badge_class }}">
