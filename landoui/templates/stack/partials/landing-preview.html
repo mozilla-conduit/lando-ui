@@ -9,15 +9,11 @@
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
     Reason for blockage is unknown
   </div>
-{% elif dryrun['blocker'] %}
+{% elif dryrun['blocker'] or dryrun['blockers'] %}
+  {% set blocker = dryrun['blockers'][0] if 'blockers' in dryrun else dryrun['blocker'] %}
   <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h3>
   <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
-    {{ dryrun['blocker']|escape_html|linkify_faq|safe }}
-  </div>
-{% elif dryrun['blockers'] %}
-  <h3 class="StackPage-landingPreview-sectionLabel">Landing is Blocked</h3>
-  <div class="StackPage-landingPreview-section StackPage-landingPreview-blocker">
-    {{ dryrun['blockers'][0]|escape_html|linkify_faq|safe }}
+    {{ blocker|escape_html|linkify_faq|safe }}
   </div>
 {% elif series %}
   <h3 class="StackPage-landingPreview-sectionLabel">
