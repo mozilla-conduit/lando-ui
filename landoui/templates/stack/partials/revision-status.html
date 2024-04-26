@@ -4,7 +4,8 @@
     file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #}
 
-{% if revision['blocked_reason'] %}
+{% if revision['blocked_reasons'] or revision['blocked_reason'] %}
+{% set blocked_reason = revision['blocked_reasons'][0] if 'blocked_reasons' in revision else revision['blocked_reason']%}
 <div class="StackPage-blockerReason">
   <div class="Badge Badge--negative">
     Blocked
