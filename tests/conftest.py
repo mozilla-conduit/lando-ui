@@ -31,6 +31,7 @@ def docker_env_vars(monkeypatch):
     monkeypatch.setenv("SESSION_COOKIE_SECURE", "0")
     monkeypatch.setenv("USE_HTTPS", "0")
     monkeypatch.setenv("LANDO_API_URL", "http://lando-api.test:8888")
+    monkeypatch.setenv("TREESTATUS_URL", "http://treestatus.test:8888")
     monkeypatch.setenv("SENTRY_DSN", "")
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
 
@@ -42,7 +43,13 @@ def api_url():
 
 
 @pytest.fixture
-def app(versionfile, docker_env_vars, api_url):
+def treestatus_url():
+    """A string holding the Treestatus API base URL. Useful for request mocking."""
+    return "http://treestatus.test"
+
+
+@pytest.fixture
+def app(versionfile, docker_env_vars, api_url, treestatus_url):
     app = create_app(
         version_path=versionfile.strpath,
         secret_key=str(binascii.b2a_hex(os.urandom(15))),
@@ -52,6 +59,7 @@ def app(versionfile, docker_env_vars, api_url):
         use_https=False,
         enable_asset_pipeline=False,
         lando_api_url=api_url,
+        treestatus_url=treestatus_url,
         debug=True,
     )
 

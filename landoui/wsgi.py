@@ -18,5 +18,6 @@ app = create_app(
     use_https=str2bool(os.getenv("USE_HTTPS", 1)),
     enable_asset_pipeline=True,
     lando_api_url=os.getenv("LANDO_API_URL"),
+    treestatus_url=os.getenv("TREESTATUS_URL"),
     debug=str2bool(os.getenv("DEBUG", 0)),
 )

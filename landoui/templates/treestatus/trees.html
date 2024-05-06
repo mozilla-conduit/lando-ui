@@ -1,0 +1,79 @@
+{#
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "partials/layout.html" %}
+{% block page_title %}Treestatus{% endblock %}
+
+{% block main %}
+<main class="Treestatus container fullhd">
+    <h1>Treestatus</h1>
+    <p>Current status of Mozilla's version-control repositories.</p>
+
+    {% include "treestatus/recent_changes.html" %}
+
+    <h1>Trees</h1>
+    {#
+        The main Treestatus page is a table that presents the trees.
+        Trees can be selected here for updating, or for deletion.
+    #}
+    <form method="post">
+        {{ treestatus_update_trees_form.csrf_token }}
+
+        {% if is_user_authenticated() %}
+        <div class="block">
+            <a href="{{ url_for("treestatus.new_tree") }}">
+                <button class="button" title="New Tree" type="button">New Tree</button>
+            </a>
+            <button class="button select-all-trees" type="button">Select all trees</button>
+            <button class="button unselect-all-trees" type="button">Unselect all trees</button>
+            <button class="button is-primary update-trees-button" title="Update Tree" type="button" disabled="disabled">Update trees</button>
+        </div>
+        {% endif %}
+
+        {# Create a namespace to track the current category across the loop iterations. #}
+        {% set ns = namespace(current_category="") %}
+
+        {% for tree_option in treestatus_update_trees_form.trees %}
+            {% set tree = trees[tree_option.data] %}
+
+            {# Check if the category has changed and display a header for new category. #}
+            {% if tree.category != ns.current_category %}
+                {% set ns.current_category = tree.category %}
+                <h4 class="subtitle is-4 tree-category-header">{{ ns.current_category | tree_category_to_display }}</h1>
+            {% endif %}
+
+            <div class="select-trees-box box">
+                <div class="columns">
+                    {% if is_user_authenticated() %}
+                        <div class="column is-1">
+                            <input class="tree-select-checkbox" type="checkbox" name="{{ tree_option.id }}" value="{{ tree_option.data }}">
+                        </div>
+                    {% endif %}
+                    <div class="column is-2">
+                        <span class="{{ tree.status | treestatus_to_status_badge_class }}">{{ tree.status }}</span>
+                    </div>
+                    <div class="column">
+                        <a href="{{ tree_option.data }}"><h2 class="subtitle is-4">{{ tree_option.data }}</h2></a>
+                    </div>
+                    <div class="column">
+                        {% if tree.reason %}
+                            <p>Reason: <b>{{ tree.reason }}</b></p>
+                            <p>Reason category: <b>{{ tree.tags[0] | reason_category_to_display }}</b></p>
+                        {% endif %}
+                    </div>
+                    <div class="column">
+                        {% if tree.message_of_the_day %}
+                            {{ tree.message_of_the_day }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% include "treestatus/update_trees.html" %}
+    </form>
+</main>
+{% endblock %}

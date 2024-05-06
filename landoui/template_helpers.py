@@ -12,7 +12,11 @@ import urllib.parse
 from typing import Optional
 
 from flask import Blueprint, current_app, escape
-from landoui.forms import UserSettingsForm
+from landoui.forms import (
+    ReasonCategory,
+    TreeCategory,
+    UserSettingsForm,
+)
 
 from landoui import helpers
 
@@ -93,6 +97,16 @@ def reviewer_to_status_badge_class(reviewer: dict) -> str:
 
 
 @template_helpers.app_template_filter()
+def treestatus_to_status_badge_class(tree_status: str) -> str:
+    """Convert Tree statuses into status badges."""
+    return {
+        "open": "Badge Badge--positive",
+        "closed": "Badge Badge--negative",
+        "approval required": "Badge Badge--warning",
+    }.get(tree_status, "Badge Badge--warning")
+
+
+@template_helpers.app_template_filter()
 def reviewer_to_action_text(reviewer: dict) -> str:
     options = {
         # status: (current_diff, for_other_diff),
@@ -128,6 +142,23 @@ def tostatusbadgename(status: dict) -> str:
         "failed": "Failed to land",
     }
     return mapping.get(status["status"].lower(), status["status"].capitalize())
+
+
+@template_helpers.app_template_filter()
+def reason_category_to_display(reason_category_str: str) -> str:
+    try:
+        return ReasonCategory(reason_category_str).to_display()
+    except ValueError:
+        # Return the bare string, in case of older data.
+        return reason_category_str
+
+
+@template_helpers.app_template_filter()
+def tree_category_to_display(tree_category_str: str) -> str:
+    try:
+        return TreeCategory(tree_category_str).to_display()
+    except ValueError:
+        return tree_category_str
 
 
 @template_helpers.app_template_filter()
@@ -324,6 +355,9 @@ def message_type_to_notification_class(flash_message_category: str) -> str:
     See https://bulma.io/documentation/elements/notification/ for the list of
     Bulma notification states.
     """
-    return {"info": "is-info", "success": "is-success", "warning": "is-warning"}.get(
-        flash_message_category, "is-info"
-    )
+    return {
+        "error": "is-danger",
+        "info": "is-info",
+        "success": "is-success",
+        "warning": "is-warning",
+    }.get(flash_message_category, "is-info")

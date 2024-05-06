@@ -22,5 +22,6 @@ app = create_app(
     use_https=False,
     enable_asset_pipeline=True,
     lando_api_url="http://lando-api.test",
+    treestatus_url="http://treestatus.test",
     debug=True,
 )
