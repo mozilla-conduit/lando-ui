@@ -13,7 +13,7 @@ version: 2
 jobs:
   full:
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/base:2024.05
         user: root
     steps:
       - setup_remote_docker
