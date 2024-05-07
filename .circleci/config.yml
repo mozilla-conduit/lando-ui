@@ -13,7 +13,7 @@ version: 2
 jobs:
   full:
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/base:2024.05
         user: root
     steps:
       - setup_remote_docker
@@ -56,7 +56,7 @@ jobs:
       - run:
           name: Run the tests
           command: |
-            docker-compose \
+            docker compose \
               -f docker/docker-compose.ci.yml \
               -p landoui \
               run lando-ui pytest --junitxml=/test_results/junit.xml
