@@ -229,7 +229,7 @@ def treestatus_tree(tree: str):
             f"Could not retrieve status logs for {tree} from Lando, try again later.",
             "error",
         )
-        return redirect(request.referrer, code=404)
+        return redirect(request.referrer)
 
     current_log = logs[0]
 
