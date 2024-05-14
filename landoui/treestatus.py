@@ -214,7 +214,7 @@ def treestatus_tree(tree: str):
     try:
         logs_response = api.request("GET", f"trees/{tree}/logs")
     except LandoAPIError as exc:
-        if not exc.detail:
+        if not exc.detail or not exc.status_code:
             raise
 
         error = f"Error received from LandoAPI: {exc.detail}"
