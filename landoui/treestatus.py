@@ -129,7 +129,7 @@ def update_treestatus(api: TreestatusAPI, update_trees_form: TreeStatusUpdateTre
     """
     if not is_user_authenticated():
         flash("Authentication is required to update tree statuses.")
-        return redirect(request.referrer)
+        return redirect(request.referrer, code=401)
 
     logger.info(f"Requesting tree status update.")
 
@@ -177,7 +177,7 @@ def new_tree_handler(api: TreestatusAPI, form: TreeStatusNewTreeForm):
     """Handler for the new tree form."""
     if not is_user_authenticated():
         flash("Authentication is required to create new trees.")
-        return redirect(request.referrer)
+        return redirect(request.referrer, code=401)
 
     # Retrieve data from the form.
     tree = form.tree.data
@@ -267,7 +267,7 @@ def update_change(id: int):
     """
     if not is_user_authenticated():
         flash("Authentication is required to update stack entries.")
-        return redirect(request.referrer)
+        return redirect(request.referrer, code=401)
 
     api = TreestatusAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
@@ -309,7 +309,7 @@ def update_log(id: int):
     """
     if not is_user_authenticated():
         flash("Authentication is required to update log entries.")
-        return redirect(request.referrer)
+        return redirect(request.referrer, code=401)
 
     api = TreestatusAPI.from_environment()
 
