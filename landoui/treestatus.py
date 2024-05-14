@@ -14,6 +14,7 @@ from flask import (
 )
 
 from landoui.helpers import (
+    is_user_authenticated,
     set_last_local_referrer,
 )
 from landoui.landoapi import (
@@ -126,6 +127,10 @@ def update_treestatus(api: TreestatusAPI, update_trees_form: TreeStatusUpdateTre
     Treestatus page on success. Display an error message and return to the form if
     the status updating rules were broken or the API returned an error.
     """
+    if not is_user_authenticated():
+        flash("Authentication is required to update tree statuses.")
+        return redirect(request.referrer)
+
     logger.info(f"Requesting tree status update.")
 
     try:
@@ -170,6 +175,10 @@ def new_tree():
 
 def new_tree_handler(api: TreestatusAPI, form: TreeStatusNewTreeForm):
     """Handler for the new tree form."""
+    if not is_user_authenticated():
+        flash("Authentication is required to create new trees.")
+        return redirect(request.referrer)
+
     # Retrieve data from the form.
     tree = form.tree.data
     tree_category = form.category.data
@@ -256,6 +265,10 @@ def update_change(id: int):
     stack. This includes pressing the "restore" or "discard" buttons, as well as updates
     to the reason and reason category after pressing "edit" and "update".
     """
+    if not is_user_authenticated():
+        flash("Authentication is required to update stack entries.")
+        return redirect(request.referrer)
+
     api = TreestatusAPI.from_environment()
     recent_changes_form = TreeStatusRecentChangesForm()
 
@@ -294,6 +307,10 @@ def update_log(id: int):
     This function handles form submissions for updates to individual log entries
     in the per-tree log view.
     """
+    if not is_user_authenticated():
+        flash("Authentication is required to update log entries.")
+        return redirect(request.referrer)
+
     api = TreestatusAPI.from_environment()
 
     log_update_form = TreeStatusLogUpdateForm()
