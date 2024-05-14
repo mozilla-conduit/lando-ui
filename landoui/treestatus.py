@@ -220,7 +220,17 @@ def treestatus_tree(tree: str):
     """Display the log of statuses for an individual tree."""
     api = TreestatusAPI.from_environment()
 
-    logs_response = api.request("GET", f"trees/{tree}/logs")
+    try:
+        logs_response = api.request("GET", f"trees/{tree}/logs")
+    except LandoAPIError as exc:
+        if not exc.detail or not exc.status_code:
+            raise
+
+        error = f"Error received from LandoAPI: {exc.detail}"
+        logger.error(error)
+        flash(error, "error")
+        return redirect(request.referrer, code=exc.status_code)
+
     logs = logs_response.get("result")
     if not logs:
         logger.error(f"Could not retrieve logs for tree {tree}.")
