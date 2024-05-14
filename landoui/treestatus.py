@@ -211,14 +211,24 @@ def treestatus_tree(tree: str):
     """Display the log of statuses for an individual tree."""
     api = TreestatusAPI.from_environment()
 
-    logs_response = api.request("GET", f"trees/{tree}/logs")
-    logs = logs_response.get("result")
+    try:
+        logs_response = api.request("GET", f"trees/{tree}/logs")
+
+        # We got a response, if this is empty is it an error.
+        logs = logs_response.get("result")
+        detail = "empty response from Lando"
+    except LandoAPIError as exc:
+        if not exc.detail:
+            raise exc
+
+        # We got some exception back from LandoAPI..
+        detail = exc.detail
+        logs = []
+
     if not logs:
-        logger.error(f"Could not retrieve logs for tree {tree}.")
-        flash(
-            f"Could not retrieve status logs for {tree} from Lando, try again later.",
-            "error",
-        )
+        error = (f"Could not retrieve status logs for {tree}: {detail}.",)
+        logger.error(error)
+        flash(error, "error")
         return redirect(request.referrer)
 
     current_log = logs[0]
