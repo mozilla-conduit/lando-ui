@@ -219,7 +219,7 @@ def treestatus_tree(tree: str):
 
         error = f"Error received from LandoAPI: {exc.detail}"
         logger.error(error)
-        flash(error, error)
+        flash(error, "error")
         return redirect(request.referrer, code=exc.status_code)
 
     logs = logs_response.get("result")
