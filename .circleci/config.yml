@@ -74,7 +74,7 @@ jobs:
       - store_artifacts:
           path: /tmp/test-reports
 
-      - deploy:
+      - run:
           command: |
             if [[ "x$DOCKERHUB_REPO" != x ]]; then
               docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
