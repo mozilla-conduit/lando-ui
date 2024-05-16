@@ -226,9 +226,12 @@ def treestatus_tree(tree: str):
         if not exc.detail or not exc.status_code:
             raise
 
-        error = f"Error received from LandoAPI: {exc.detail}"
-        logger.info(error)
-        flash(error, "error")
+        # Avoid displaying an error for a 404.
+        if exc.status_code != 404:
+            error = f"Error received from LandoAPI: {exc.detail}"
+            logger.info(error)
+            flash(error, "error")
+
         return redirect(request.referrer, code=exc.status_code)
 
     logs = logs_response.get("result")
