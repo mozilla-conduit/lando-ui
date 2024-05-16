@@ -141,7 +141,7 @@ def update_treestatus(api: TreestatusAPI, update_trees_form: TreeStatusUpdateTre
             json=update_trees_form.to_submitted_json(),
         )
     except LandoAPIError as exc:
-        logger.exception("Request to update trees status failed.")
+        logger.info("Request to update trees status failed.")
         if not exc.detail:
             raise exc
 
@@ -200,7 +200,7 @@ def new_tree_handler(api: TreestatusAPI, form: TreeStatusNewTreeForm):
             },
         )
     except LandoAPIError as exc:
-        logger.exception(f"Could not create new tree {tree}.")
+        logger.info(f"Could not create new tree {tree}.")
 
         if not exc.detail:
             raise exc
@@ -227,13 +227,13 @@ def treestatus_tree(tree: str):
             raise
 
         error = f"Error received from LandoAPI: {exc.detail}"
-        logger.error(error)
+        logger.info(error)
         flash(error, "error")
         return redirect(request.referrer, code=exc.status_code)
 
     logs = logs_response.get("result")
     if not logs:
-        logger.error(f"Could not retrieve logs for tree {tree}.")
+        logger.info(f"Could not retrieve logs for tree {tree}.")
         flash(
             f"Could not retrieve status logs for {tree} from Lando, try again later.",
             "error",
@@ -294,7 +294,7 @@ def update_change(id: int):
             **action.request_args,
         )
     except LandoAPIError as exc:
-        logger.exception(f"Stack entry {id} failed to update.")
+        logger.info(f"Stack entry {id} failed to update.")
 
         if not exc.detail:
             raise exc
@@ -340,7 +340,7 @@ def update_log(id: int):
             json=json_body,
         )
     except LandoAPIError as exc:
-        logger.exception(f"Log entry {id} failed to update.")
+        logger.info(f"Log entry {id} failed to update.")
 
         if not exc.detail:
             raise exc
