@@ -12,7 +12,9 @@
     <h1>Treestatus</h1>
     <p>Current status of Mozilla's version-control repositories.</p>
 
+    {% if is_treestatus_user() %}
     {% include "treestatus/recent_changes.html" %}
+    {% endif %}
 
     <h1>Trees</h1>
     {#
