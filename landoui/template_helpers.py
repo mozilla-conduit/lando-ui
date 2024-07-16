@@ -11,7 +11,7 @@ import urllib.parse
 
 from typing import Optional
 
-from flask import Blueprint, current_app, escape
+from flask import Blueprint, current_app, escape, session
 from landoui.forms import (
     ReasonCategory,
     TreeCategory,
@@ -30,6 +30,30 @@ template_helpers = Blueprint("template_helpers", __name__)
 @template_helpers.app_template_global()
 def is_user_authenticated() -> bool:
     return helpers.is_user_authenticated()
+
+
+@template_helpers.app_template_global()
+def is_treestatus_user() -> bool:
+    if not is_user_authenticated():
+        return False
+
+    try:
+        userinfo = session["userinfo"]
+    except KeyError:
+        return False
+
+    try:
+        groups = userinfo["https://sso.mozilla.com/claim/groups"]
+    except KeyError:
+        return False
+
+    return any(
+        group in groups
+        for group in {
+            "mozilliansorg_treestatus_admins",
+            "mozilliansorg_treestatus_users",
+        }
+    )
 
 
 @template_helpers.app_template_global()
