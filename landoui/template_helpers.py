@@ -32,6 +32,12 @@ def is_user_authenticated() -> bool:
     return helpers.is_user_authenticated()
 
 
+TREESTATUS_USER_GROUPS = {
+    "mozilliansorg_treestatus_admins",
+    "mozilliansorg_treestatus_users",
+}
+
+
 @template_helpers.app_template_global()
 def is_treestatus_user() -> bool:
     if not is_user_authenticated():
@@ -42,14 +48,7 @@ def is_treestatus_user() -> bool:
     except KeyError:
         return False
 
-
-    return any(
-        group in groups
-        for group in {
-            "mozilliansorg_treestatus_admins",
-            "mozilliansorg_treestatus_users",
-        }
-    )
+    return not TREESTATUS_USER_GROUPS.isdisjoint(groups)
 
 
 @template_helpers.app_template_global()
