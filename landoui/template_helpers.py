@@ -38,14 +38,10 @@ def is_treestatus_user() -> bool:
         return False
 
     try:
-        userinfo = session["userinfo"]
+        groups = session["userinfo"]["https://sso.mozilla.com/claim/groups"]
     except KeyError:
         return False
 
-    try:
-        groups = userinfo["https://sso.mozilla.com/claim/groups"]
-    except KeyError:
-        return False
 
     return any(
         group in groups
