@@ -30,7 +30,7 @@ class Talisman(BaseTalisman):
         self._set_coop_header(response.headers)
         return response
 
-    def _set_coop_header(self, headers: dict):
+    def _set_coop_header(self, headers: dict[str, str]):
         headers["Cross-Origin-Opener-Policy"] = "same-origin"
 
 
