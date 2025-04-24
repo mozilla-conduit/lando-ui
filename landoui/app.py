@@ -8,7 +8,7 @@ import os
 from urllib.parse import urlparse
 from typing import Any
 
-from flask import Flask
+from flask import Flask, Response
 from flask_assets import Environment
 from flask_talisman import Talisman as BaseTalisman
 from webassets.loaders import YAMLLoader
@@ -25,12 +25,12 @@ oidc = None
 
 
 class Talisman(BaseTalisman):
-    def _set_response_headers(self, response):
+    def _set_response_headers(self, response: Response) -> Response:
         response = super()._set_response_headers(response)
         self._set_coop_header(response.headers)
         return response
 
-    def _set_coop_header(self, headers):
+    def _set_coop_header(self, headers: dict):
         headers["Cross-Origin-Opener-Policy"] = "same-origin"
 
 
