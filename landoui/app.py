@@ -8,9 +8,9 @@ import os
 from urllib.parse import urlparse
 from typing import Any
 
-from flask import Flask
+from flask import Flask, Response
 from flask_assets import Environment
-from flask_talisman import Talisman
+from flask_talisman import Talisman as BaseTalisman
 from webassets.loaders import YAMLLoader
 
 from landoui import auth, errorhandlers
@@ -22,6 +22,16 @@ logger = logging.getLogger(__name__)
 # This global is required to allow OIDC initialization on the entire app,
 # yet still allow @oidc decorate uses for pages
 oidc = None
+
+
+class Talisman(BaseTalisman):
+    def _set_response_headers(self, response: Response) -> Response:
+        response = super()._set_response_headers(response)
+        self._set_coop_header(response.headers)
+        return response
+
+    def _set_coop_header(self, headers: dict[str, str]):
+        headers["Cross-Origin-Opener-Policy"] = "same-origin"
 
 
 def get_app_version(path: str) -> dict[str, str]:
