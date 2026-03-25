@@ -12,6 +12,7 @@ cryptography==3.3.2
 flake8==3.7.9
 flask-assets==0.12
 flask-pyoidc==3.7.0
+humanize==4.13.0
 oic==1.2.1
 # Required by flask-pyoidc, can be removed when flask-pyoidc is updated.
 mako>=1.2.2

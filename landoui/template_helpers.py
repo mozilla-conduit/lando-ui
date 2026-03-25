@@ -12,6 +12,7 @@ import urllib.parse
 from typing import Optional
 
 from flask import Blueprint, current_app, escape, session
+import humanize
 from landoui.forms import (
     ReasonCategory,
     TreeCategory,
@@ -64,6 +65,15 @@ def new_settings_form() -> UserSettingsForm:
 @template_helpers.app_template_filter()
 def escape_html(text: str) -> str:
     return escape(text)
+
+
+@template_helpers.app_template_filter()
+def format_datetime(iso_string: str) -> str:
+    """Format an ISO 8601 timestamp into a human-readable string with relative time."""
+    dt = datetime.datetime.fromisoformat(iso_string)
+    formatted = dt.strftime("%B %d, %Y, %I:%M %p %Z")
+    relative = humanize.naturaltime(datetime.datetime.now(datetime.timezone.utc) - dt)
+    return f"{formatted} ({relative})"
 
 
 @template_helpers.app_template_global()

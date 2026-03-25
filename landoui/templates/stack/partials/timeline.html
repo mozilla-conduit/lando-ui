@@ -13,7 +13,7 @@
         </div>
 
         <div class="StackPage-timeline-itemDetail">
-            <p>Landing requested on <time data-timestamp="{{ transplant['created_at'] }}"></time>, by {{ transplant['requester_email'] }}.</p>
+            <p>Landing requested on {{ transplant['created_at'] | format_datetime }}, by {{ transplant['requester_email'] }}.</p>
             <p><strong>Revisions:</strong>
             {% for i in transplant['landing_path'] %}{{
             "" if loop.first else " ← "

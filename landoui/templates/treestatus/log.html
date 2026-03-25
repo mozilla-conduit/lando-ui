@@ -28,7 +28,7 @@
                             <span class="{{ log.status | treestatus_to_status_badge_class }}">{{ log.status }}</span>
                         </div>
                         <div class="column is-expanded">
-                            <div class="block"><b>{{ log.when }}</b></div>
+                            <div class="block"><b>{{ log.when | format_datetime }}</b></div>
                             <div class="block"><h2 class="subtitle">{{ log.who }}</h2></div>
                             <div class="block">
                                 {% if log.reason %}
