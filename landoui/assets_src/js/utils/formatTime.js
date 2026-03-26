@@ -31,7 +31,7 @@ $.fn.formatTime = function() {
     let time = $(this).data('timestamp');
     let date = new Date(time);
 
-    const formattedDate = date.toLocaleString('en', {
+    $(this).text(date.toLocaleString('en', {
       weekday: 'short',
       year: 'numeric',
       month: 'long',
@@ -39,8 +39,8 @@ $.fn.formatTime = function() {
       timeZoneName: 'short',
       hour: 'numeric',
       minute: 'numeric'
-    }).trimEnd();
-
-    $(this).text(`${formattedDate} (${humanizeTimeDelta(date)})`);
+    // We can't use string interpolation as the minifier eats the
+    // empty space between the timestamp and the humanized time delta.
+    }) + ' (' + humanizeTimeDelta(date) + ')');
   });
 };
