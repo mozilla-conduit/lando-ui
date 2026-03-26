@@ -8,6 +8,11 @@
 
 $.fn.treestatus = function() {
     return this.each(function() {
+        let $treestatus = $(this);
+
+        // Format timestamps.
+        $treestatus.find('time[data-timestamp]').formatTime();
+
         // Register an on-click handler for each log update edit button.
         $('.log-update-edit').on("click", function () {
             // Toggle the elements from hidden/visible.
