@@ -15,7 +15,7 @@
 
             <div class="columns">
                 <div class="column">
-                    <p>At {{ status_change_data.when }}, <b>{{ status_change_data.who }}</b> changed trees:</p>
+                    <p>At <time data-timestamp="{{ status_change_data.when }}"></time>, <b>{{ status_change_data.who }}</b> changed trees:</p>
                     <div class="block content">
                         <ul>
                             {% for tree in status_change_data.trees %}
