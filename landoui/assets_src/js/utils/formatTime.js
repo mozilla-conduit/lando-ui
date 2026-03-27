@@ -6,6 +6,26 @@
 
 'use strict';
 
+const RELATIVE_UNITS = [
+  { unit: 'year',   seconds: 31536000 },
+  { unit: 'month',  seconds: 2592000 },
+  { unit: 'week',   seconds: 604800 },
+  { unit: 'day',    seconds: 86400 },
+  { unit: 'hour',   seconds: 3600 },
+  { unit: 'minute', seconds: 60 },
+  { unit: 'second', seconds: 1 },
+];
+
+const relativeFormatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+function humanizeTimeDelta(date, now = new Date()) {
+  const deltaSeconds = Math.round((date - now) / 1000);
+  const match = RELATIVE_UNITS.find((entry) => Math.abs(deltaSeconds) >= entry.seconds);
+  return match
+    ? relativeFormatter.format(Math.round(deltaSeconds / match.seconds), match.unit)
+    : relativeFormatter.format(deltaSeconds, 'second');
+}
+
 $.fn.formatTime = function() {
   return this.each(function() {
     let time = $(this).data('timestamp');
@@ -19,6 +39,8 @@ $.fn.formatTime = function() {
       timeZoneName: 'short',
       hour: 'numeric',
       minute: 'numeric'
-    }));
+    // We can't use string interpolation as the minifier eats the
+    // empty space between the timestamp and the humanized time delta.
+    }) + ' (' + humanizeTimeDelta(date) + ')');
   });
 };
